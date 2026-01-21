@@ -63,9 +63,10 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`\n🚀 Servidor josenizzo.info corriendo en puerto ${PORT}`);
   console.log(`📡 API disponible en http://localhost:${PORT}/api`);
-  console.log(`💚 Health check: http://localhost:${PORT}/api/health\n`);
+  console.log(`💚 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🌐 Frontend servido desde /dist\n`);
 });
 
 export default app;
