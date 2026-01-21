@@ -1,0 +1,325 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #1a1a1a;
+    background-color: #fafafa;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', 'Merriweather', Georgia, serif;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .font-serif {
+    font-family: 'Merriweather', Georgia, serif;
+  }
+
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  /* Espaciado para el contenido de artículos */
+  article p {
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+  }
+
+  article h2,
+  article h3,
+  article h4 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.3;
+  }
+
+  article h2 {
+    font-size: 1.875rem;
+  }
+
+  article h3 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  /* Estilos para imágenes en el contenido de artículos */
+  article img,
+  .prose img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+  }
+
+  /* Imágenes de autor - limitar tamaño SOLO para fotos de autor específicas */
+  article img[src*="Analia_photo"],
+  article img[src*="Jose_photo"],
+  article img[src*="José_photo"],
+  article img[src*="JoseNizzo"],
+  article img[src*="José_Nizzo"],
+  article img[src*="generation-04998e15"],
+  article figure img[src*="Analia_photo"],
+  article figure img[src*="Jose_photo"],
+  article figure img[src*="José_photo"],
+  article figure img[src*="JoseNizzo"],
+  article figure img[src*="José_Nizzo"],
+  article figure img[src*="generation-04998e15"] {
+    max-width: 150px !important;
+    width: 150px !important;
+    height: auto !important;
+    object-fit: cover;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    float: left;
+    margin-right: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Wrapper de foto de autor con figure - SOLO para fotos de autor */
+  article figure:has(img[src*="Analia_photo"]),
+  article figure:has(img[src*="Jose_photo"]),
+  article figure:has(img[src*="José_photo"]),
+  article figure:has(img[src*="JoseNizzo"]),
+  article figure:has(img[src*="José_Nizzo"]),
+  article figure:has(img[src*="generation-04998e15"]) {
+    float: left;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    max-width: 150px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Firma de autor - texto que sigue a la foto - SOLO para fotos de autor */
+  article figure:has(img[src*="Analia_photo"]) + p,
+  article figure:has(img[src*="Jose_photo"]) + p,
+  article figure:has(img[src*="José_photo"]) + p,
+  article figure:has(img[src*="JoseNizzo"]) + p,
+  article figure:has(img[src*="José_Nizzo"]) + p,
+  article figure:has(img[src*="generation-04998e15"]) + p {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: #666;
+    clear: left;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    max-width: 150px;
+    float: left;
+    margin-right: 1rem;
+  }
+
+  /* Logos e íconos */
+  article img[src*="flag"],
+  article img[src*="logo"],
+  article img[src*="icon"] {
+    max-width: 150px !important;
+  }
+
+  /* Limitar el ancho máximo de imágenes con atributos */
+  article img[width],
+  article img[height] {
+    max-width: 600px;
+    width: auto;
+    height: auto;
+  }
+
+  /* Todas las imágenes dentro de figure */
+  article figure img {
+    max-width: 100%;
+  }
+
+  /* Imágenes de autor con resize (Analía y José) - mantener 150px */
+  article img[src*="Analia_photo"][src*="resize"],
+  article img[src*="Jose_photo"][src*="resize"],
+  article img[src*="José_photo"][src*="resize"],
+  article img[src*="José_Nizzo"][src*="resize"],
+  article img[src*="generation-04998e15"][src*="resize"],
+  article figure img[src*="Analia_photo"][src*="resize"],
+  article figure img[src*="Jose_photo"][src*="resize"],
+  article figure img[src*="José_photo"][src*="resize"],
+  article figure img[src*="José_Nizzo"][src*="resize"],
+  article figure img[src*="generation-04998e15"][src*="resize"] {
+    max-width: 150px !important;
+    width: 150px !important;
+    height: auto !important;
+  }
+
+  /* Estilos para elementos periodísticos adicionales */
+
+  /* Separador horizontal */
+  article hr {
+    margin: 3rem auto;
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    max-width: 200px;
+  }
+
+  /* Texto resaltado/destacado */
+  article mark {
+    background-color: #fef3c7;
+    padding: 0.125rem 0.25rem;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Nota del editor */
+  article .nota-editor {
+    background-color: #fef9e7;
+    border-left: 4px solid #f59e0b;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    border-radius: 4px;
+  }
+
+  article .nota-editor strong {
+    color: #d97706;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Artículo relacionado */
+  article .articulo-relacionado {
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+  }
+
+  article .articulo-relacionado a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  article .articulo-relacionado a:hover {
+    text-decoration: underline;
+  }
+
+  /* Tabla */
+  article table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+
+  article table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  article table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  article table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+  /* Declaración con fuente */
+  article .declaracion {
+    background-color: #f9fafb;
+    border-left: 4px solid #6b7280;
+    padding: 1.5rem 1.5rem 1rem;
+    margin: 2rem 0;
+    font-style: italic;
+  }
+
+  article .declaracion p {
+    font-size: 1.125rem;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  article .declaracion cite {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Alerta/Advertencia */
+  article .alerta {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+  }
+
+  article .alerta strong {
+    color: #dc2626;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Ubicación */
+  article .ubicacion {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f0fdf4;
+    color: #166534;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid #bbf7d0;
+  }
+
+  /* Videos e iframes */
+  article figure iframe,
+  article iframe {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    margin: 1.5rem auto;
+    display: block;
+  }
+
+  /* Twitter embeds */
+  article .twitter-tweet {
+    margin: 1.5rem auto !important;
+  }
+}
