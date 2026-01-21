@@ -30,6 +30,10 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos (para imágenes subidas)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Servir el frontend compilado (dist) en producción
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
 // Rutas API
 app.use('/api/articles', articleRoutes);
 app.use('/api/auth', authRoutes);
@@ -53,9 +57,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Manejo de rutas no encontradas
-app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
+// Todas las demás rutas sirven el frontend (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
