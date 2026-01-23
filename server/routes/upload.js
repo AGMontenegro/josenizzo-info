@@ -1,36 +1,25 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const router = express.Router();
 
-// Configurar almacenamiento de multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../uploads');
-    // Crear directorio si no existe
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
+// Configurar cliente S3 para DigitalOcean Spaces
+const s3Client = new S3Client({
+  endpoint: process.env.DO_SPACES_ENDPOINT || 'https://nyc3.digitaloceanspaces.com',
+  region: process.env.DO_SPACES_REGION || 'nyc3',
+  credentials: {
+    accessKeyId: process.env.DO_SPACES_KEY,
+    secretAccessKey: process.env.DO_SPACES_SECRET,
   },
-  filename: function (req, file, cb) {
-    // Generar nombre único: timestamp-nombre-original
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext)
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .substring(0, 50);
-    cb(null, nameWithoutExt + '-' + uniqueSuffix + ext);
-  }
+  forcePathStyle: false,
 });
+
+const BUCKET_NAME = process.env.DO_SPACES_BUCKET || 'josenizzo-uploads';
+
+// Configurar multer para memoria (no guardar en disco)
+const storage = multer.memoryStorage();
 
 // Filtrar solo imágenes
 const fileFilter = (req, file, cb) => {
@@ -53,26 +42,47 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-// POST /api/upload - Subir imagen
-router.post('/', upload.single('image'), (req, res) => {
+// POST /api/upload - Subir imagen a DigitalOcean Spaces
+router.post('/', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
     }
 
-    // URL de la imagen subida
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // Generar nombre único para el archivo
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const nameWithoutExt = path.basename(req.file.originalname, ext)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .substring(0, 50);
+    const fileName = `uploads/${nameWithoutExt}-${uniqueSuffix}${ext}`;
+
+    // Subir a DigitalOcean Spaces
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: fileName,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      ACL: 'public-read', // Hacer el archivo público
+    });
+
+    await s3Client.send(command);
+
+    // URL pública del archivo (usando CDN si está habilitado)
+    const imageUrl = `https://${BUCKET_NAME}.nyc3.cdn.digitaloceanspaces.com/${fileName}`;
 
     res.json({
       success: true,
-      message: 'Imagen subida exitosamente',
+      message: 'Imagen subida exitosamente a DigitalOcean Spaces',
       url: imageUrl,
-      filename: req.file.filename,
+      filename: fileName,
       size: req.file.size
     });
   } catch (error) {
-    console.error('Error al subir imagen:', error);
-    res.status(500).json({ error: 'Error al subir la imagen' });
+    console.error('Error al subir imagen a Spaces:', error);
+    res.status(500).json({ error: 'Error al subir la imagen: ' + error.message });
   }
 });
 
