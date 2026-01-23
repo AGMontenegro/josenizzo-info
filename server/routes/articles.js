@@ -160,18 +160,15 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Ya existe un artículo con ese slug. Por favor, modifica el título o el slug.' });
     }
 
-    // Insertar usando una Promise que maneje correctamente el lastID
-    const articleId = await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO articles (title, slug, excerpt, content, image, category, author_name, featured, breaking, badge, read_time, published)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [title, slug, excerpt, content, image, category, author_name, featured ? 1 : 0, breaking ? 1 : 0, badge || null, read_time || 5, published ? 1 : 0],
-        function(err) {
-          if (err) reject(err);
-          else resolve(this.lastID);
-        }
-      );
-    });
+    // Insertar artículo
+    const result = await db.runAsync(
+      `INSERT INTO articles (title, slug, excerpt, content, image, category, author_name, featured, breaking, badge, read_time, published)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, slug, excerpt, content, image, category, author_name, featured ? 1 : 0, breaking ? 1 : 0, badge || null, read_time || 5, published ? 1 : 0]
+    );
+
+    // MySQL usa insertId, SQLite usa lastID
+    const articleId = result.insertId || result.lastID;
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [articleId]);
     res.status(201).json(article);

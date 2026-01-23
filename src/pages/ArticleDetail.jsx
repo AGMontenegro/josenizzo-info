@@ -27,19 +27,23 @@ function ArticleDetail() {
   useEffect(() => {
     if (!article) return;
 
-    const loadTwitterWidgets = () => {
+    const loadTwitterWidgets = (retries = 0) => {
       if (window.twttr && window.twttr.widgets) {
-        console.log('Loading Twitter widgets...');
-        window.twttr.widgets.load();
-      } else {
-        console.log('Twitter widgets not ready, retrying...');
-        // Retry after a short delay if Twitter script isn't loaded yet
-        setTimeout(loadTwitterWidgets, 500);
+        // Find the article content container
+        const contentDiv = document.querySelector('.prose');
+        if (contentDiv) {
+          window.twttr.widgets.load(contentDiv);
+        } else {
+          window.twttr.widgets.load();
+        }
+      } else if (retries < 10) {
+        // Retry if Twitter script isn't loaded yet (max 10 retries = 5 seconds)
+        setTimeout(() => loadTwitterWidgets(retries + 1), 500);
       }
     };
 
-    // Wait a bit for content to be in DOM, then load widgets
-    const timer = setTimeout(loadTwitterWidgets, 300);
+    // Wait for content to be in DOM, then load widgets
+    const timer = setTimeout(() => loadTwitterWidgets(0), 500);
 
     return () => clearTimeout(timer);
   }, [article]);

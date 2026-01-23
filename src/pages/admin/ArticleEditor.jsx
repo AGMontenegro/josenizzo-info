@@ -137,7 +137,7 @@ function ArticleEditor() {
             const formDataUpload = new FormData();
             formDataUpload.append('image', file);
 
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+            const API_URL = import.meta.env.VITE_API_URL || '/api';
             const response = await fetch(`${API_URL}/upload`, {
               method: 'POST',
               body: formDataUpload
@@ -735,14 +735,14 @@ function ArticleEditor() {
 
               {/* Input manual de URL */}
               <input
-                type="url"
+                type="text"
                 id="image"
                 name="image"
                 value={formData.image}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://ejemplo.com/imagen.jpg"
+                placeholder="/uploads/imagen.jpg o https://ejemplo.com/imagen.jpg"
               />
               <p className="text-xs text-gray-500">
                 Formatos soportados: JPG, PNG, GIF, WebP (máx. 5MB)
