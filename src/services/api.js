@@ -1,5 +1,6 @@
 // Configuración de la API
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Use relative URL '/api' for production (same server serves frontend and API)
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Helper para manejar respuestas
 async function handleResponse(response) {
