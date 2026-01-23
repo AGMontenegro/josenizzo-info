@@ -130,13 +130,15 @@ function ArticleDetail() {
           </div>
 
           {/* Imagen principal */}
-          <div className="mb-8">
-            <img
-              src={article.image}
-              alt={article.title}
-              className="w-full rounded-lg shadow-lg"
-            />
-          </div>
+          {article.image && (
+            <div className="mb-8">
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full rounded-lg shadow-lg"
+              />
+            </div>
+          )}
 
           {/* Contenido del artículo */}
           <ZenMode>
