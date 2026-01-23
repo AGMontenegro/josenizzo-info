@@ -63,7 +63,8 @@ function LiveDataWidget() {
         };
 
         try {
-          const commoditiesRes = await fetch('http://localhost:3001/api/market/commodities');
+          const API_URL = import.meta.env.VITE_API_URL || '/api';
+          const commoditiesRes = await fetch(`${API_URL}/market/commodities`);
           if (commoditiesRes.ok) {
             commoditiesData = await commoditiesRes.json();
           }

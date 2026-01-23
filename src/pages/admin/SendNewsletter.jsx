@@ -25,12 +25,13 @@ function SendNewsletter() {
       setArticles(articlesData.articles);
 
       // Cargar stats de suscriptores
-      const response = await fetch('http://localhost:3001/api/newsletter/subscribers');
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${API_URL}/newsletter/subscribers`);
       const subscribersData = await response.json();
       setStats(subscribersData.stats);
 
       // Cargar templates disponibles
-      const templatesResponse = await fetch('http://localhost:3001/api/newsletter/templates');
+      const templatesResponse = await fetch(`${API_URL}/newsletter/templates`);
       const templatesData = await templatesResponse.json();
       setTemplates(templatesData.templates);
     } catch (error) {
@@ -62,7 +63,8 @@ function SendNewsletter() {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/newsletter/send', {
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${API_URL}/newsletter/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

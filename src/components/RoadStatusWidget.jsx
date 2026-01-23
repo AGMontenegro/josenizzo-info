@@ -12,7 +12,8 @@ function RoadStatusWidget() {
   useEffect(() => {
     const fetchRoadStatus = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/roads/status');
+        const API_URL = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${API_URL}/roads/status`);
         if (response.ok) {
           const data = await response.json();
           setRoadData({

@@ -148,7 +148,8 @@ function ArticleEditor() {
             }
 
             const data = await response.json();
-            const imageUrl = `http://localhost:3001${data.url}`;
+            // Use relative URL for images - works in both dev and production
+            const imageUrl = data.url;
 
             // Insertar la imagen en el contenido
             const currentContent = formData.content;
@@ -340,9 +341,8 @@ function ArticleEditor() {
 
       const data = await response.json();
 
-      // Actualizar el campo de imagen con la URL completa
-      const imageUrl = `http://localhost:3001${data.url}`;
-      setFormData(prev => ({ ...prev, image: imageUrl }));
+      // Use relative URL for images - works in both dev and production
+      setFormData(prev => ({ ...prev, image: data.url }));
     } catch (err) {
       setError('Error al subir la imagen: ' + err.message);
     } finally {

@@ -14,7 +14,8 @@ function NewsletterSubscribers() {
   const fetchSubscribers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/newsletter/subscribers');
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${API_URL}/newsletter/subscribers`);
 
       if (!response.ok) {
         throw new Error('Error al cargar suscriptores');
