@@ -26,8 +26,7 @@ router.get('/', async (req, res) => {
       params.push(searchTerm, searchTerm, searchTerm);
     }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    params.push(limit, offset);
+    query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
     const articles = await db.allAsync(query, params);
 
@@ -66,8 +65,7 @@ router.get('/featured', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3;
     const articles = await db.allAsync(
-      'SELECT * FROM articles WHERE featured = 1 AND published = 1 ORDER BY created_at DESC LIMIT ?',
-      [limit]
+      `SELECT * FROM articles WHERE featured = 1 AND published = 1 ORDER BY created_at DESC LIMIT ${limit}`
     );
     res.json(articles);
   } catch (error) {
@@ -92,8 +90,7 @@ router.get('/trending', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
     const articles = await db.allAsync(
-      'SELECT * FROM articles WHERE published = 1 ORDER BY views DESC LIMIT ?',
-      [limit]
+      `SELECT * FROM articles WHERE published = 1 ORDER BY views DESC LIMIT ${limit}`
     );
     res.json(articles);
   } catch (error) {
