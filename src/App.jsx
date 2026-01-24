@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
@@ -34,6 +34,7 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/articles" element={<ProtectedRoute><AdminArticlesList /></ProtectedRoute>} />
