@@ -204,20 +204,12 @@ function Terms() {
               <p className="text-gray-700 leading-relaxed mb-4">
                 Si tenés preguntas sobre estos términos y condiciones, contactanos:
               </p>
-              <div className="space-y-2">
-                <p className="text-gray-700">
-                  <strong>Email:</strong>{' '}
-                  <a href="mailto:legal@josenizzo.info" className="text-blue-600 hover:underline">
-                    legal@josenizzo.info
-                  </a>
-                </p>
-                <p className="text-gray-700">
-                  <strong>Contacto general:</strong>{' '}
-                  <a href="mailto:contacto@josenizzo.info" className="text-blue-600 hover:underline">
-                    contacto@josenizzo.info
-                  </a>
-                </p>
-              </div>
+              <p className="text-gray-700">
+                <strong>Email:</strong>{' '}
+                <a href="mailto:josenizzo@gmail.com" className="text-blue-600 hover:underline">
+                  josenizzo@gmail.com
+                </a>
+              </p>
             </section>
           </div>
         </div>
