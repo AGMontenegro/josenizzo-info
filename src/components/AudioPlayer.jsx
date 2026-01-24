@@ -14,6 +14,7 @@ function AudioPlayer({ articleTitle, articleContent }) {
   const utteranceRef = useRef(null);
   const startTimeRef = useRef(null);
   const intervalRef = useRef(null);
+  const loadingTimeoutRef = useRef(null);
 
   // Extraer texto plano del HTML
   const getPlainText = useCallback((html) => {
@@ -75,6 +76,9 @@ function AudioPlayer({ articleTitle, articleContent }) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -100,6 +104,16 @@ function AudioPlayer({ articleTitle, articleContent }) {
       setIsLoading(true);
       speechSynthesis.cancel();
 
+      // Timeout de seguridad - si no inicia en 5 segundos, cancelar
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      loadingTimeoutRef.current = setTimeout(() => {
+        console.warn('Speech synthesis timeout - not starting');
+        setIsLoading(false);
+        setIsPlaying(false);
+      }, 5000);
+
       const text = getPlainText(articleContent);
       const fullText = `${articleTitle}. ${text}`;
 
@@ -112,6 +126,9 @@ function AudioPlayer({ articleTitle, articleContent }) {
       }
 
       utteranceRef.current.onstart = () => {
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current);
+        }
         setIsLoading(false);
         setIsPlaying(true);
         setIsPaused(false);
@@ -131,6 +148,9 @@ function AudioPlayer({ articleTitle, articleContent }) {
 
       utteranceRef.current.onerror = (event) => {
         console.error('Speech synthesis error:', event);
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current);
+        }
         setIsLoading(false);
         setIsPlaying(false);
         setIsPaused(false);
