@@ -312,10 +312,32 @@
     max-width: 100%;
     width: 100%;
     height: auto;
+    min-height: 400px;
     aspect-ratio: 16 / 9;
     border-radius: 8px;
     margin: 1.5rem auto;
     display: block;
+  }
+
+  /* Video container */
+  article .video-container,
+  article figure.video-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+
+  article .video-container iframe,
+  article .video-container video {
+    width: 100%;
+    min-height: 400px;
+    border-radius: 8px;
+  }
+
+  article video {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
   }
 
   /* Twitter embeds */

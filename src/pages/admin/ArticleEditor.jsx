@@ -203,14 +203,19 @@ function ArticleEditor() {
         insertedText = `<ol>\n  <li>${selectedText || 'Elemento 1'}</li>\n  <li>Elemento 2</li>\n  <li>Elemento 3</li>\n</ol>\n\n`;
         break;
       case 'video':
-        const videoUrl = prompt('Ingresa el enlace del video (YouTube, Twitter, etc.):');
+        const videoUrl = prompt('Ingresa el enlace del video (YouTube, Facebook, Twitter, etc.):');
         if (!videoUrl) return;
 
         if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
           const videoId = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
           if (videoId) {
-            insertedText = `\n<figure><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></figure>\n\n`;
+            // YouTube embed con branding minimizado: modestbranding=1, rel=0 (no videos de otros canales)
+            insertedText = `\n<figure class="video-container"><iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0" frameborder="0" allowfullscreen></iframe></figure>\n\n`;
           }
+        } else if (videoUrl.includes('facebook.com') || videoUrl.includes('fb.watch')) {
+          // Facebook video embed
+          const encodedUrl = encodeURIComponent(videoUrl);
+          insertedText = `\n<figure class="video-container"><iframe src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&width=560" width="100%" height="400" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe></figure>\n\n`;
         } else if (videoUrl.includes('twitter.com') || videoUrl.includes('x.com')) {
           // Extract clean tweet URL (remove tracking parameters)
           let cleanUrl = videoUrl;
@@ -222,9 +227,74 @@ function ArticleEditor() {
 
           insertedText = `\n<blockquote class="twitter-tweet"><p lang="es" dir="ltr"></p>&mdash; <a href="${cleanUrl}">${cleanUrl}</a></blockquote>\n\n`;
         } else {
-          insertedText = `\n<figure><video controls src="${videoUrl}"></video></figure>\n\n`;
+          insertedText = `\n<figure class="video-container"><video controls src="${videoUrl}" width="100%"></video></figure>\n\n`;
         }
         break;
+      case 'uploadVideo':
+        // Subir video desde PC
+        const videoInput = document.createElement('input');
+        videoInput.type = 'file';
+        videoInput.accept = 'video/*';
+        videoInput.onchange = async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          if (!file.type.startsWith('video/')) {
+            alert('Solo se permiten archivos de video');
+            return;
+          }
+
+          if (file.size > 100 * 1024 * 1024) {
+            alert('El video no puede superar los 100MB antes de compresión');
+            return;
+          }
+
+          try {
+            const statusMsg = `Subiendo y comprimiendo video (${(file.size / 1024 / 1024).toFixed(1)}MB)... Esto puede tardar unos minutos.`;
+            alert(statusMsg);
+
+            const formDataUpload = new FormData();
+            formDataUpload.append('video', file);
+
+            const API_URL = import.meta.env.VITE_API_URL || '/api';
+            const response = await fetch(`${API_URL}/upload/video`, {
+              method: 'POST',
+              body: formDataUpload
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Error al subir el video');
+            }
+
+            const data = await response.json();
+
+            // Insertar el video en el contenido
+            const currentContent = formData.content;
+            const textarea = document.getElementById('content');
+            const cursorPos = textarea.selectionStart;
+            const beforeText = currentContent.substring(0, cursorPos);
+            const afterText = currentContent.substring(cursorPos);
+            const insertText = `\n<figure class="video-container"><video controls src="${data.url}" width="100%"></video></figure>\n\n`;
+
+            setFormData(prev => ({
+              ...prev,
+              content: beforeText + insertText + afterText
+            }));
+
+            alert(`✅ Video subido!\nOriginal: ${(data.originalSize / 1024 / 1024).toFixed(1)}MB\nComprimido: ${(data.optimizedSize / 1024 / 1024).toFixed(1)}MB\nAhorro: ${data.savings}`);
+
+            setTimeout(() => {
+              textarea.focus();
+              const newPos = cursorPos + insertText.length;
+              textarea.setSelectionRange(newPos, newPos);
+            }, 100);
+          } catch (error) {
+            alert('Error al subir el video: ' + error.message);
+          }
+        };
+        videoInput.click();
+        return;
       case 'twitter':
         const tweetUrl = prompt('Ingresa la URL del tweet completa de Twitter/X:');
         if (tweetUrl) {
@@ -569,9 +639,17 @@ function ArticleEditor() {
                 type="button"
                 onClick={() => insertElement('video')}
                 className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm"
-                title="Insertar video (YouTube, etc.)"
+                title="Insertar video por URL (YouTube, etc.)"
               >
                 🎥
+              </button>
+              <button
+                type="button"
+                onClick={() => insertElement('uploadVideo')}
+                className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm"
+                title="Subir video desde PC (max 100MB, se comprime a 20MB)"
+              >
+                📤
               </button>
               <div className="w-px bg-gray-300 mx-1"></div>
               <button
