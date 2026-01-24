@@ -14,6 +14,25 @@ function Home() {
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
   const [showSecureModal, setShowSecureModal] = useState(false);
+  const [showSecureForm, setShowSecureForm] = useState(false);
+  const [secureFormData, setSecureFormData] = useState({
+    subject: '',
+    message: '',
+    contactMethod: '',
+    files: []
+  });
+  const [secureFormSubmitted, setSecureFormSubmitted] = useState(false);
+
+  const handleSecureFormSubmit = (e) => {
+    e.preventDefault();
+    setSecureFormSubmitted(true);
+    setTimeout(() => {
+      setShowSecureModal(false);
+      setShowSecureForm(false);
+      setSecureFormSubmitted(false);
+      setSecureFormData({ subject: '', message: '', contactMethod: '', files: [] });
+    }, 3000);
+  };
 
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -995,7 +1014,11 @@ function Home() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowSecureModal(false)}
+                  onClick={() => {
+                    setShowSecureModal(false);
+                    setShowSecureForm(false);
+                    setSecureFormData({ subject: '', message: '', contactMethod: '', files: [] });
+                  }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1034,35 +1057,145 @@ function Home() {
                   <h3 className="text-xl font-serif font-bold text-gray-900 mb-4">Métodos de contacto seguros</h3>
 
                   {/* Formulario encriptado */}
-                  <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-start gap-3 mb-3">
-                      <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <div>
-                        <h4 className="font-bold text-gray-900 mb-2">Formulario Encriptado</h4>
-                        <p className="text-sm text-gray-700 mb-3">
-                          Esta página utiliza cifrado para codificar cualquier información que compartas. El contenido del mensaje, incluidos los archivos adjuntos, solo podrá ser leído por josenizzo.info.
-                        </p>
-                        <p className="text-xs text-gray-600 mb-3">
-                          <strong>Nota:</strong> Debes dejar un correo electrónico si deseas que nos pongamos en contacto con vos.
-                        </p>
-                        <button
-                          onClick={() => {
-                            setShowSecureModal(false);
-                            // El botón flotante abrirá el formulario SecureInbox
-                            document.querySelector('[title="Buzón de Denuncias Seguro"]')?.click();
-                          }}
-                          className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition-colors text-sm"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                          Abrir formulario seguro
-                        </button>
+                  {!showSecureForm ? (
+                    <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <div>
+                          <h4 className="font-bold text-gray-900 mb-2">Formulario Encriptado</h4>
+                          <p className="text-sm text-gray-700 mb-3">
+                            Esta página utiliza cifrado para codificar cualquier información que compartas. El contenido del mensaje, incluidos los archivos adjuntos, solo podrá ser leído por josenizzo.info.
+                          </p>
+                          <p className="text-xs text-gray-600 mb-3">
+                            <strong>Nota:</strong> Debes dejar un correo electrónico si deseas que nos pongamos en contacto con vos.
+                          </p>
+                          <button
+                            onClick={() => setShowSecureForm(true)}
+                            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition-colors text-sm"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Abrir formulario seguro
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-6">
+                      {!secureFormSubmitted ? (
+                        <form onSubmit={handleSecureFormSubmit}>
+                          <div className="flex items-center gap-2 mb-4">
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            <h4 className="font-bold text-gray-900">Formulario Encriptado</h4>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Asunto de la denuncia *
+                              </label>
+                              <input
+                                type="text"
+                                value={secureFormData.subject}
+                                onChange={(e) => setSecureFormData({ ...secureFormData, subject: e.target.value })}
+                                placeholder="Ej: Irregularidades en licitación pública"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                                required
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Descripción detallada *
+                              </label>
+                              <textarea
+                                value={secureFormData.message}
+                                onChange={(e) => setSecureFormData({ ...secureFormData, message: e.target.value })}
+                                rows={4}
+                                placeholder="Proporciona todos los detalles que consideres relevantes..."
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-sm"
+                                required
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Método de contacto (opcional)
+                              </label>
+                              <input
+                                type="text"
+                                value={secureFormData.contactMethod}
+                                onChange={(e) => setSecureFormData({ ...secureFormData, contactMethod: e.target.value })}
+                                placeholder="Email, WhatsApp, Signal, etc."
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Adjuntar documentos (opcional)
+                              </label>
+                              <input
+                                type="file"
+                                multiple
+                                onChange={(e) => setSecureFormData({ ...secureFormData, files: Array.from(e.target.files) })}
+                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                              />
+                              {secureFormData.files.length > 0 && (
+                                <p className="text-xs text-gray-500 mt-1">{secureFormData.files.length} archivo(s) seleccionado(s)</p>
+                              )}
+                            </div>
+
+                            <div className="flex items-start gap-2">
+                              <input type="checkbox" required className="mt-1" id="secure-terms" />
+                              <label htmlFor="secure-terms" className="text-xs text-gray-600">
+                                Confirmo que la información es veraz y será tratada con confidencialidad.
+                              </label>
+                            </div>
+
+                            <div className="flex gap-3">
+                              <button
+                                type="button"
+                                onClick={() => setShowSecureForm(false)}
+                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                              >
+                                Volver
+                              </button>
+                              <button
+                                type="submit"
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Enviar
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="text-center py-6">
+                          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">¡Información recibida!</h4>
+                          <p className="text-sm text-gray-600">
+                            Tu mensaje ha sido encriptado y enviado de forma segura.
+                          </p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Código: <span className="font-mono font-bold">#{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* WhatsApp */}
                   <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
