@@ -173,6 +173,41 @@ function Home() {
 
                   {/* Línea separadora más oscura después de "Tenés un dato?" */}
                   <div className="mt-8 border-t-2 border-gray-900"></div>
+
+                  {/* NG Insights - Solo visible en MOBILE */}
+                  <div className="mt-8 lg:hidden">
+                    <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                      NG Insights
+                    </h3>
+                    {ngInsightsLoading ? (
+                      <LoadingSpinner className="py-10" />
+                    ) : ngInsightsArticles.length > 0 && (
+                      <div className="space-y-4">
+                        {/* Primer artículo - Título + Extracto */}
+                        <div className="group pb-4 border-b border-gray-200">
+                          <Link to={`/articulo/${ngInsightsArticles[0].id}`}>
+                            <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                              {ngInsightsArticles[0].title}
+                            </h3>
+                            <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed font-light">
+                              {ngInsightsArticles[0].excerpt}
+                            </p>
+                          </Link>
+                        </div>
+
+                        {/* Segundo artículo - Solo título */}
+                        {ngInsightsArticles.length >= 2 && (
+                          <div className="group">
+                            <Link to={`/articulo/${ngInsightsArticles[1].id}`}>
+                              <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                                {ngInsightsArticles[1].title}
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Columna DERECHA - Layout vertical con imágenes más pequeñas */}
@@ -784,8 +819,8 @@ function Home() {
                   {/* Línea separadora más oscura */}
                   <div className="mt-4 border-t-2 border-gray-900"></div>
 
-                  {/* NG Insights */}
-                  <div className="mt-8">
+                  {/* NG Insights - Solo visible en DESKTOP */}
+                  <div className="mt-8 hidden lg:block">
                     <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
                       NG Insights
                     </h3>
