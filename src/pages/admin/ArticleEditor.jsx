@@ -398,8 +398,7 @@ function ArticleEditor() {
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-      const response = await fetch(`${API_URL}/upload`, {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formDataUpload
       });
