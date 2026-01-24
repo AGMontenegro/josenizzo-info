@@ -8,9 +8,11 @@ function AudioPlayer({ articleTitle, articleContent }) {
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [isSupported, setIsSupported] = useState(true);
-  const [voices, setVoices] = useState([]);
+  const [error, setError] = useState(null);
   const [selectedVoice, setSelectedVoice] = useState(null);
 
+  const chunksRef = useRef([]);
+  const currentChunkRef = useRef(0);
   const utteranceRef = useRef(null);
   const startTimeRef = useRef(null);
   const intervalRef = useRef(null);
@@ -21,9 +23,32 @@ function AudioPlayer({ articleTitle, articleContent }) {
     if (!html) return '';
     const temp = document.createElement('div');
     temp.innerHTML = html;
-    // Remover scripts y estilos
     temp.querySelectorAll('script, style').forEach(el => el.remove());
     return temp.textContent || temp.innerText || '';
+  }, []);
+
+  // Dividir texto en chunks pequeños (por oraciones)
+  const splitIntoChunks = useCallback((text) => {
+    // Dividir por oraciones (punto, signo de interrogación, exclamación)
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    const chunks = [];
+    let currentChunk = '';
+
+    for (const sentence of sentences) {
+      // Si agregar esta oración excede 200 caracteres, guardar chunk actual
+      if (currentChunk.length + sentence.length > 200 && currentChunk.length > 0) {
+        chunks.push(currentChunk.trim());
+        currentChunk = sentence;
+      } else {
+        currentChunk += sentence;
+      }
+    }
+
+    if (currentChunk.trim()) {
+      chunks.push(currentChunk.trim());
+    }
+
+    return chunks.length > 0 ? chunks : [text];
   }, []);
 
   // Cargar voces disponibles
@@ -35,11 +60,11 @@ function AudioPlayer({ articleTitle, articleContent }) {
 
     const loadVoices = () => {
       const availableVoices = speechSynthesis.getVoices();
-      setVoices(availableVoices);
 
-      // Buscar voz en español (preferir es-AR, es-ES, o cualquier español)
+      // Buscar voz en español
       const spanishVoice = availableVoices.find(v => v.lang === 'es-AR') ||
                           availableVoices.find(v => v.lang === 'es-ES') ||
+                          availableVoices.find(v => v.lang === 'es-MX') ||
                           availableVoices.find(v => v.lang.startsWith('es')) ||
                           availableVoices[0];
 
@@ -60,7 +85,6 @@ function AudioPlayer({ articleTitle, articleContent }) {
   useEffect(() => {
     if (articleContent) {
       const text = getPlainText(articleContent);
-      // Aproximadamente 150 palabras por minuto a velocidad normal
       const wordCount = text.split(/\s+/).length;
       const estimatedSeconds = Math.ceil((wordCount / 150) * 60);
       setDuration(estimatedSeconds);
@@ -70,29 +94,93 @@ function AudioPlayer({ articleTitle, articleContent }) {
   // Limpiar al desmontar
   useEffect(() => {
     return () => {
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
-      }
+      speechSynthesis.cancel();
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
     };
   }, []);
 
-  const togglePlay = () => {
+  // Reproducir siguiente chunk
+  const playNextChunk = useCallback(() => {
+    if (currentChunkRef.current >= chunksRef.current.length) {
+      // Terminó todo
+      setIsPlaying(false);
+      setIsPaused(false);
+      setCurrentTime(duration);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+
+    const chunk = chunksRef.current[currentChunkRef.current];
+    utteranceRef.current = new SpeechSynthesisUtterance(chunk);
+    utteranceRef.current.lang = 'es-AR';
+    utteranceRef.current.rate = speed;
+
+    if (selectedVoice) {
+      utteranceRef.current.voice = selectedVoice;
+    }
+
+    utteranceRef.current.onstart = () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
+      setIsLoading(false);
+      setIsPlaying(true);
+      setError(null);
+    };
+
+    utteranceRef.current.onend = () => {
+      currentChunkRef.current++;
+      playNextChunk();
+    };
+
+    utteranceRef.current.onerror = (event) => {
+      console.error('Speech error:', event.error);
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+
+      // Si es error de interrupción, intentar siguiente chunk
+      if (event.error === 'interrupted' || event.error === 'canceled') {
+        return;
+      }
+
+      // Intentar siguiente chunk si falla uno
+      currentChunkRef.current++;
+      if (currentChunkRef.current < chunksRef.current.length) {
+        setTimeout(() => playNextChunk(), 100);
+      } else {
+        setError('Error de audio');
+        setIsPlaying(false);
+        setIsLoading(false);
+      }
+    };
+
+    speechSynthesis.speak(utteranceRef.current);
+  }, [speed, selectedVoice, duration]);
+
+  const startTimeTracking = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      if (startTimeRef.current && speechSynthesis.speaking && !speechSynthesis.paused) {
+        const elapsed = (Date.now() - startTimeRef.current) / 1000;
+        setCurrentTime(Math.min(elapsed / speed, duration));
+      }
+    }, 100);
+  }, [speed, duration]);
+
+  const togglePlay = useCallback(() => {
     if (!isSupported || !articleContent) return;
+
+    setError(null);
 
     if (isPlaying) {
       // Pausar
       speechSynthesis.pause();
       setIsPaused(true);
       setIsPlaying(false);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     } else if (isPaused) {
       // Reanudar
       speechSynthesis.resume();
@@ -104,100 +192,46 @@ function AudioPlayer({ articleTitle, articleContent }) {
       setIsLoading(true);
       speechSynthesis.cancel();
 
-      // Timeout de seguridad - si no inicia en 5 segundos, cancelar
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
-      }
-      loadingTimeoutRef.current = setTimeout(() => {
-        console.warn('Speech synthesis timeout - not starting');
-        setIsLoading(false);
-        setIsPlaying(false);
-      }, 5000);
-
+      // Preparar chunks
       const text = getPlainText(articleContent);
       const fullText = `${articleTitle}. ${text}`;
+      chunksRef.current = splitIntoChunks(fullText);
+      currentChunkRef.current = 0;
 
-      utteranceRef.current = new SpeechSynthesisUtterance(fullText);
-      utteranceRef.current.lang = 'es-AR';
-      utteranceRef.current.rate = speed;
-
-      if (selectedVoice) {
-        utteranceRef.current.voice = selectedVoice;
-      }
-
-      utteranceRef.current.onstart = () => {
-        if (loadingTimeoutRef.current) {
-          clearTimeout(loadingTimeoutRef.current);
+      // Timeout de seguridad
+      if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = setTimeout(() => {
+        if (!speechSynthesis.speaking) {
+          setIsLoading(false);
+          setError('No se pudo iniciar el audio');
         }
-        setIsLoading(false);
-        setIsPlaying(true);
-        setIsPaused(false);
-        startTimeRef.current = Date.now();
-        setCurrentTime(0);
-        startTimeTracking();
-      };
+      }, 5000);
 
-      utteranceRef.current.onend = () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-        setCurrentTime(duration);
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
-
-      utteranceRef.current.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-        if (loadingTimeoutRef.current) {
-          clearTimeout(loadingTimeoutRef.current);
-        }
-        setIsLoading(false);
-        setIsPlaying(false);
-        setIsPaused(false);
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
-
-      speechSynthesis.speak(utteranceRef.current);
+      startTimeRef.current = Date.now();
+      startTimeTracking();
+      playNextChunk();
     }
-  };
+  }, [isSupported, articleContent, isPlaying, isPaused, articleTitle, getPlainText, splitIntoChunks, startTimeTracking, playNextChunk]);
 
-  const startTimeTracking = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    intervalRef.current = setInterval(() => {
-      if (startTimeRef.current && speechSynthesis.speaking && !speechSynthesis.paused) {
-        const elapsed = (Date.now() - startTimeRef.current) / 1000;
-        setCurrentTime(Math.min(elapsed / speed, duration));
-      }
-    }, 100);
-  };
-
-  const handleSpeedChange = (newSpeed) => {
+  const handleSpeedChange = useCallback((newSpeed) => {
     setSpeed(newSpeed);
     if (isPlaying || isPaused) {
-      // Reiniciar con nueva velocidad
       speechSynthesis.cancel();
       setIsPlaying(false);
       setIsPaused(false);
       setCurrentTime(0);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
-  };
+  }, [isPlaying, isPaused]);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     speechSynthesis.cancel();
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentTime(0);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-  };
+    currentChunkRef.current = 0;
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -207,7 +241,6 @@ function AudioPlayer({ articleTitle, articleContent }) {
 
   const speeds = [0.75, 1, 1.25, 1.5, 2];
 
-  // Si no es soportado, no mostrar nada
   if (!isSupported) {
     return null;
   }
@@ -243,7 +276,17 @@ function AudioPlayer({ articleTitle, articleContent }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-medium text-gray-700">
-              {isLoading ? 'Cargando...' : isPlaying ? 'Reproduciendo...' : isPaused ? 'En pausa' : 'Escuchar este artículo ahora'}
+              {error ? (
+                <span className="text-red-500">{error}</span>
+              ) : isLoading ? (
+                'Cargando...'
+              ) : isPlaying ? (
+                'Reproduciendo...'
+              ) : isPaused ? (
+                'En pausa'
+              ) : (
+                'Escuchar este artículo'
+              )}
             </span>
             <span className="text-xs text-gray-500">
               {formatTime(currentTime)} / {formatTime(duration)}
