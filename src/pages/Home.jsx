@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import SEO from '../components/SEO';
 import LoadingSpinner from '../components/LoadingSpinner';
+import HomeSkeleton from '../components/HomeSkeleton';
 import RoadStatusWidget from '../components/RoadStatusWidget';
 import { useFeaturedArticles, useArticles, useTrendingArticles, useArticlesByCategory } from '../hooks/useArticles';
 import { newsletterAPI } from '../services/api';
@@ -66,8 +67,8 @@ function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-0">
           {/* Hero Section - Estilo NYT exacto */}
           <section className="mb-16">
-            {featuredLoading ? (
-              <LoadingSpinner className="py-20" />
+            {(featuredLoading || latestLoading) ? (
+              <HomeSkeleton />
             ) : featuredArticles.length > 0 && latestArticles.length >= 6 && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna IZQUIERDA - Layout horizontal con imagen central más grande */}
