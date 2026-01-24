@@ -129,8 +129,8 @@ function Privacy() {
               </ul>
               <p className="text-gray-700 leading-relaxed mt-4">
                 Para ejercer estos derechos, contactanos a:{' '}
-                <a href="mailto:privacidad@josenizzo.info" className="text-blue-600 hover:underline">
-                  privacidad@josenizzo.info
+                <a href="mailto:josenizzo@gmail.com" className="text-blue-600 hover:underline">
+                  josenizzo@gmail.com
                 </a>
               </p>
             </section>
@@ -175,20 +175,12 @@ function Privacy() {
                 Si tenés preguntas sobre esta política de privacidad o sobre cómo manejamos tus datos,
                 contactanos:
               </p>
-              <div className="space-y-2">
-                <p className="text-gray-700">
-                  <strong>Email:</strong>{' '}
-                  <a href="mailto:privacidad@josenizzo.info" className="text-blue-600 hover:underline">
-                    privacidad@josenizzo.info
-                  </a>
-                </p>
-                <p className="text-gray-700">
-                  <strong>Contacto general:</strong>{' '}
-                  <a href="mailto:contacto@josenizzo.info" className="text-blue-600 hover:underline">
-                    contacto@josenizzo.info
-                  </a>
-                </p>
-              </div>
+              <p className="text-gray-700">
+                <strong>Email:</strong>{' '}
+                <a href="mailto:josenizzo@gmail.com" className="text-blue-600 hover:underline">
+                  josenizzo@gmail.com
+                </a>
+              </p>
             </section>
           </div>
         </div>
