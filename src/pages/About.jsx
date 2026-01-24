@@ -48,9 +48,15 @@ function About() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     Cobertura Integral
                   </h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed mb-3">
                     Cubrimos las noticias más relevantes de Argentina y el mundo en múltiples categorías:
                     Economía, Política, Tecnología, Cultura, Deportes, Sociedad e Internacional.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed">
+                    Además, contamos con secciones especiales: <strong>Desafío Bienestar</strong> para que
+                    te desafíes cotidianamente hacia una vida más saludable, <strong>Planeta Extremo</strong> sobre
+                    los cambios que está viviendo nuestra Tierra, y <strong>NG Insights</strong>, nuestros
+                    artículos de opinión y análisis editorial.
                   </p>
                 </div>
 
