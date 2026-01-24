@@ -60,7 +60,7 @@ function Footer() {
             </a>
 
             <a
-              href="https://instagram.com/josenizzo"
+              href="https://www.instagram.com/lonuestro2024?igsh=Zmt3d2ZyMmFxenIx"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white transition-colors"
