@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../config/database.js';
+import socialMediaService from '../services/socialMediaService.js';
 
 const router = express.Router();
 
@@ -218,6 +219,27 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Artículo eliminado exitosamente' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar artículo' });
+  }
+});
+
+// POST /api/articles/:id/share - Publicar artículo en redes sociales
+router.post('/:id/share', async (req, res) => {
+  try {
+    const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);
+
+    if (!article) {
+      return res.status(404).json({ error: 'Artículo no encontrado' });
+    }
+
+    const results = await socialMediaService.publishToAll(article);
+
+    res.json({
+      message: 'Publicación en redes sociales procesada',
+      results
+    });
+  } catch (error) {
+    console.error('Error al publicar en redes sociales:', error);
+    res.status(500).json({ error: 'Error al publicar en redes sociales' });
   }
 });
 

@@ -12,6 +12,8 @@ function ArticleEditor() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [shareToSocial, setShareToSocial] = useState(false);
+  const [socialShareResult, setSocialShareResult] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -423,14 +425,35 @@ function ArticleEditor() {
     e.preventDefault();
     setError('');
     setSaving(true);
+    setSocialShareResult(null);
 
     try {
       const token = localStorage.getItem('token');
+      let articleId = id;
 
       if (isEditing) {
         await articlesAPI.update(id, formData, token);
       } else {
-        await articlesAPI.create(formData, token);
+        const newArticle = await articlesAPI.create(formData, token);
+        articleId = newArticle.id;
+      }
+
+      // Publicar en redes sociales si está marcado
+      if (shareToSocial && formData.published) {
+        try {
+          const shareResult = await articlesAPI.shareToSocialMedia(articleId, token);
+          setSocialShareResult(shareResult);
+
+          if (shareResult.results?.facebook?.success) {
+            alert('✅ Artículo guardado y publicado en Facebook!');
+          } else {
+            alert('⚠️ Artículo guardado, pero hubo un problema al publicar en redes: ' +
+              (shareResult.results?.facebook?.error || 'Error desconocido'));
+          }
+        } catch (shareErr) {
+          console.error('Error sharing to social media:', shareErr);
+          alert('⚠️ Artículo guardado, pero hubo un error al publicar en redes sociales');
+        }
       }
 
       navigate('/admin/articles');
@@ -948,6 +971,26 @@ function ArticleEditor() {
               />
               <label htmlFor="published" className="ml-2 block text-sm text-gray-700">
                 Publicar (visible en el sitio)
+              </label>
+            </div>
+
+            {/* Compartir en redes sociales */}
+            <div className="flex items-center mt-3">
+              <input
+                type="checkbox"
+                id="shareToSocial"
+                checked={shareToSocial}
+                onChange={(e) => setShareToSocial(e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                disabled={!formData.published}
+              />
+              <label htmlFor="shareToSocial" className="ml-2 block text-sm text-gray-700">
+                <span className="flex items-center gap-2">
+                  📱 Publicar en redes sociales (Facebook)
+                  {!formData.published && (
+                    <span className="text-xs text-gray-400">(requiere publicar primero)</span>
+                  )}
+                </span>
               </label>
             </div>
           </div>

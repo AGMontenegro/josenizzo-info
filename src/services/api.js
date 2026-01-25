@@ -85,6 +85,17 @@ export const articlesAPI = {
       }
     });
     return handleResponse(response);
+  },
+
+  // Publicar en redes sociales
+  shareToSocialMedia: async (id, token) => {
+    const response = await fetch(`${API_URL}/articles/${id}/share`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return handleResponse(response);
   }
 };
 
