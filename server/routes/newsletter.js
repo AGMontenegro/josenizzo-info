@@ -114,7 +114,7 @@ router.post('/send', async (req, res) => {
       'INSERT INTO newsletter_sends (sent_at, article_count, subscriber_count) VALUES (?, ?, ?)',
       [sendTimestamp, articles.length, subscribers.length]
     );
-    const sendId = await db.getAsync('SELECT last_insert_rowid() as id');
+    const sendId = await db.getAsync('SELECT LAST_INSERT_ID() as id');
 
     // Enviar newsletter con tracking y opciones de template
     console.log(`Enviando newsletter con ${articles.length} artículos a ${subscribers.length} suscriptores...`);
