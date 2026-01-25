@@ -120,7 +120,7 @@ export function useTrendingArticles(limit = 5) {
   return { articles, loading, error };
 }
 
-export function useArticle(id) {
+export function useArticle(slug) {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -129,14 +129,14 @@ export function useArticle(id) {
     let isMounted = true;
 
     async function fetchArticle() {
-      if (!id) {
+      if (!slug) {
         setLoading(false);
         return;
       }
 
       try {
         setLoading(true);
-        const data = await articlesAPI.getById(id);
+        const data = await articlesAPI.getBySlug(slug);
 
         if (isMounted) {
           setArticle(data);
@@ -158,7 +158,7 @@ export function useArticle(id) {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [slug]);
 
   return { article, loading, error };
 }

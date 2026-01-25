@@ -24,7 +24,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="articulo/:id" element={<ArticleDetail />} />
+          <Route path="articulo/:slug" element={<ArticleDetail />} />
           <Route path="categoria/:category" element={<Category />} />
           <Route path="desuscribirse" element={<Unsubscribe />} />
           <Route path="sobre-nosotros" element={<About />} />

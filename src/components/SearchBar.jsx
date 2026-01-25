@@ -106,7 +106,7 @@ function SearchBar() {
                 {results.map((article) => (
                   <Link
                     key={article.id}
-                    to={`/articulo/${article.id}`}
+                    to={`/articulo/${article.slug}`}
                     onClick={clearSearch}
                     className="block p-4 hover:bg-gray-50 transition-colors"
                   >

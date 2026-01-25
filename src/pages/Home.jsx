@@ -122,7 +122,7 @@ function Home() {
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                     {/* Imagen CENTRAL - Solo imagen decorativa (4 columnas) - Primero en mobile */}
                     <div className="md:col-span-4 group order-1 md:order-2">
-                      <Link to={`/articulo/${featuredArticles[0].id}`}>
+                      <Link to={`/articulo/${featuredArticles[0].slug}`}>
                         <div className="aspect-[16/9] overflow-hidden bg-gray-100 rounded-sm">
                           <img
                             src={featuredArticles[0].image}
@@ -137,7 +137,7 @@ function Home() {
                     {/* Artículos izquierda - 2 apilados con texto completo - Después en mobile */}
                     <div className="space-y-6 order-2 md:order-1">
                       <div className="group pb-6 border-b border-gray-200">
-                        <Link to={`/articulo/${latestArticles[0].id}`}>
+                        <Link to={`/articulo/${latestArticles[0].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[0].title}
                           </h3>
@@ -147,7 +147,7 @@ function Home() {
                         </Link>
                       </div>
                       <div className="group">
-                        <Link to={`/articulo/${latestArticles[1].id}`}>
+                        <Link to={`/articulo/${latestArticles[1].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[1].title}
                           </h3>
@@ -163,7 +163,7 @@ function Home() {
                   {latestArticles.length >= 4 && (
                     <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="group pb-6 border-b border-gray-200 md:pb-0 md:border-b-0">
-                        <Link to={`/articulo/${latestArticles[2].id}`}>
+                        <Link to={`/articulo/${latestArticles[2].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[2].title}
                           </h3>
@@ -171,7 +171,7 @@ function Home() {
                       </div>
 
                       <div className="group md:border-l border-gray-200 md:pl-6">
-                        <Link to={`/articulo/${latestArticles[3].id}`}>
+                        <Link to={`/articulo/${latestArticles[3].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[3].title}
                           </h3>
@@ -212,7 +212,7 @@ function Home() {
                       <div className="space-y-4">
                         {/* Primer artículo - Título + Extracto */}
                         <div className="group pb-4 border-b border-gray-200">
-                          <Link to={`/articulo/${ngInsightsArticles[0].id}`}>
+                          <Link to={`/articulo/${ngInsightsArticles[0].slug}`}>
                             <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
                               {ngInsightsArticles[0].title}
                             </h3>
@@ -225,7 +225,7 @@ function Home() {
                         {/* Segundo artículo - Solo título */}
                         {ngInsightsArticles.length >= 2 && (
                           <div className="group">
-                            <Link to={`/articulo/${ngInsightsArticles[1].id}`}>
+                            <Link to={`/articulo/${ngInsightsArticles[1].slug}`}>
                               <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                 {ngInsightsArticles[1].title}
                               </h3>
@@ -242,7 +242,7 @@ function Home() {
                   {/* Artículo superior - Imagen reducida */}
                   {featuredArticles.length >= 2 && (
                     <div className="group pb-5 border-b border-gray-200">
-                      <Link to={`/articulo/${featuredArticles[1].id}`}>
+                      <Link to={`/articulo/${featuredArticles[1].slug}`}>
                         <div className="aspect-[16/10] overflow-hidden bg-gray-100 mb-2 rounded-sm">
                           <img
                             src={featuredArticles[1].image}
@@ -263,7 +263,7 @@ function Home() {
                     <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
                     {latestArticles.slice(4, 6).map((article) => (
                       <div key={article.id} className="group">
-                        <Link to={`/articulo/${article.id}`}>
+                        <Link to={`/articulo/${article.slug}`}>
                           <div className="aspect-square overflow-hidden bg-gray-100 mb-2 rounded-sm">
                             <img
                               src={article.image}
@@ -299,7 +299,7 @@ function Home() {
                     <div className="space-y-6 md:col-span-1">
                       {/* Primer artículo - Título + Extracto */}
                       <div className="group pb-6 border-b border-gray-200">
-                        <Link to={`/articulo/${latestArticles[6].id}`}>
+                        <Link to={`/articulo/${latestArticles[6].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[6].title}
                           </h3>
@@ -311,7 +311,7 @@ function Home() {
 
                       {/* Segundo artículo - Solo título */}
                       <div className="group pb-6 border-b border-gray-200">
-                        <Link to={`/articulo/${latestArticles[7].id}`}>
+                        <Link to={`/articulo/${latestArticles[7].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[7].title}
                           </h3>
@@ -320,7 +320,7 @@ function Home() {
 
                       {/* Tercer artículo - Solo título */}
                       <div className="group">
-                        <Link to={`/articulo/${latestArticles[8].id}`}>
+                        <Link to={`/articulo/${latestArticles[8].slug}`}>
                           <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[8].title}
                           </h3>
@@ -348,7 +348,7 @@ function Home() {
                     <div className="mt-8">
                       <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">Desafío Bienestar</h3>
                       <div className="group">
-                        <Link to={`/articulo/${bienestarArticles[0].id}`}>
+                        <Link to={`/articulo/${bienestarArticles[0].slug}`}>
                           <div className="flex gap-6">
                             <div className="w-1/2 flex flex-col justify-center">
                               <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-tight text-2xl mb-3">
@@ -412,7 +412,7 @@ function Home() {
                     {/* Artículo con título/extracto (40%) e imagen (60%) */}
                     {latestArticles.length > 17 && (
                       <div className="mt-8">
-                        <Link to={`/articulo/${latestArticles[17].id}`} className="group block">
+                        <Link to={`/articulo/${latestArticles[17].slug}`} className="group block">
                           <div className="flex gap-4">
                             {/* Texto - 40% */}
                             <div className="flex-[0.4]">
@@ -447,7 +447,7 @@ function Home() {
                           <div className="mt-8 overflow-hidden">
                             <div className="grid grid-cols-2 gap-4 divide-x divide-gray-200">
                               {/* Artículo izquierda */}
-                              <Link to={`/articulo/${latestArticles[18].id}`} className="group block pr-3">
+                              <Link to={`/articulo/${latestArticles[18].slug}`} className="group block pr-3">
                                 <div className="flex gap-2 items-center">
                                   <div className="w-16 sm:w-24 flex-shrink-0">
                                     <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
@@ -468,7 +468,7 @@ function Home() {
                               </Link>
 
                               {/* Artículo derecha */}
-                              <Link to={`/articulo/${latestArticles[19].id}`} className="group block pl-3">
+                              <Link to={`/articulo/${latestArticles[19].slug}`} className="group block pl-3">
                                 <div className="flex gap-2 items-center">
                                   <div className="w-16 sm:w-24 flex-shrink-0">
                                     <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
@@ -500,21 +500,21 @@ function Home() {
                             <div className="mt-6">
                               <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
                                 {/* Artículo 1 */}
-                                <Link to={`/articulo/${latestArticles[20].id}`} className="group pr-6">
+                                <Link to={`/articulo/${latestArticles[20].slug}`} className="group pr-6">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[20].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 2 */}
-                                <Link to={`/articulo/${latestArticles[21].id}`} className="group px-6">
+                                <Link to={`/articulo/${latestArticles[21].slug}`} className="group px-6">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[21].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 3 */}
-                                <Link to={`/articulo/${latestArticles[22].id}`} className="group pl-6">
+                                <Link to={`/articulo/${latestArticles[22].slug}`} className="group pl-6">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[22].title}
                                   </h3>
@@ -536,7 +536,7 @@ function Home() {
                               </h3>
                               <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
                                 {/* Artículo 1 */}
-                                <Link to={`/articulo/${latestArticles[23].id}`} className="group block pr-3">
+                                <Link to={`/articulo/${latestArticles[23].slug}`} className="group block pr-3">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[23].image}
@@ -554,7 +554,7 @@ function Home() {
                                 </Link>
 
                                 {/* Artículo 2 */}
-                                <Link to={`/articulo/${latestArticles[24].id}`} className="group block px-3">
+                                <Link to={`/articulo/${latestArticles[24].slug}`} className="group block px-3">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[24].image}
@@ -572,7 +572,7 @@ function Home() {
                                 </Link>
 
                                 {/* Artículo 3 */}
-                                <Link to={`/articulo/${latestArticles[25].id}`} className="group block pl-3">
+                                <Link to={`/articulo/${latestArticles[25].slug}`} className="group block pl-3">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[25].image}
@@ -604,7 +604,7 @@ function Home() {
                               {latestArticles.length > 27 && (
                                 <div className="grid grid-cols-2 gap-6 pb-6 border-b border-gray-200 relative">
                                   <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[26].id}`} className="group block">
+                                  <Link to={`/articulo/${latestArticles[26].slug}`} className="group block">
                                     <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                       <img
                                         src={latestArticles[26].image}
@@ -618,7 +618,7 @@ function Home() {
                                     </h4>
                                   </Link>
                                   {latestArticles.length > 28 && (
-                                    <Link to={`/articulo/${latestArticles[27].id}`} className="group block">
+                                    <Link to={`/articulo/${latestArticles[27].slug}`} className="group block">
                                       <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                         <img
                                           src={latestArticles[27].image}
@@ -639,7 +639,7 @@ function Home() {
                               {latestArticles.length > 29 && (
                                 <div className="grid grid-cols-2 gap-6 py-6 border-b border-gray-200 relative">
                                   <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[28].id}`} className="group block">
+                                  <Link to={`/articulo/${latestArticles[28].slug}`} className="group block">
                                     <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                       <img
                                         src={latestArticles[28].image}
@@ -653,7 +653,7 @@ function Home() {
                                     </h4>
                                   </Link>
                                   {latestArticles.length > 30 && (
-                                    <Link to={`/articulo/${latestArticles[29].id}`} className="group block">
+                                    <Link to={`/articulo/${latestArticles[29].slug}`} className="group block">
                                       <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                         <img
                                           src={latestArticles[29].image}
@@ -674,7 +674,7 @@ function Home() {
                               {latestArticles.length > 31 && (
                                 <div className="grid grid-cols-2 gap-6 py-6 border-b border-gray-200 relative">
                                   <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[30].id}`} className="group block">
+                                  <Link to={`/articulo/${latestArticles[30].slug}`} className="group block">
                                     <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                       <img
                                         src={latestArticles[30].image}
@@ -688,7 +688,7 @@ function Home() {
                                     </h4>
                                   </Link>
                                   {latestArticles.length >= 32 && (
-                                    <Link to={`/articulo/${latestArticles[31].id}`} className="group block">
+                                    <Link to={`/articulo/${latestArticles[31].slug}`} className="group block">
                                       <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                         <img
                                           src={latestArticles[31].image}
@@ -709,7 +709,7 @@ function Home() {
                               {latestArticles.length > 33 && (
                                 <div className="grid grid-cols-2 gap-6 pt-6 relative">
                                   <div className="absolute left-1/2 top-6 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[32].id}`} className="group block">
+                                  <Link to={`/articulo/${latestArticles[32].slug}`} className="group block">
                                     <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                       <img
                                         src={latestArticles[32].image}
@@ -723,7 +723,7 @@ function Home() {
                                     </h4>
                                   </Link>
                                   {latestArticles.length >= 34 && (
-                                    <Link to={`/articulo/${latestArticles[33].id}`} className="group block">
+                                    <Link to={`/articulo/${latestArticles[33].slug}`} className="group block">
                                       <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                         <img
                                           src={latestArticles[33].image}
@@ -753,7 +753,7 @@ function Home() {
                   <div className="space-y-5">
                     {/* Primer artículo - Título + Imagen */}
                     <div className="group pb-5 border-b border-gray-200">
-                      <Link to={`/articulo/${latestArticles[9].id}`}>
+                      <Link to={`/articulo/${latestArticles[9].slug}`}>
                         <div className="aspect-[16/9] overflow-hidden bg-gray-100 mb-2 rounded-sm">
                           <img
                             src={latestArticles[9].image}
@@ -770,7 +770,7 @@ function Home() {
 
                     {/* Segundo artículo - Solo título */}
                     <div className="group pb-5 border-b border-gray-200">
-                      <Link to={`/articulo/${latestArticles[10].id}`}>
+                      <Link to={`/articulo/${latestArticles[10].slug}`}>
                         <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                           {latestArticles[10].title}
                         </h4>
@@ -780,7 +780,7 @@ function Home() {
                     {/* Tercer artículo - Título a la izquierda + Imagen a la derecha */}
                     {latestArticles.length >= 12 && (
                       <div className="group pb-5 border-b border-gray-200">
-                        <Link to={`/articulo/${latestArticles[11].id}`}>
+                        <Link to={`/articulo/${latestArticles[11].slug}`}>
                           <div className="flex gap-3">
                             <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-5 leading-snug text-sm w-1/2">
                               {latestArticles[11].title}
@@ -801,7 +801,7 @@ function Home() {
                     {/* Cuarto artículo - Solo título */}
                     {latestArticles.length >= 13 && (
                       <div className="group pb-5 border-b border-gray-200">
-                        <Link to={`/articulo/${latestArticles[12].id}`}>
+                        <Link to={`/articulo/${latestArticles[12].slug}`}>
                           <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[12].title}
                           </h4>
@@ -817,7 +817,7 @@ function Home() {
                             key={article.id}
                             className={`group ${index % 2 === 0 ? 'border-r border-gray-200 pr-3' : 'pl-3'} ${index < 2 ? 'pb-5 border-b border-gray-200' : 'pt-5'}`}
                           >
-                            <Link to={`/articulo/${article.id}`}>
+                            <Link to={`/articulo/${article.slug}`}>
                               <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-tight text-sm">
                                 {article.title}
                               </h4>
@@ -857,7 +857,7 @@ function Home() {
                       <div className="space-y-4">
                         {/* Primer artículo - Título + Extracto */}
                         <div className="group pb-4 border-b border-gray-200">
-                          <Link to={`/articulo/${ngInsightsArticles[0].id}`}>
+                          <Link to={`/articulo/${ngInsightsArticles[0].slug}`}>
                             <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
                               {ngInsightsArticles[0].title}
                             </h3>
@@ -870,7 +870,7 @@ function Home() {
                         {/* Segundo artículo - Solo título */}
                         {ngInsightsArticles.length >= 2 && (
                           <div className="group">
-                            <Link to={`/articulo/${ngInsightsArticles[1].id}`}>
+                            <Link to={`/articulo/${ngInsightsArticles[1].slug}`}>
                               <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                 {ngInsightsArticles[1].title}
                               </h3>
@@ -950,7 +950,7 @@ function Home() {
                       {latestArticles.length > 27 && (
                         <div className="grid grid-cols-2 gap-4 pb-6 border-b border-gray-200 relative">
                           <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[26].id}`} className="group block">
+                          <Link to={`/articulo/${latestArticles[26].slug}`} className="group block">
                             <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                               <img
                                 src={latestArticles[26].image}
@@ -964,7 +964,7 @@ function Home() {
                             </h4>
                           </Link>
                           {latestArticles.length > 28 && (
-                            <Link to={`/articulo/${latestArticles[27].id}`} className="group block">
+                            <Link to={`/articulo/${latestArticles[27].slug}`} className="group block">
                               <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                 <img
                                   src={latestArticles[27].image}
@@ -985,7 +985,7 @@ function Home() {
                       {latestArticles.length > 29 && (
                         <div className="grid grid-cols-2 gap-4 py-6 border-b border-gray-200 relative">
                           <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[28].id}`} className="group block">
+                          <Link to={`/articulo/${latestArticles[28].slug}`} className="group block">
                             <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                               <img
                                 src={latestArticles[28].image}
@@ -999,7 +999,7 @@ function Home() {
                             </h4>
                           </Link>
                           {latestArticles.length > 30 && (
-                            <Link to={`/articulo/${latestArticles[29].id}`} className="group block">
+                            <Link to={`/articulo/${latestArticles[29].slug}`} className="group block">
                               <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                 <img
                                   src={latestArticles[29].image}
@@ -1020,7 +1020,7 @@ function Home() {
                       {latestArticles.length > 31 && (
                         <div className="grid grid-cols-2 gap-4 pt-6 relative">
                           <div className="absolute left-1/2 top-6 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[30].id}`} className="group block">
+                          <Link to={`/articulo/${latestArticles[30].slug}`} className="group block">
                             <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                               <img
                                 src={latestArticles[30].image}
@@ -1034,7 +1034,7 @@ function Home() {
                             </h4>
                           </Link>
                           {latestArticles.length >= 32 && (
-                            <Link to={`/articulo/${latestArticles[31].id}`} className="group block">
+                            <Link to={`/articulo/${latestArticles[31].slug}`} className="group block">
                               <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
                                 <img
                                   src={latestArticles[31].image}

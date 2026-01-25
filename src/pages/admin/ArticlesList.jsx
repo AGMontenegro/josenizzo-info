@@ -199,7 +199,7 @@ function ArticlesList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link
-                          to={`/articulo/${article.id}`}
+                          to={`/articulo/${article.slug}`}
                           target="_blank"
                           className="text-gray-600 hover:text-gray-900 mr-3"
                         >

@@ -16,8 +16,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useArticle, useArticles } from '../hooks/useArticles';
 
 function ArticleDetail() {
-  const { id } = useParams();
-  const { article, loading, error } = useArticle(id);
+  const { slug } = useParams();
+  const { article, loading, error } = useArticle(slug);
   const { articles: relatedArticles } = useArticles({
     category: article?.category,
     limit: 3
@@ -84,7 +84,7 @@ function ArticleDetail() {
         author={article.author || article.author_name}
         publishedTime={date}
         category={article.category}
-        url={`/articulo/${article.id}`}
+        url={`/articulo/${article.slug}`}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <article className="max-w-3xl mx-auto">

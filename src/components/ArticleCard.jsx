@@ -10,7 +10,7 @@ function ArticleCard({ article, featured = false, variant = 'default', hideCateg
 
   if (featured) {
     return (
-      <Link to={`/articulo/${article.id}`} className="group block">
+      <Link to={`/articulo/${article.slug}`} className="group block">
         <article className="relative overflow-hidden bg-white">
           <div className="aspect-[3/2] relative overflow-hidden bg-gray-100">
             <img
@@ -57,7 +57,7 @@ function ArticleCard({ article, featured = false, variant = 'default', hideCateg
 
   if (variant === 'editorial') {
     return (
-      <Link to={`/articulo/${article.id}`} className="group block">
+      <Link to={`/articulo/${article.slug}`} className="group block">
         <article>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-gray-700 text-xs font-bold uppercase tracking-widest">
@@ -85,7 +85,7 @@ function ArticleCard({ article, featured = false, variant = 'default', hideCateg
 
   if (variant === 'horizontal') {
     return (
-      <Link to={`/articulo/${article.id}`} className="group block">
+      <Link to={`/articulo/${article.slug}`} className="group block">
         <article className="py-2">
           <span className="text-gray-600 text-xs font-semibold uppercase tracking-wider">
             {article.category}
@@ -104,7 +104,7 @@ function ArticleCard({ article, featured = false, variant = 'default', hideCateg
   // Variante 'secondary' - Estilo NYT con imagen pequeña al lado
   if (variant === 'secondary') {
     return (
-      <Link to={`/articulo/${article.id}`} className="group block">
+      <Link to={`/articulo/${article.slug}`} className="group block">
         <article className="flex gap-4">
           <div className="flex-1 min-w-0">
             <span className="text-gray-700 text-xs font-bold uppercase tracking-wider">
@@ -134,7 +134,7 @@ function ArticleCard({ article, featured = false, variant = 'default', hideCateg
   }
 
   return (
-    <Link to={`/articulo/${article.id}`} className="group block">
+    <Link to={`/articulo/${article.slug}`} className="group block">
       <article className="overflow-hidden bg-white pb-6">
         <div className="aspect-[4/3] relative overflow-hidden bg-gray-100 mb-4">
           <img
