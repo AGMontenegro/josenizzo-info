@@ -108,7 +108,8 @@ router.post('/send', async (req, res) => {
     }
 
     // Crear registro de envío para tracking
-    const sendTimestamp = new Date().toISOString();
+    const now = new Date();
+    const sendTimestamp = now.toISOString().slice(0, 19).replace('T', ' ');
     await db.runAsync(
       'INSERT INTO newsletter_sends (sent_at, article_count, subscriber_count) VALUES (?, ?, ?)',
       [sendTimestamp, articles.length, subscribers.length]
