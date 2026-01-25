@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 class SocialMediaService {
   constructor() {
     this.facebookPageId = process.env.FACEBOOK_PAGE_ID;
@@ -28,27 +26,37 @@ class SocialMediaService {
       // Create the post message
       const message = `${article.title}\n\n${article.excerpt || ''}\n\nLee la nota completa:`;
 
-      // Post with link to Facebook Page
-      const response = await axios.post(
+      // Post with link to Facebook Page using native fetch
+      const response = await fetch(
         `https://graph.facebook.com/v18.0/${this.facebookPageId}/feed`,
         {
-          message: message,
-          link: articleUrl,
-          access_token: this.facebookAccessToken
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: message,
+            link: articleUrl,
+            access_token: this.facebookAccessToken
+          })
         }
       );
 
-      console.log('Facebook post published successfully:', response.data.id);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Facebook API error');
+      }
+
+      console.log('Facebook post published successfully:', data.id);
       return {
         success: true,
-        postId: response.data.id,
+        postId: data.id,
         platform: 'facebook'
       };
     } catch (error) {
-      console.error('Error posting to Facebook:', error.response?.data || error.message);
+      console.error('Error posting to Facebook:', error.message);
       return {
         success: false,
-        error: error.response?.data?.error?.message || error.message,
+        error: error.message,
         platform: 'facebook'
       };
     }
