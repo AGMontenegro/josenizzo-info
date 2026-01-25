@@ -109,7 +109,7 @@ function Home() {
         url="/"
       />
 
-      <div className="bg-white">
+      <div className="bg-white overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-0">
           {/* Hero Section - Estilo NYT exacto */}
           <section className="mb-16">
@@ -445,9 +445,9 @@ function Home() {
                     {/* 2 artículos lado a lado con línea divisoria */}
                     {latestArticles.length > 19 && (
                           <div className="mt-8">
-                            <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-gray-200">
                               {/* Artículo izquierda */}
-                              <Link to={`/articulo/${latestArticles[18].id}`} className="group block pr-6">
+                              <Link to={`/articulo/${latestArticles[18].id}`} className="group block md:pr-6 pb-6 md:pb-0 border-b md:border-b-0 border-gray-200">
                                 <div className="flex gap-3 items-center">
                                   <div className="w-24 flex-shrink-0">
                                     <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
@@ -459,7 +459,7 @@ function Home() {
                                       />
                                     </div>
                                   </div>
-                                  <div className="flex-1">
+                                  <div className="flex-1 min-w-0">
                                     <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm">
                                       {latestArticles[18].title}
                                     </h3>
@@ -468,7 +468,7 @@ function Home() {
                               </Link>
 
                               {/* Artículo derecha */}
-                              <Link to={`/articulo/${latestArticles[19].id}`} className="group block pl-6">
+                              <Link to={`/articulo/${latestArticles[19].id}`} className="group block md:pl-6">
                                 <div className="flex gap-3 items-center">
                                   <div className="w-24 flex-shrink-0">
                                     <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
@@ -480,7 +480,7 @@ function Home() {
                                       />
                                     </div>
                                   </div>
-                                  <div className="flex-1">
+                                  <div className="flex-1 min-w-0">
                                     <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm">
                                       {latestArticles[19].title}
                                     </h3>
@@ -498,23 +498,23 @@ function Home() {
 
                             {/* 3 artículos solo título */}
                             <div className="mt-6">
-                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 md:divide-x divide-gray-200">
                                 {/* Artículo 1 */}
-                                <Link to={`/articulo/${latestArticles[20].id}`} className="group pr-6">
+                                <Link to={`/articulo/${latestArticles[20].id}`} className="group md:pr-6 pb-4 md:pb-0 border-b md:border-b-0 border-gray-200">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[20].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 2 */}
-                                <Link to={`/articulo/${latestArticles[21].id}`} className="group px-6">
+                                <Link to={`/articulo/${latestArticles[21].id}`} className="group md:px-6 pb-4 md:pb-0 border-b md:border-b-0 border-gray-200">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[21].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 3 */}
-                                <Link to={`/articulo/${latestArticles[22].id}`} className="group pl-6">
+                                <Link to={`/articulo/${latestArticles[22].id}`} className="group md:pl-6">
                                   <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[22].title}
                                   </h3>
@@ -534,9 +534,9 @@ function Home() {
                               <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
                                 Cultura
                               </h3>
-                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:divide-x divide-gray-200">
                                 {/* Artículo 1 */}
-                                <Link to={`/articulo/${latestArticles[23].id}`} className="group block pr-3">
+                                <Link to={`/articulo/${latestArticles[23].id}`} className="group block md:pr-3 pb-6 md:pb-0 border-b md:border-b-0 border-gray-200">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[23].image}
@@ -554,7 +554,7 @@ function Home() {
                                 </Link>
 
                                 {/* Artículo 2 */}
-                                <Link to={`/articulo/${latestArticles[24].id}`} className="group block px-3">
+                                <Link to={`/articulo/${latestArticles[24].id}`} className="group block md:px-3 pb-6 md:pb-0 border-b md:border-b-0 border-gray-200">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[24].image}
@@ -572,7 +572,7 @@ function Home() {
                                 </Link>
 
                                 {/* Artículo 3 */}
-                                <Link to={`/articulo/${latestArticles[25].id}`} className="group block pl-3">
+                                <Link to={`/articulo/${latestArticles[25].id}`} className="group block md:pl-3">
                                   <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[25].image}
