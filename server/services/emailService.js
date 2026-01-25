@@ -187,7 +187,18 @@ export async function sendSecureTipNotification(tipData) {
     const transporter = getTransporter();
     const recipientEmail = process.env.SECURE_TIP_EMAIL || process.env.GMAIL_USER;
 
-    const { subject, message, contactMethod } = tipData;
+    const { subject, message, contactMethod, attachments = [] } = tipData;
+
+    const attachmentInfo = attachments.length > 0
+      ? `<div class="field">
+          <div class="label">Archivos Adjuntos (${attachments.length})</div>
+          <div class="value">
+            <ul style="margin: 0; padding-left: 20px;">
+              ${attachments.map(a => `<li>${a.filename}</li>`).join('')}
+            </ul>
+          </div>
+        </div>`
+      : '';
 
     const html = `
       <!DOCTYPE html>
@@ -230,6 +241,8 @@ export async function sendSecureTipNotification(tipData) {
               <div class="value">${contactMethod || 'No proporcionado - Anónimo'}</div>
             </div>
 
+            ${attachmentInfo}
+
             <div class="field">
               <div class="label">Fecha de Recepción</div>
               <div class="value">${new Date().toLocaleString('es-AR', { dateStyle: 'full', timeStyle: 'short' })}</div>
@@ -247,9 +260,14 @@ export async function sendSecureTipNotification(tipData) {
       to: recipientEmail,
       subject: `🔒 DENUNCIA: ${subject || 'Nueva denuncia confidencial'}`,
       html,
+      attachments: attachments.map(a => ({
+        filename: a.filename,
+        content: a.content,
+        contentType: a.contentType
+      }))
     });
 
-    console.log('✅ Notificación de denuncia enviada:', info.messageId);
+    console.log('✅ Notificación de denuncia enviada:', info.messageId, `con ${attachments.length} adjunto(s)`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error al enviar notificación de denuncia:', error);

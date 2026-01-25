@@ -27,14 +27,21 @@ function Home() {
     e.preventDefault();
 
     try {
+      const formData = new FormData();
+      formData.append('subject', secureFormData.subject);
+      formData.append('message', secureFormData.message);
+      formData.append('contactMethod', secureFormData.contactMethod);
+
+      // Agregar archivos si hay
+      if (secureFormData.files && secureFormData.files.length > 0) {
+        secureFormData.files.forEach((file) => {
+          formData.append('files', file);
+        });
+      }
+
       const response = await fetch('/api/contact/secure-tip', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subject: secureFormData.subject,
-          message: secureFormData.message,
-          contactMethod: secureFormData.contactMethod
-        })
+        body: formData
       });
 
       if (response.ok) {
