@@ -12,6 +12,7 @@ import commentRoutes from './routes/comments.js';
 import uploadRoutes from './routes/upload.js';
 import marketRoutes from './routes/market.js';
 import roadsRoutes from './routes/roads.js';
+import contactRoutes from './routes/contact.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,6 +43,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/roads', roadsRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req, res) => {

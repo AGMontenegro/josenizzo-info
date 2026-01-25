@@ -179,7 +179,86 @@ export async function sendNewsletter(subscribers, articles, sendId, options = {}
   }
 }
 
+/**
+ * Envía una notificación de denuncia/dato confidencial al equipo
+ */
+export async function sendSecureTipNotification(tipData) {
+  try {
+    const transporter = getTransporter();
+    const recipientEmail = process.env.SECURE_TIP_EMAIL || process.env.GMAIL_USER;
+
+    const { subject, message, contactMethod } = tipData;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+            .content { padding: 20px; background: #f9f9f9; }
+            .field { margin-bottom: 15px; }
+            .label { font-weight: bold; color: #666; font-size: 12px; text-transform: uppercase; }
+            .value { margin-top: 5px; padding: 10px; background: white; border-left: 3px solid #22c55e; }
+            .footer { padding: 15px; text-align: center; font-size: 12px; color: #666; }
+            .warning { background: #fef3c7; border: 1px solid #f59e0b; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1 style="margin:0;">🔒 Nueva Denuncia Confidencial</h1>
+            <p style="margin:5px 0 0 0; opacity: 0.8;">josenizzo.info - Buzón Seguro</p>
+          </div>
+          <div class="content">
+            <div class="warning">
+              ⚠️ Este mensaje fue enviado a través del formulario de denuncias confidenciales. Tratá la información con discreción.
+            </div>
+
+            <div class="field">
+              <div class="label">Asunto</div>
+              <div class="value">${subject || 'Sin asunto'}</div>
+            </div>
+
+            <div class="field">
+              <div class="label">Mensaje</div>
+              <div class="value" style="white-space: pre-wrap;">${message || 'Sin mensaje'}</div>
+            </div>
+
+            <div class="field">
+              <div class="label">Método de Contacto (si proporcionó)</div>
+              <div class="value">${contactMethod || 'No proporcionado - Anónimo'}</div>
+            </div>
+
+            <div class="field">
+              <div class="label">Fecha de Recepción</div>
+              <div class="value">${new Date().toLocaleString('es-AR', { dateStyle: 'full', timeStyle: 'short' })}</div>
+            </div>
+          </div>
+          <div class="footer">
+            Este mensaje fue generado automáticamente por el sistema de denuncias de josenizzo.info
+          </div>
+        </body>
+      </html>
+    `;
+
+    const info = await transporter.sendMail({
+      from: `"Buzón Seguro josenizzo.info" <${process.env.GMAIL_USER}>`,
+      to: recipientEmail,
+      subject: `🔒 DENUNCIA: ${subject || 'Nueva denuncia confidencial'}`,
+      html,
+    });
+
+    console.log('✅ Notificación de denuncia enviada:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error al enviar notificación de denuncia:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export default {
   sendWelcomeEmail,
   sendNewsletter,
+  sendSecureTipNotification,
 };

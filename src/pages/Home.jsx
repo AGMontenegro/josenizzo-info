@@ -23,15 +23,35 @@ function Home() {
   });
   const [secureFormSubmitted, setSecureFormSubmitted] = useState(false);
 
-  const handleSecureFormSubmit = (e) => {
+  const handleSecureFormSubmit = async (e) => {
     e.preventDefault();
-    setSecureFormSubmitted(true);
-    setTimeout(() => {
-      setShowSecureModal(false);
-      setShowSecureForm(false);
-      setSecureFormSubmitted(false);
-      setSecureFormData({ subject: '', message: '', contactMethod: '', files: [] });
-    }, 3000);
+
+    try {
+      const response = await fetch('/api/contact/secure-tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: secureFormData.subject,
+          message: secureFormData.message,
+          contactMethod: secureFormData.contactMethod
+        })
+      });
+
+      if (response.ok) {
+        setSecureFormSubmitted(true);
+        setTimeout(() => {
+          setShowSecureModal(false);
+          setShowSecureForm(false);
+          setSecureFormSubmitted(false);
+          setSecureFormData({ subject: '', message: '', contactMethod: '', files: [] });
+        }, 3000);
+      } else {
+        alert('Error al enviar. Por favor intentá de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al enviar. Por favor intentá de nuevo.');
+    }
   };
 
   // Newsletter state
