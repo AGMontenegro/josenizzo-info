@@ -20,6 +20,86 @@ function SEO({
   const defaultImage = `${siteUrl}/logos/josenizzo-og.png`;
 
   useEffect(() => {
+    // JSON-LD Structured Data para Google News
+    const existingJsonLd = document.querySelector('script[type="application/ld+json"]');
+    if (existingJsonLd) {
+      existingJsonLd.remove();
+    }
+
+    if (article && title) {
+      const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'NewsArticle',
+        headline: title,
+        description: description || defaultDescription,
+        image: image ? [image] : [defaultImage],
+        datePublished: publishedTime || new Date().toISOString(),
+        dateModified: modifiedTime || publishedTime || new Date().toISOString(),
+        author: {
+          '@type': 'Person',
+          name: author || 'Redacción josenizzo.info'
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: siteTitle,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${siteUrl}/logos/josenizzo-logo.png`
+          }
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': fullUrl
+        },
+        articleSection: category || 'Noticias',
+        inLanguage: 'es-AR'
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    } else {
+      // JSON-LD para la página principal (WebSite + Organization)
+      const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': `${siteUrl}/#website`,
+            url: siteUrl,
+            name: siteName,
+            description: defaultDescription,
+            inLanguage: 'es-AR',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: `${siteUrl}/buscar?q={search_term_string}`,
+              'query-input': 'required name=search_term_string'
+            }
+          },
+          {
+            '@type': 'Organization',
+            '@id': `${siteUrl}/#organization`,
+            name: siteTitle,
+            url: siteUrl,
+            logo: {
+              '@type': 'ImageObject',
+              url: `${siteUrl}/logos/josenizzo-logo.png`
+            },
+            sameAs: [
+              'https://twitter.com/josenizzo',
+              'https://facebook.com/josenizzo'
+            ]
+          }
+        ]
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    }
+
     // Actualizar título
     document.title = fullTitle;
 
@@ -76,7 +156,7 @@ function SEO({
 
     // Lang attribute
     document.documentElement.lang = 'es-AR';
-  }, [fullTitle, description, image, article, author, publishedTime, modifiedTime, category, fullUrl, defaultDescription, defaultImage, title, siteTitle]);
+  }, [fullTitle, description, image, article, author, publishedTime, modifiedTime, category, fullUrl, defaultDescription, defaultImage, title, siteTitle, siteName, siteUrl]);
 
   return null;
 }

@@ -13,6 +13,7 @@ import {
   logSecurityEvent,
   getSecurityLogs
 } from './middleware/security.js';
+import logger, { httpLogger, logInfo } from './utils/logger.js';
 
 // Rutas
 import articleRoutes from './routes/articles.js';
@@ -23,6 +24,7 @@ import uploadRoutes from './routes/upload.js';
 import marketRoutes from './routes/market.js';
 import roadsRoutes from './routes/roads.js';
 import contactRoutes from './routes/contact.js';
+import sitemapRoutes from './routes/sitemap.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +34,9 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// ========== LOGGING ==========
+app.use(httpLogger);
 
 // ========== SEGURIDAD ==========
 
@@ -136,6 +141,11 @@ app.use('/api/market', marketRoutes);
 app.use('/api/roads', roadsRoutes);
 app.use('/api/contact', contactRoutes);
 
+// Rutas SEO (sitemap, robots.txt)
+app.use('/sitemap.xml', sitemapRoutes);
+app.use('/news-sitemap.xml', (req, _res, next) => { req.url = '/news'; next(); }, sitemapRoutes);
+app.use('/robots.txt', (req, _res, next) => { req.url = '/robots'; next(); }, sitemapRoutes);
+
 // Ruta de salud
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'josenizzo.info API funcionando' });
@@ -162,7 +172,13 @@ app.use((err, req, res, _next) => {
   // Log security event for server errors
   logSecurityEvent(req, 'SERVER_ERROR', { message: err.message });
 
-  console.error(err.stack);
+  logger.error('Server error', {
+    error: err.message,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method
+  });
+
   res.status(500).json({
     error: 'Error del servidor',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Algo salió mal'
@@ -175,6 +191,12 @@ app.use((_req, res) => {
 });
 
 app.listen(PORT, () => {
+  logInfo('Servidor iniciado', {
+    port: PORT,
+    env: process.env.NODE_ENV || 'development',
+    api: `http://localhost:${PORT}/api`,
+    health: `http://localhost:${PORT}/api/health`
+  });
   console.log(`\n🚀 Servidor josenizzo.info corriendo en puerto ${PORT}`);
   console.log(`📡 API disponible en http://localhost:${PORT}/api`);
   console.log(`💚 Health check: http://localhost:${PORT}/api/health`);
