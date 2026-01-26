@@ -1,14 +1,31 @@
 import express from 'express';
+import { body, param, query, validationResult } from 'express-validator';
 import db from '../config/database.js';
 import socialMediaService from '../services/socialMediaService.js';
+import { validateArticleContent, logSecurityEvent } from '../middleware/security.js';
 
 const router = express.Router();
 
+// Middleware to handle validation errors
+const handleValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Datos inválidos', details: errors.array() });
+  }
+  next();
+};
+
 // GET /api/articles - Obtener todos los artículos (con paginación)
-router.get('/', async (req, res) => {
+router.get('/',
+  query('page').optional().isInt({ min: 1, max: 1000 }).toInt(),
+  query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+  query('category').optional().trim().escape(),
+  query('search').optional().trim().escape().isLength({ max: 200 }),
+  handleValidation,
+  async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 20;
     const offset = (page - 1) * limit;
     const category = req.query.category;
     const search = req.query.search;
@@ -75,7 +92,7 @@ router.get('/featured', async (req, res) => {
 });
 
 // GET /api/articles/breaking - Breaking news
-router.get('/breaking', async (req, res) => {
+router.get('/breaking', async (_req, res) => {
   try {
     const articles = await db.allAsync(
       'SELECT * FROM articles WHERE breaking = 1 AND published = 1 ORDER BY created_at DESC LIMIT 3'
@@ -100,7 +117,10 @@ router.get('/trending', async (req, res) => {
 });
 
 // GET /api/articles/:id - Obtener artículo por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id',
+  param('id').isInt({ min: 1 }),
+  handleValidation,
+  async (req, res) => {
   try {
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);
 
@@ -119,7 +139,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /api/articles/slug/:slug - Obtener artículo por slug
-router.get('/slug/:slug', async (req, res) => {
+router.get('/slug/:slug',
+  param('slug').matches(/^[a-z0-9-]+$/).isLength({ min: 1, max: 300 }),
+  handleValidation,
+  async (req, res) => {
   try {
     const article = await db.getAsync('SELECT * FROM articles WHERE slug = ?', [req.params.slug]);
 
@@ -138,7 +161,20 @@ router.get('/slug/:slug', async (req, res) => {
 });
 
 // POST /api/articles - Crear nuevo artículo (requiere autenticación)
-router.post('/', async (req, res) => {
+router.post('/',
+  body('title').trim().isLength({ min: 5, max: 300 }).withMessage('Título debe tener entre 5 y 300 caracteres'),
+  body('slug').matches(/^[a-z0-9-]+$/).isLength({ min: 5, max: 300 }).withMessage('Slug inválido'),
+  body('excerpt').optional().trim().isLength({ max: 500 }),
+  body('content').isLength({ min: 10 }).custom((value) => {
+    const validation = validateArticleContent(value);
+    if (!validation.valid) throw new Error(validation.message);
+    return true;
+  }),
+  body('image').optional().trim(),
+  body('category').trim().isLength({ min: 1, max: 100 }),
+  body('author_name').optional().trim().isLength({ max: 100 }),
+  handleValidation,
+  async (req, res) => {
   try {
     const {
       title,
@@ -154,6 +190,9 @@ router.post('/', async (req, res) => {
       read_time,
       published
     } = req.body;
+
+    // Log article creation
+    logSecurityEvent(req, 'ARTICLE_CREATE', { title, slug });
 
     // Verificar si el slug ya existe
     const existingSlug = await db.getAsync('SELECT id FROM articles WHERE slug = ?', [slug]);
@@ -184,7 +223,17 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/articles/:id - Actualizar artículo
-router.put('/:id', async (req, res) => {
+router.put('/:id',
+  param('id').isInt({ min: 1 }),
+  body('title').trim().isLength({ min: 5, max: 300 }),
+  body('excerpt').optional().trim().isLength({ max: 500 }),
+  body('content').isLength({ min: 10 }).custom((value) => {
+    const validation = validateArticleContent(value);
+    if (!validation.valid) throw new Error(validation.message);
+    return true;
+  }),
+  handleValidation,
+  async (req, res) => {
   try {
     const {
       title,
@@ -196,6 +245,8 @@ router.put('/:id', async (req, res) => {
       breaking,
       badge
     } = req.body;
+
+    logSecurityEvent(req, 'ARTICLE_UPDATE', { id: req.params.id, title });
 
     await db.runAsync(
       `UPDATE articles
@@ -213,8 +264,12 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/articles/:id - Eliminar artículo
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',
+  param('id').isInt({ min: 1 }),
+  handleValidation,
+  async (req, res) => {
   try {
+    logSecurityEvent(req, 'ARTICLE_DELETE', { id: req.params.id });
     await db.runAsync('DELETE FROM articles WHERE id = ?', [req.params.id]);
     res.json({ message: 'Artículo eliminado exitosamente' });
   } catch (error) {

@@ -1,9 +1,20 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { body, validationResult } from 'express-validator';
 import db from '../config/database.js';
+import { logSecurityEvent, trackSuspiciousActivity, blockIP } from '../middleware/security.js';
 
 const router = express.Router();
+
+// Middleware to handle validation errors
+const handleValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Datos inválidos', details: errors.array() });
+  }
+  next();
+};
 
 // JWT_SECRET debe estar configurado en producción
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -84,26 +95,39 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/auth/login - Iniciar sesión
-router.post('/login', async (req, res) => {
+router.post('/login',
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 1 }),
+  handleValidation,
+  async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Validar datos
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email y contraseña son requeridos' });
-    }
+    const ip = req.ip || req.socket?.remoteAddress || 'unknown';
 
     // Buscar usuario
     const user = await db.getAsync('SELECT * FROM users WHERE email = ?', [email]);
     if (!user) {
+      logSecurityEvent(req, 'AUTH_FAILURE', { email, reason: 'user_not_found' });
+      // Track suspicious activity
+      if (trackSuspiciousActivity(ip)) {
+        blockIP(ip, 60);
+      }
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     // Verificar contraseña
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
+      logSecurityEvent(req, 'AUTH_FAILURE', { email, reason: 'invalid_password' });
+      // Track suspicious activity
+      if (trackSuspiciousActivity(ip)) {
+        blockIP(ip, 60);
+      }
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
+
+    // Login exitoso
+    logSecurityEvent(req, 'AUTH_SUCCESS', { email, role: user.role });
 
     // Generar token
     const token = jwt.sign(
@@ -211,3 +235,4 @@ router.post('/logout', verifyToken, (req, res) => {
 });
 
 export default router;
+export { verifyToken, requireAdmin };

@@ -7,6 +7,7 @@ import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
 import os from 'os';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { validateFileMagicBytes, scanFileForMalware, logSecurityEvent } from '../middleware/security.js';
 
 const router = express.Router();
 
@@ -141,6 +142,25 @@ router.post('/', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'No se proporcionó ningún archivo' });
     }
 
+    // Security: Scan file for malware
+    const malwareScan = scanFileForMalware(req.file.buffer, req.file.originalname);
+    if (!malwareScan.safe) {
+      logSecurityEvent(req, 'MALWARE_UPLOAD_ATTEMPT', { filename: req.file.originalname });
+      return res.status(400).json({ error: 'Archivo rechazado por seguridad' });
+    }
+
+    // Security: Validate magic bytes
+    const ext = path.extname(req.file.originalname).toLowerCase().slice(1);
+    if (['jpeg', 'jpg', 'png', 'gif', 'webp'].includes(ext)) {
+      const validMagic = validateFileMagicBytes(req.file.buffer, ext === 'jpg' ? 'jpeg' : ext);
+      if (!validMagic) {
+        logSecurityEvent(req, 'INVALID_FILE_TYPE', { filename: req.file.originalname, claimedType: ext });
+        return res.status(400).json({ error: 'El archivo no coincide con su extensión' });
+      }
+    }
+
+    logSecurityEvent(req, 'FILE_UPLOAD', { filename: req.file.originalname, size: req.file.size });
+
     let processedFile;
     const isVideo = req.fileType === 'video' || req.file.mimetype.startsWith('video/');
 
@@ -239,7 +259,7 @@ router.post('/video', upload.single('video'), async (req, res) => {
 });
 
 // Error handler para multer
-router.use((error, req, res, next) => {
+router.use((error, _req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'El archivo es demasiado grande. Máximo 100MB para videos.' });

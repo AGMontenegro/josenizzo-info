@@ -5,6 +5,14 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+// Security middleware
+import {
+  checkBlockedIP,
+  securityHeaders,
+  sqlInjectionCheck,
+  logSecurityEvent,
+  getSecurityLogs
+} from './middleware/security.js';
 
 // Rutas
 import articleRoutes from './routes/articles.js';
@@ -26,6 +34,15 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ========== SEGURIDAD ==========
+
+// Verificar IPs bloqueadas
+app.use(checkBlockedIP);
+
+// Headers de seguridad adicionales
+app.use(securityHeaders);
+
+// Protección contra SQL injection
+app.use(sqlInjectionCheck);
 
 // Helmet - Headers de seguridad
 app.use(helmet({
@@ -120,12 +137,31 @@ app.use('/api/roads', roadsRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Ruta de salud
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'josenizzo.info API funcionando' });
 });
 
+// Ruta de logs de seguridad (solo admin, requiere token)
+app.get('/api/security/logs', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token requerido' });
+  }
+
+  // Solo permitir en desarrollo o con JWT válido (verificar en producción)
+  if (process.env.NODE_ENV !== 'development') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+
+  const logs = getSecurityLogs(100);
+  res.json({ logs, count: logs.length });
+});
+
 // Manejo de errores global
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
+  // Log security event for server errors
+  logSecurityEvent(req, 'SERVER_ERROR', { message: err.message });
+
   console.error(err.stack);
   res.status(500).json({
     error: 'Error del servidor',
@@ -134,7 +170,7 @@ app.use((err, req, res, next) => {
 });
 
 // Todas las demás rutas sirven el frontend (SPA)
-app.use((req, res) => {
+app.use((_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 

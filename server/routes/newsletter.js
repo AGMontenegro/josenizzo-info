@@ -1,18 +1,30 @@
 import express from 'express';
+import { body, validationResult } from 'express-validator';
 import db from '../config/database.js';
 import { sendWelcomeEmail, sendNewsletter } from '../services/emailService.js';
 import { getAvailableTemplates } from '../templates/index.js';
+import { logSecurityEvent } from '../middleware/security.js';
 
 const router = express.Router();
 
+// Middleware to handle validation errors
+const handleValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Datos inválidos', details: errors.array() });
+  }
+  next();
+};
+
 // POST /api/newsletter/subscribe - Suscribirse al newsletter
-router.post('/subscribe', async (req, res) => {
+router.post('/subscribe',
+  body('email').isEmail().normalizeEmail().withMessage('Email inválido'),
+  handleValidation,
+  async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email || !email.includes('@')) {
-      return res.status(400).json({ error: 'Email válido es requerido' });
-    }
+    logSecurityEvent(req, 'NEWSLETTER_SUBSCRIBE', { email });
 
     // Verificar si ya está suscrito
     const existing = await db.getAsync('SELECT * FROM newsletter WHERE email = ?', [email]);
@@ -63,7 +75,7 @@ router.post('/unsubscribe', async (req, res) => {
 });
 
 // GET /api/newsletter/subscribers - Obtener todos los suscriptores (para admin)
-router.get('/subscribers', async (req, res) => {
+router.get('/subscribers', async (_req, res) => {
   try {
     const subscribers = await db.allAsync('SELECT id, email, active, created_at FROM newsletter ORDER BY created_at DESC');
 
@@ -165,7 +177,7 @@ router.get('/track/:subscriberId/:sendId', async (req, res) => {
 });
 
 // GET /api/newsletter/stats - Obtener estadísticas de envíos
-router.get('/stats', async (req, res) => {
+router.get('/stats', async (_req, res) => {
   try {
     const sends = await db.allAsync(
       'SELECT * FROM newsletter_sends ORDER BY sent_at DESC LIMIT 10'
@@ -194,7 +206,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // GET /api/newsletter/templates - Obtener templates disponibles
-router.get('/templates', (req, res) => {
+router.get('/templates', (_req, res) => {
   try {
     const templates = getAvailableTemplates();
     res.json({ templates });

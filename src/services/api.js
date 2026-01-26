@@ -46,7 +46,9 @@ export const articlesAPI = {
 
   // Obtener artículo por slug
   getBySlug: async (slug) => {
-    const response = await fetch(`${API_URL}/articles/slug/${slug}`);
+    // Remove trailing slash if present
+    const cleanSlug = slug.replace(/\/$/, '');
+    const response = await fetch(`${API_URL}/articles/slug/${cleanSlug}`);
     return handleResponse(response);
   },
 

@@ -1,6 +1,8 @@
 import express from 'express';
 import multer from 'multer';
+import { body, validationResult } from 'express-validator';
 import { sendSecureTipNotification } from '../services/emailService.js';
+import { scanFileForMalware, logSecurityEvent } from '../middleware/security.js';
 
 const router = express.Router();
 
@@ -11,7 +13,7 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB máximo por archivo
     files: 5 // Máximo 5 archivos
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     // Permitir documentos, imágenes, audio y video
     const allowedTypes = [
       'image/jpeg', 'image/png', 'image/gif', 'image/webp',
@@ -30,13 +32,37 @@ const upload = multer({
   }
 });
 
+// Middleware to handle validation errors
+const handleValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Datos inválidos', details: errors.array() });
+  }
+  next();
+};
+
 // POST /api/contact/secure-tip - Recibir denuncia confidencial
-router.post('/secure-tip', upload.array('files', 5), async (req, res) => {
+router.post('/secure-tip',
+  upload.array('files', 5),
+  body('subject').trim().isLength({ min: 3, max: 200 }).escape(),
+  body('message').trim().isLength({ min: 10, max: 10000 }),
+  body('contactMethod').optional().trim().isLength({ max: 500 }),
+  handleValidation,
+  async (req, res) => {
   try {
     const { subject, message, contactMethod } = req.body;
 
-    if (!subject || !message) {
-      return res.status(400).json({ error: 'Asunto y mensaje son requeridos' });
+    logSecurityEvent(req, 'SECURE_TIP_RECEIVED', { hasFiles: req.files?.length > 0 });
+
+    // Scan files for malware
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const scan = scanFileForMalware(file.buffer, file.originalname);
+        if (!scan.safe) {
+          logSecurityEvent(req, 'MALWARE_IN_TIP', { filename: file.originalname });
+          return res.status(400).json({ error: 'Archivo rechazado por seguridad' });
+        }
+      }
     }
 
     // Preparar archivos adjuntos para el email
@@ -58,7 +84,7 @@ router.post('/secure-tip', upload.array('files', 5), async (req, res) => {
       res.json({
         success: true,
         message: 'Denuncia recibida correctamente',
-        referenceCode: Math.random().toString(36).substr(2, 9).toUpperCase()
+        referenceCode: Math.random().toString(36).substring(2, 11).toUpperCase()
       });
     } else {
       console.error('Error al procesar denuncia:', result.error);
