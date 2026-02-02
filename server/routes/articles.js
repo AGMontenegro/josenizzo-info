@@ -3,6 +3,7 @@ import { body, param, query, validationResult } from 'express-validator';
 import db from '../config/database.js';
 import socialMediaService from '../services/socialMediaService.js';
 import { validateArticleContent, logSecurityEvent } from '../middleware/security.js';
+import { cacheOrFetch, KEYS, invalidateArticles } from '../utils/cache.js';
 
 const router = express.Router();
 
@@ -30,48 +31,47 @@ router.get('/',
     const category = req.query.category;
     const search = req.query.search;
 
-    let query = 'SELECT * FROM articles WHERE published = 1';
-    let params = [];
+    const cacheKey = KEYS.articleList({ page, limit, category, search });
+    const data = await cacheOrFetch(cacheKey, async () => {
+      let query = 'SELECT * FROM articles WHERE published = 1';
+      let params = [];
 
-    if (category) {
-      query += ' AND category = ?';
-      params.push(category);
-    }
-
-    if (search) {
-      query += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
-      const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, searchTerm);
-    }
-
-    query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-
-    const articles = await db.allAsync(query, params);
-
-    // Contar total
-    let countQuery = 'SELECT COUNT(*) as total FROM articles WHERE published = 1';
-    let countParams = [];
-    if (category) {
-      countQuery += ' AND category = ?';
-      countParams.push(category);
-    }
-    if (search) {
-      countQuery += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
-      const searchTerm = `%${search}%`;
-      countParams.push(searchTerm, searchTerm, searchTerm);
-    }
-
-    const { total } = await db.getAsync(countQuery, countParams);
-
-    res.json({
-      articles,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
+      if (category) {
+        query += ' AND category = ?';
+        params.push(category);
       }
-    });
+
+      if (search) {
+        query += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+        const searchTerm = `%${search}%`;
+        params.push(searchTerm, searchTerm, searchTerm);
+      }
+
+      query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+
+      const articles = await db.allAsync(query, params);
+
+      let countQuery = 'SELECT COUNT(*) as total FROM articles WHERE published = 1';
+      let countParams = [];
+      if (category) {
+        countQuery += ' AND category = ?';
+        countParams.push(category);
+      }
+      if (search) {
+        countQuery += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+        const searchTerm = `%${search}%`;
+        countParams.push(searchTerm, searchTerm, searchTerm);
+      }
+
+      const { total } = await db.getAsync(countQuery, countParams);
+
+      return {
+        articles,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+      };
+    }, 120); // Cache 2 minutos para listados
+
+    res.json(data);
   } catch (error) {
     console.error('Error al obtener artículos:', error);
     res.status(500).json({ error: 'Error al obtener artículos' });
@@ -82,9 +82,9 @@ router.get('/',
 router.get('/featured', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3;
-    const articles = await db.allAsync(
-      `SELECT * FROM articles WHERE featured = 1 AND published = 1 ORDER BY created_at DESC LIMIT ${limit}`
-    );
+    const articles = await cacheOrFetch(KEYS.featured(limit), () =>
+      db.allAsync(`SELECT * FROM articles WHERE featured = 1 AND published = 1 ORDER BY created_at DESC LIMIT ${limit}`)
+    , 300);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener artículos destacados' });
@@ -94,9 +94,9 @@ router.get('/featured', async (req, res) => {
 // GET /api/articles/breaking - Breaking news
 router.get('/breaking', async (_req, res) => {
   try {
-    const articles = await db.allAsync(
-      'SELECT * FROM articles WHERE breaking = 1 AND published = 1 ORDER BY created_at DESC LIMIT 3'
-    );
+    const articles = await cacheOrFetch('breaking', () =>
+      db.allAsync('SELECT * FROM articles WHERE breaking = 1 AND published = 1 ORDER BY created_at DESC LIMIT 3')
+    , 120);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener breaking news' });
@@ -107,9 +107,9 @@ router.get('/breaking', async (_req, res) => {
 router.get('/trending', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
-    const articles = await db.allAsync(
-      `SELECT * FROM articles WHERE published = 1 ORDER BY views DESC LIMIT ${limit}`
-    );
+    const articles = await cacheOrFetch(KEYS.trending(limit), () =>
+      db.allAsync(`SELECT * FROM articles WHERE published = 1 ORDER BY views DESC LIMIT ${limit}`)
+    , 300);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener artículos trending' });
@@ -144,15 +144,16 @@ router.get('/slug/:slug',
   handleValidation,
   async (req, res) => {
   try {
-    const article = await db.getAsync('SELECT * FROM articles WHERE slug = ?', [req.params.slug]);
+    const article = await cacheOrFetch(KEYS.article(req.params.slug), () =>
+      db.getAsync('SELECT * FROM articles WHERE slug = ?', [req.params.slug])
+    , 300);
 
     if (!article) {
       return res.status(404).json({ error: 'Artículo no encontrado' });
     }
 
-    // Incrementar vistas
-    await db.runAsync('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
-    article.views += 1;
+    // Incrementar vistas en background (no bloquea la respuesta)
+    db.runAsync('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]).catch(() => {});
 
     res.json(article);
   } catch (error) {
@@ -211,6 +212,7 @@ router.post('/',
     const articleId = result.insertId || result.lastID;
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [articleId]);
+    invalidateArticles();
     res.status(201).json(article);
   } catch (error) {
     console.error('Error al crear artículo:', error);
@@ -257,6 +259,7 @@ router.put('/:id',
     );
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);
+    invalidateArticles();
     res.json(article);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar artículo' });
@@ -271,6 +274,7 @@ router.delete('/:id',
   try {
     logSecurityEvent(req, 'ARTICLE_DELETE', { id: req.params.id });
     await db.runAsync('DELETE FROM articles WHERE id = ?', [req.params.id]);
+    invalidateArticles();
     res.json({ message: 'Artículo eliminado exitosamente' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar artículo' });
