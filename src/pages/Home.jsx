@@ -885,7 +885,7 @@ function Home() {
                   <div id="newsletter" className="border-t-2 border-gray-900 pt-4 scroll-mt-20">
                     <h3 className="text-base font-serif font-bold mb-3 text-gray-900">Newsletter Diario</h3>
                     <p className="text-gray-600 text-sm mb-5 leading-relaxed">
-                      Las noticias más importantes cada mañana en tu casilla
+                      Las noticias más importantes cada día en tu casilla
                     </p>
                     <form onSubmit={handleNewsletterSubmit} className="space-y-3">
                       <input

@@ -36,6 +36,9 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy - necesario en DigitalOcean (proxy reverso) para rate limiting
+app.set('trust proxy', 1);
+
 // ========== LOGGING ==========
 app.use(httpLogger);
 
@@ -104,6 +107,7 @@ app.use('/api/newsletter/subscribe', sensitiveLimiter);
 const allowedOrigins = [
   'https://josenizzo.info',
   'https://www.josenizzo.info',
+  'https://josenizzoinfo-m49mn.ondigitalocean.app',
   process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : null,
   process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : null,
 ].filter(Boolean);
