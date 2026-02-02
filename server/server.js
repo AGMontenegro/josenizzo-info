@@ -60,7 +60,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
       frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com"],
       mediaSrc: ["'self'", "https:", "blob:", "data:"],
-      connectSrc: ["'self'", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com"],
+      connectSrc: ["'self'", "blob:", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com"],
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
