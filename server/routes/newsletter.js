@@ -4,6 +4,7 @@ import db from '../config/database.js';
 import { sendWelcomeEmail, sendNewsletter } from '../services/emailService.js';
 import { getAvailableTemplates } from '../templates/index.js';
 import { logSecurityEvent } from '../middleware/security.js';
+import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
@@ -74,8 +75,8 @@ router.post('/unsubscribe', async (req, res) => {
   }
 });
 
-// GET /api/newsletter/subscribers - Obtener todos los suscriptores (para admin)
-router.get('/subscribers', async (_req, res) => {
+// GET /api/newsletter/subscribers - Obtener todos los suscriptores (admin)
+router.get('/subscribers', verifyToken, requireAdmin, async (_req, res) => {
   try {
     const subscribers = await db.allAsync('SELECT id, email, active, created_at FROM newsletter ORDER BY created_at DESC');
 
@@ -92,8 +93,8 @@ router.get('/subscribers', async (_req, res) => {
   }
 });
 
-// POST /api/newsletter/send - Enviar newsletter masivo
-router.post('/send', async (req, res) => {
+// POST /api/newsletter/send - Enviar newsletter masivo (admin)
+router.post('/send', verifyToken, requireAdmin, async (req, res) => {
   try {
     const { articleIds, template = 'default', customTitle } = req.body;
 
@@ -176,8 +177,8 @@ router.get('/track/:subscriberId/:sendId', async (req, res) => {
   }
 });
 
-// GET /api/newsletter/stats - Obtener estadísticas de envíos
-router.get('/stats', async (_req, res) => {
+// GET /api/newsletter/stats - Obtener estadísticas de envíos (admin)
+router.get('/stats', verifyToken, requireAdmin, async (_req, res) => {
   try {
     const sends = await db.allAsync(
       'SELECT * FROM newsletter_sends ORDER BY sent_at DESC LIMIT 10'

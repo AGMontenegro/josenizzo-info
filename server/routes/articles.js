@@ -4,6 +4,7 @@ import db from '../config/database.js';
 import socialMediaService from '../services/socialMediaService.js';
 import { validateArticleContent, logSecurityEvent } from '../middleware/security.js';
 import { cacheOrFetch, KEYS, invalidateArticles } from '../utils/cache.js';
+import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
@@ -163,6 +164,7 @@ router.get('/slug/:slug',
 
 // POST /api/articles - Crear nuevo artículo (requiere autenticación)
 router.post('/',
+  verifyToken, requireAdmin,
   body('title').trim().isLength({ min: 5, max: 300 }).withMessage('Título debe tener entre 5 y 300 caracteres'),
   body('slug').matches(/^[a-z0-9-]+$/).isLength({ min: 5, max: 300 }).withMessage('Slug inválido'),
   body('excerpt').optional().trim().isLength({ max: 500 }),
@@ -226,6 +228,7 @@ router.post('/',
 
 // PUT /api/articles/:id - Actualizar artículo
 router.put('/:id',
+  verifyToken, requireAdmin,
   param('id').isInt({ min: 1 }),
   body('title').trim().isLength({ min: 5, max: 300 }),
   body('excerpt').optional().trim().isLength({ max: 500 }),
@@ -268,6 +271,7 @@ router.put('/:id',
 
 // DELETE /api/articles/:id - Eliminar artículo
 router.delete('/:id',
+  verifyToken, requireAdmin,
   param('id').isInt({ min: 1 }),
   handleValidation,
   async (req, res) => {
@@ -282,7 +286,7 @@ router.delete('/:id',
 });
 
 // POST /api/articles/:id/share - Publicar artículo en redes sociales
-router.post('/:id/share', async (req, res) => {
+router.post('/:id/share', verifyToken, requireAdmin, async (req, res) => {
   try {
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);
 

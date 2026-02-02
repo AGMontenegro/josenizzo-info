@@ -8,6 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { validateFileMagicBytes, scanFileForMalware, logSecurityEvent } from '../middleware/security.js';
+import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
@@ -136,7 +137,7 @@ function compressVideo(inputBuffer, originalName) {
 }
 
 // POST /api/upload - Subir imagen o video
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', verifyToken, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No se proporcionó ningún archivo' });
@@ -213,7 +214,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // POST /api/upload/video - Endpoint específico para videos (acepta archivos más grandes)
-router.post('/video', upload.single('video'), async (req, res) => {
+router.post('/video', verifyToken, requireAdmin, upload.single('video'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No se proporcionó ningún video' });

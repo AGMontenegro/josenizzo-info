@@ -25,6 +25,7 @@ import marketRoutes from './routes/market.js';
 import roadsRoutes from './routes/roads.js';
 import contactRoutes from './routes/contact.js';
 import sitemapRoutes from './routes/sitemap.js';
+import { openGraphMiddleware } from './middleware/openGraph.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -185,6 +186,9 @@ app.use((err, req, res, _next) => {
     message: process.env.NODE_ENV === 'development' ? err.message : 'Algo salió mal'
   });
 });
+
+// Open Graph: inyectar meta tags para crawlers de redes sociales
+app.use(openGraphMiddleware);
 
 // Todas las demás rutas sirven el frontend (SPA)
 app.use((_req, res) => {

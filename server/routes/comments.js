@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../config/database.js';
+import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
@@ -21,8 +22,8 @@ router.get('/:articleId', async (req, res) => {
   }
 });
 
-// POST /api/comments - Crear nuevo comentario
-router.post('/', async (req, res) => {
+// POST /api/comments - Crear nuevo comentario (requiere usuario logueado)
+router.post('/', verifyToken, async (req, res) => {
   try {
     const { article_id, user_id, content } = req.body;
 
@@ -54,7 +55,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/comments/:id/approve - Aprobar comentario (admin)
-router.put('/:id/approve', async (req, res) => {
+router.put('/:id/approve', verifyToken, requireAdmin, async (req, res) => {
   try {
     await db.runAsync('UPDATE comments SET approved = 1 WHERE id = ?', [req.params.id]);
     res.json({ message: 'Comentario aprobado' });
@@ -63,8 +64,8 @@ router.put('/:id/approve', async (req, res) => {
   }
 });
 
-// DELETE /api/comments/:id - Eliminar comentario
-router.delete('/:id', async (req, res) => {
+// DELETE /api/comments/:id - Eliminar comentario (admin)
+router.delete('/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     await db.runAsync('DELETE FROM comments WHERE id = ?', [req.params.id]);
     res.json({ message: 'Comentario eliminado' });
