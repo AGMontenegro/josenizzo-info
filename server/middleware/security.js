@@ -383,8 +383,24 @@ export function validateFileMagicBytes(buffer, expectedType) {
 
 /**
  * Scan file for malicious content
+ * Solo escanea archivos de texto, no binarios (imágenes, videos, etc.)
  */
 export function scanFileForMalware(buffer, filename) {
+  // No escanear archivos binarios (imágenes, videos, audio, PDFs)
+  const ext = filename.toLowerCase().split('.').pop();
+  const binaryExtensions = [
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'ico', 'svg',
+    'mp4', 'mov', 'avi', 'webm', 'mkv',
+    'mp3', 'wav', 'ogg', 'aac',
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+    'zip', 'rar', '7z', 'gz'
+  ];
+
+  if (binaryExtensions.includes(ext)) {
+    return { safe: true };
+  }
+
+  // Solo escanear archivos de texto
   const content = buffer.toString('utf8', 0, Math.min(buffer.length, 1000));
 
   const malwarePatterns = [
