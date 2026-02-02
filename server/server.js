@@ -59,6 +59,7 @@ app.use(helmet({
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
       frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com"],
+      mediaSrc: ["'self'", "https:", "blob:", "data:"],
       connectSrc: ["'self'", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com"],
     },
   },
