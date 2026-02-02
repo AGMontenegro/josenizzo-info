@@ -745,9 +745,9 @@ function Home() {
                             <div className="mt-8 border-t-2 border-gray-900"></div>
 
                             {/* Banner publicitario horizontal - solo desktop */}
-                            <div className="hidden md:flex mt-8 bg-gray-50 border border-gray-200 p-6 text-center min-h-[90px] flex-col items-center justify-center">
+                            <div className="hidden md:flex mt-8 bg-gray-50 border border-gray-200 p-6 text-center min-h-[250px] flex-col items-center justify-center">
                               <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
-                              <p className="text-xs text-gray-300 mt-1">728x90</p>
+                              <p className="text-xs text-gray-300 mt-1">970x250</p>
                             </div>
                           </>
                         )}
