@@ -415,7 +415,7 @@ function Home() {
                     >
                       <div className="flex items-center gap-4">
                         <img
-                          src="/logos/MultimediosLoNuestro.jpg"
+                          src="/logos/logo_lonuestro_tv.webp"
                           alt="Lo Nuestro TV"
                           className="w-24 h-24 rounded-lg shadow-sm object-cover"
                         />
