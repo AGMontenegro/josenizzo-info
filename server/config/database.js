@@ -233,9 +233,10 @@ async function initializeTables(db) {
       CREATE TABLE IF NOT EXISTS push_subscriptions (
         id ${intType} PRIMARY KEY ${autoIncrement},
         endpoint VARCHAR(1000) UNIQUE NOT NULL,
-        keys_p256dh ${textType} NOT NULL,
-        keys_auth VARCHAR(500) NOT NULL,
-        created_at ${dateType}
+        p256dh ${textType} NOT NULL,
+        auth VARCHAR(500) NOT NULL,
+        created_at ${dateType},
+        updated_at ${dateType}
       )
     `);
 
@@ -247,7 +248,8 @@ async function initializeTables(db) {
         article_id ${intType},
         referrer VARCHAR(1000),
         user_agent VARCHAR(500),
-        ip VARCHAR(45),
+        ip_hash VARCHAR(45),
+        duration ${intType} DEFAULT 0,
         created_at ${dateType}
       )
     `);
@@ -267,6 +269,25 @@ async function initializeTables(db) {
       } catch (e) {
         // Índice ya existe, ignorar
       }
+
+      // Migrar columnas push_subscriptions si tienen nombres viejos
+      try {
+        await db.runAsync('ALTER TABLE push_subscriptions CHANGE COLUMN keys_p256dh p256dh TEXT NOT NULL');
+      } catch (e) { /* ya migrado o no existe */ }
+      try {
+        await db.runAsync('ALTER TABLE push_subscriptions CHANGE COLUMN keys_auth auth VARCHAR(500) NOT NULL');
+      } catch (e) { /* ya migrado o no existe */ }
+      try {
+        await db.runAsync('ALTER TABLE push_subscriptions ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP');
+      } catch (e) { /* ya existe */ }
+
+      // Migrar columnas page_views si tienen nombres viejos
+      try {
+        await db.runAsync('ALTER TABLE page_views CHANGE COLUMN ip ip_hash VARCHAR(45)');
+      } catch (e) { /* ya migrado o no existe */ }
+      try {
+        await db.runAsync('ALTER TABLE page_views ADD COLUMN duration INT DEFAULT 0');
+      } catch (e) { /* ya existe */ }
     }
 
     console.log('✅ Tablas de base de datos inicializadas');
