@@ -232,7 +232,7 @@ async function initializeTables(db) {
     await db.runAsync(`
       CREATE TABLE IF NOT EXISTS push_subscriptions (
         id ${intType} PRIMARY KEY ${autoIncrement},
-        endpoint VARCHAR(1000) UNIQUE NOT NULL,
+        endpoint VARCHAR(768) UNIQUE NOT NULL,
         p256dh ${textType} NOT NULL,
         auth VARCHAR(500) NOT NULL,
         created_at ${dateType},
