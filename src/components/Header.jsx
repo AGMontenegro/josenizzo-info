@@ -107,10 +107,10 @@ function Header() {
               <img
                 src="/logos/logo_jn.png"
                 alt="josenizzo.info - El diario de la Patria"
-                className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto mb-2 md:mb-3 dark:brightness-0 dark:invert"
+                className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto mb-2 md:mb-3"
               />
               <p className="text-xs sm:text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 tracking-wide text-center">
-                josenizzo.info <span className="hidden sm:inline text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">EL DIARIO DE LA PATRIA</span>
+                josenizzo.info <span className="text-xs md:text-sm text-gray-900 dark:text-gray-100 font-medium">EL DIARIO DE LA PATRIA</span>
               </p>
             </Link>
           </div>
