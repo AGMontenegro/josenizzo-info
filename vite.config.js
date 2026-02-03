@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logos/logo_jn.png', 'logos/logo512.webp', 'sw-push.js'],
+      includeAssets: ['logos/logo_jn.png', 'logos/logo512.png', 'logos/logo512.webp', 'sw-push.js'],
       manifest: {
         name: 'josenizzo.info - El diario de la Patria',
         short_name: 'josenizzo.info',
@@ -25,9 +25,9 @@ export default defineConfig({
             type: 'image/png'
           },
           {
-            src: '/logos/logo512.webp',
+            src: '/logos/logo512.png',
             sizes: '512x512',
-            type: 'image/webp'
+            type: 'image/png'
           },
           {
             src: '/logos/logo512.webp',
