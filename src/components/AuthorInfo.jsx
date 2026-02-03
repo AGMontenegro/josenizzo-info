@@ -27,8 +27,8 @@ function AuthorInfo({ author, date, readTime, compact = false }) {
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2 text-xs text-gray-600">
-        <span className="font-medium text-gray-900">{author}</span>
+      <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+        <span className="font-medium text-gray-900 dark:text-gray-100">{author}</span>
         {date && (
           <>
             <span>•</span>
@@ -51,8 +51,8 @@ function AuthorInfo({ author, date, readTime, compact = false }) {
         {getInitials(author)}
       </div>
       <div>
-        <p className="font-semibold text-sm text-gray-900">{author}</p>
-        <div className="flex items-center gap-2 text-xs text-gray-600">
+        <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">{author}</p>
+        <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
           {date && <span>{date}</span>}
           {readTime && (
             <>

@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -25,6 +26,9 @@ import marketRoutes from './routes/market.js';
 import roadsRoutes from './routes/roads.js';
 import contactRoutes from './routes/contact.js';
 import sitemapRoutes from './routes/sitemap.js';
+import notificationRoutes from './routes/notifications.js';
+import analyticsRoutes from './routes/analytics.js';
+import ampRoutes from './routes/amp.js';
 import { openGraphMiddleware } from './middleware/openGraph.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,6 +42,9 @@ const PORT = process.env.PORT || 3001;
 
 // Trust proxy - necesario en DigitalOcean (proxy reverso) para rate limiting
 app.set('trust proxy', 1);
+
+// ========== COMPRESIÓN ==========
+app.use(compression());
 
 // ========== LOGGING ==========
 app.use(httpLogger);
@@ -64,7 +71,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
       frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com"],
       mediaSrc: ["'self'", "https:", "blob:", "data:"],
-      connectSrc: ["'self'", "blob:", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com"],
+      connectSrc: ["'self'", "blob:", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org"],
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
@@ -131,11 +138,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Servir archivos estáticos (para imágenes subidas)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '7d' }));
 
 // Servir el frontend compilado (dist) en producción
 const distPath = path.join(__dirname, '..', 'dist');
-app.use(express.static(distPath));
+app.use(express.static(distPath, { maxAge: '1y', immutable: true }));
 
 // Rutas API
 app.use('/api/articles', articleRoutes);
@@ -146,11 +153,17 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/roads', roadsRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/analytics', analyticsRoutes);
+
+// Ruta AMP
+app.use('/amp/articulo', ampRoutes);
 
 // Rutas SEO (sitemap, robots.txt)
 app.use('/sitemap.xml', sitemapRoutes);
 app.use('/news-sitemap.xml', (req, _res, next) => { req.url = '/news'; next(); }, sitemapRoutes);
 app.use('/robots.txt', (req, _res, next) => { req.url = '/robots'; next(); }, sitemapRoutes);
+app.use('/feed.xml', (req, _res, next) => { req.url = '/feed'; next(); }, sitemapRoutes);
 
 // Ruta de salud
 app.get('/api/health', (_req, res) => {

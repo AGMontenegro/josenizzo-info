@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-16">
+    <footer className="bg-gray-900 dark:bg-gray-950 dark:border-t dark:border-gray-800 text-gray-300 mt-16">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Fila superior: Logo, Contactos, Links, Redes */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">

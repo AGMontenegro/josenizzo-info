@@ -154,6 +154,21 @@ function SEO({
     }
     canonical.setAttribute('href', fullUrl);
 
+    // AMP link (solo para artículos)
+    let ampLink = document.querySelector('link[rel="amphtml"]');
+    if (article && url) {
+      const slug = url.replace('/articulo/', '');
+      const ampUrl = `${siteUrl}/amp/articulo/${slug}`;
+      if (!ampLink) {
+        ampLink = document.createElement('link');
+        ampLink.setAttribute('rel', 'amphtml');
+        document.head.appendChild(ampLink);
+      }
+      ampLink.setAttribute('href', ampUrl);
+    } else if (ampLink) {
+      ampLink.remove();
+    }
+
     // Lang attribute
     document.documentElement.lang = 'es-AR';
   }, [fullTitle, description, image, article, author, publishedTime, modifiedTime, category, fullUrl, defaultDescription, defaultImage, title, siteTitle, siteName, siteUrl]);

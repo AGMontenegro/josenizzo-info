@@ -63,20 +63,20 @@ function RoadStatusWidget() {
 
   if (roadData.loading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
       {/* Header - Mobile first */}
       <div
-        className="bg-gradient-to-r from-gray-800 to-gray-700 text-white p-3 sm:p-4 cursor-pointer"
+        className="bg-gradient-to-r from-gray-800 to-gray-700 dark:from-gray-700 dark:to-gray-600 text-white p-3 sm:p-4 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
@@ -119,31 +119,31 @@ function RoadStatusWidget() {
       {isExpanded && (
         <div className="p-3 sm:p-4">
           {roadData.routes.length === 0 ? (
-            <p className="text-gray-500 text-center py-4 text-sm">No hay datos disponibles</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">No hay datos disponibles</p>
           ) : (
             <div className="space-y-2 sm:space-y-3">
               {roadData.routes.map((route, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
+                  className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                 >
                   <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full mt-1 flex-shrink-0 ${getStatusBadge(route.statusColor)}`}></span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                      <span className="font-bold text-gray-800 text-sm">{route.ruta}</span>
+                      <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">{route.ruta}</span>
                       <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
-                        route.statusColor === 'green' ? 'bg-green-100 text-green-700' :
-                        route.statusColor === 'red' ? 'bg-red-100 text-red-700' :
-                        'bg-yellow-100 text-yellow-700'
+                        route.statusColor === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                        route.statusColor === 'red' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                        'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                       }`}>
                         {getStatusText(route.statusColor)}
                       </span>
                     </div>
                     {route.tramo && (
-                      <p className="text-xs sm:text-sm text-gray-600 mt-1">{route.tramo}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">{route.tramo}</p>
                     )}
                     {route.observaciones && (
-                      <p className="text-[10px] sm:text-xs text-gray-500 mt-1">{route.observaciones}</p>
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-500 mt-1">{route.observaciones}</p>
                     )}
                   </div>
                 </div>
@@ -152,7 +152,7 @@ function RoadStatusWidget() {
           )}
 
           {/* Footer con fuente y actualización */}
-          <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200 text-[10px] sm:text-xs text-gray-500">
+          <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200 dark:border-gray-700 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <span className="truncate">Fuente: {roadData.source}</span>
               {roadData.lastUpdate && (

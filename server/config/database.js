@@ -228,6 +228,47 @@ async function initializeTables(db) {
       )
     `);
 
+    // Tabla de suscripciones push
+    await db.runAsync(`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id ${intType} PRIMARY KEY ${autoIncrement},
+        endpoint VARCHAR(1000) UNIQUE NOT NULL,
+        keys_p256dh ${textType} NOT NULL,
+        keys_auth VARCHAR(500) NOT NULL,
+        created_at ${dateType}
+      )
+    `);
+
+    // Tabla de page views (analytics)
+    await db.runAsync(`
+      CREATE TABLE IF NOT EXISTS page_views (
+        id ${intType} PRIMARY KEY ${autoIncrement},
+        path VARCHAR(500) NOT NULL,
+        article_id ${intType},
+        referrer VARCHAR(1000),
+        user_agent VARCHAR(500),
+        ip VARCHAR(45),
+        created_at ${dateType}
+      )
+    `);
+
+    // Migraciones: agregar columnas y índices si no existen
+    if (isMySQL) {
+      // Columna image_blur para blur placeholders
+      try {
+        await db.runAsync('ALTER TABLE articles ADD COLUMN image_blur TEXT');
+      } catch (e) {
+        // Columna ya existe, ignorar
+      }
+
+      // FULLTEXT index para búsqueda
+      try {
+        await db.runAsync('ALTER TABLE articles ADD FULLTEXT INDEX ft_search (title, excerpt)');
+      } catch (e) {
+        // Índice ya existe, ignorar
+      }
+    }
+
     console.log('✅ Tablas de base de datos inicializadas');
   } catch (error) {
     console.error('❌ Error al inicializar tablas:', error);

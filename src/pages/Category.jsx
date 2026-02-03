@@ -30,7 +30,7 @@ function Category() {
   if (!categoryName) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Categoría no encontrada</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Categoría no encontrada</h1>
         <Link to="/" className="text-red-600 hover:text-red-700 font-semibold">
           Volver al inicio
         </Link>
@@ -42,16 +42,16 @@ function Category() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm">
-        <Link to="/" className="text-red-600 hover:text-red-700">
+        <Link to="/" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
           Inicio
         </Link>
-        <span className="mx-2 text-gray-400">/</span>
-        <span className="text-gray-600">{categoryName}</span>
+        <span className="mx-2 text-gray-400 dark:text-gray-600">/</span>
+        <span className="text-gray-600 dark:text-gray-400">{categoryName}</span>
       </nav>
 
       {/* Título de la categoría */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">{categoryName}</h1>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">{categoryName}</h1>
         <div className="h-1 w-20 bg-red-600"></div>
       </div>
 
@@ -66,7 +66,7 @@ function Category() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-gray-500 text-lg">No hay artículos en esta categoría todavía.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">No hay artículos en esta categoría todavía.</p>
         </div>
       )}
     </div>

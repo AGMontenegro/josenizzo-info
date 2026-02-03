@@ -29,14 +29,15 @@ function setCachedData(data) {
 
 function LiveDataWidget() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [weather] = useState({
+
+  // Intentar cargar datos del cache inmediatamente
+  const cached = getCachedData();
+
+  const [weather, setWeather] = useState(cached?.weather || {
     temp: 24,
     condition: 'Parcialmente nublado',
     location: 'Neuquén'
   });
-
-  // Intentar cargar datos del cache inmediatamente
-  const cached = getCachedData();
 
   const [economicData, setEconomicData] = useState({
     dolar: cached?.dolar || {
@@ -72,6 +73,11 @@ function LiveDataWidget() {
           commodities: data.commodities,
           loading: false
         });
+
+        // Actualizar clima si viene del API
+        if (data.weather) {
+          setWeather(data.weather);
+        }
 
         // Guardar en sessionStorage para navegación instantánea
         setCachedData(data);

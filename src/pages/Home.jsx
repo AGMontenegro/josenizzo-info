@@ -4,15 +4,20 @@ import SEO from '../components/SEO';
 import LoadingSpinner from '../components/LoadingSpinner';
 import HomeSkeleton from '../components/HomeSkeleton';
 import RoadStatusWidget from '../components/RoadStatusWidget';
+import BlurImage from '../components/BlurImage';
 import { useFeaturedArticles, useArticles, useTrendingArticles, useArticlesByCategory } from '../hooks/useArticles';
 import { newsletterAPI } from '../services/api';
 
 function Home() {
   const { articles: featuredArticles, loading: featuredLoading } = useFeaturedArticles(3);
-  const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 34 });
+  const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 26 });
   const { articles: trendingArticles, loading: trendingLoading } = useTrendingArticles(5);
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
+  const [moreArticles, setMoreArticles] = useState([]);
+  const [moreOffset, setMoreOffset] = useState(26); // Start after the initial 26
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [showSecureModal, setShowSecureModal] = useState(false);
   const [showSecureForm, setShowSecureForm] = useState(false);
   const [secureFormData, setSecureFormData] = useState({
@@ -101,6 +106,25 @@ function Home() {
     }
   };
 
+  const loadMoreArticles = async () => {
+    setLoadingMore(true);
+    try {
+      const data = await articlesAPI.getAll({ offset: moreOffset, limit: 8 });
+      const newArticles = data.articles || [];
+      if (newArticles.length === 0) {
+        setHasMore(false);
+      } else {
+        setMoreArticles(prev => [...prev, ...newArticles]);
+        setMoreOffset(prev => prev + newArticles.length);
+        if (newArticles.length < 8) setHasMore(false);
+      }
+    } catch (err) {
+      console.error('Error loading more articles:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   return (
     <>
       <SEO
@@ -109,7 +133,7 @@ function Home() {
         url="/"
       />
 
-      <div className="bg-white overflow-x-hidden">
+      <div className="bg-white dark:bg-gray-950 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-0">
           {/* Hero Section - Estilo NYT exacto */}
           <section className="mb-16">
@@ -118,16 +142,17 @@ function Home() {
             ) : featuredArticles.length > 0 && latestArticles.length >= 6 && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna IZQUIERDA - Layout horizontal con imagen central más grande */}
-                <div className="lg:col-span-8 lg:border-r border-gray-200 lg:pr-8">
+                <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                     {/* Imagen CENTRAL - Solo imagen decorativa (4 columnas) - Primero en mobile */}
                     <div className="md:col-span-4 group order-1 md:order-2">
                       <Link to={`/articulo/${featuredArticles[0].slug}`}>
-                        <div className="aspect-[16/9] overflow-hidden bg-gray-100 rounded-sm">
-                          <img
+                        <div className="aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                          <BlurImage
                             src={featuredArticles[0].image}
                             alt={featuredArticles[0].title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            blurData={featuredArticles[0].image_blur}
                             loading="lazy"
                           />
                         </div>
@@ -136,22 +161,22 @@ function Home() {
 
                     {/* Artículos izquierda - 2 apilados con texto completo - Después en mobile */}
                     <div className="space-y-6 order-2 md:order-1">
-                      <div className="group pb-6 border-b border-gray-200">
+                      <div className="group pb-6 border-b border-gray-200 dark:border-gray-800">
                         <Link to={`/articulo/${latestArticles[0].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[0].title}
                           </h3>
-                          <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                          <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                             {latestArticles[0].excerpt}
                           </p>
                         </Link>
                       </div>
                       <div className="group">
                         <Link to={`/articulo/${latestArticles[1].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[1].title}
                           </h3>
-                          <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                          <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                             {latestArticles[1].excerpt}
                           </p>
                         </Link>
@@ -161,18 +186,18 @@ function Home() {
 
                   {/* Artículos adicionales debajo - 2 artículos solo texto separados por línea */}
                   {latestArticles.length >= 4 && (
-                    <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="group pb-6 border-b border-gray-200 md:pb-0 md:border-b-0">
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="group pb-6 border-b border-gray-200 dark:border-gray-800 md:pb-0 md:border-b-0">
                         <Link to={`/articulo/${latestArticles[2].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[2].title}
                           </h3>
                         </Link>
                       </div>
 
-                      <div className="group md:border-l border-gray-200 md:pl-6">
+                      <div className="group md:border-l border-gray-200 dark:border-gray-800 md:pl-6">
                         <Link to={`/articulo/${latestArticles[3].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[3].title}
                           </h3>
                         </Link>
@@ -181,12 +206,12 @@ function Home() {
                   )}
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-8 border-t-2 border-gray-900"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* Llamado a acción para denuncias confidenciales */}
                   <button
                     onClick={() => setShowSecureModal(true)}
-                    className="text-sm text-gray-700 hover:text-gray-900 transition-colors group flex items-center gap-2 mt-4"
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors group flex items-center gap-2 mt-4"
                   >
                     <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -199,11 +224,11 @@ function Home() {
                   </button>
 
                   {/* Línea separadora más oscura después de "Tenés un dato?" */}
-                  <div className="mt-8 border-t-2 border-gray-900"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* NG Insights - Solo visible en MOBILE */}
                   <div className="mt-8 lg:hidden">
-                    <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                       NG Insights
                     </h3>
                     {ngInsightsLoading ? (
@@ -211,12 +236,12 @@ function Home() {
                     ) : ngInsightsArticles.length > 0 && (
                       <div className="space-y-4">
                         {/* Primer artículo - Título + Extracto */}
-                        <div className="group pb-4 border-b border-gray-200">
+                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
                           <Link to={`/articulo/${ngInsightsArticles[0].slug}`}>
-                            <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
                               {ngInsightsArticles[0].title}
                             </h3>
-                            <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed font-light">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
                               {ngInsightsArticles[0].excerpt}
                             </p>
                           </Link>
@@ -226,7 +251,7 @@ function Home() {
                         {ngInsightsArticles.length >= 2 && (
                           <div className="group">
                             <Link to={`/articulo/${ngInsightsArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                 {ngInsightsArticles[1].title}
                               </h3>
                             </Link>
@@ -241,17 +266,18 @@ function Home() {
                 <div className="lg:col-span-4 space-y-5">
                   {/* Artículo superior - Imagen reducida */}
                   {featuredArticles.length >= 2 && (
-                    <div className="group pb-5 border-b border-gray-200">
+                    <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
                       <Link to={`/articulo/${featuredArticles[1].slug}`}>
                         <div className="aspect-[16/10] overflow-hidden bg-gray-100 mb-2 rounded-sm">
-                          <img
+                          <BlurImage
                             src={featuredArticles[1].image}
                             alt={featuredArticles[1].title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            blurData={featuredArticles[1].image_blur}
                             loading="lazy"
                           />
                         </div>
-                        <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                        <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                           {featuredArticles[1].title}
                         </h3>
                       </Link>
@@ -260,7 +286,7 @@ function Home() {
 
                   {/* Artículos inferiores - 2 lado a lado con imágenes más pequeñas */}
                   <div className="grid grid-cols-2 gap-3 relative">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
+                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700 -ml-[0.5px]"></div>
                     {latestArticles.slice(4, 6).map((article) => (
                       <div key={article.id} className="group">
                         <Link to={`/articulo/${article.slug}`}>
@@ -272,7 +298,7 @@ function Home() {
                               loading="lazy"
                             />
                           </div>
-                          <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-tight text-sm">
+                          <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-tight text-sm">
                             {article.title}
                           </h4>
                         </Link>
@@ -281,7 +307,7 @@ function Home() {
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-8 border-t-2 border-gray-900"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
                 </div>
               </div>
             )}
@@ -292,27 +318,27 @@ function Home() {
             <section className="mb-0 -mt-20">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
-                <div className="lg:col-span-8 lg:border-r border-gray-200 lg:pr-8">
+                <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
                   {/* Grid con artículos a la izquierda y espacio para videos a la derecha */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Columna izquierda - 3 artículos (1/3) */}
                     <div className="space-y-6 md:col-span-1">
                       {/* Primer artículo - Título + Extracto */}
-                      <div className="group pb-6 border-b border-gray-200">
+                      <div className="group pb-6 border-b border-gray-200 dark:border-gray-800">
                         <Link to={`/articulo/${latestArticles[6].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-sm mb-1">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-4 leading-snug text-sm mb-1">
                             {latestArticles[6].title}
                           </h3>
-                          <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                          <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                             {latestArticles[6].excerpt}
                           </p>
                         </Link>
                       </div>
 
                       {/* Segundo artículo - Solo título */}
-                      <div className="group pb-6 border-b border-gray-200">
+                      <div className="group pb-6 border-b border-gray-200 dark:border-gray-800">
                         <Link to={`/articulo/${latestArticles[7].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[7].title}
                           </h3>
                         </Link>
@@ -321,7 +347,7 @@ function Home() {
                       {/* Tercer artículo - Solo título */}
                       <div className="group">
                         <Link to={`/articulo/${latestArticles[8].slug}`}>
-                          <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                          <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[8].title}
                           </h3>
                         </Link>
@@ -329,7 +355,7 @@ function Home() {
                     </div>
 
                     {/* Columna derecha - Espacio para videos (2/3) */}
-                    <div className="bg-gray-50 border border-gray-200 p-6 flex items-center justify-center md:col-span-2 min-h-[200px] md:min-h-0">
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 flex items-center justify-center md:col-span-2 min-h-[200px] md:min-h-0">
                       <div className="text-center">
                         <svg className="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -341,28 +367,29 @@ function Home() {
                   </div>
 
                   {/* Línea separadora gruesa */}
-                  <div className="mt-8 border-t-2 border-gray-900"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* Sección Desafío Bienestar - Artículo destacado */}
                   {bienestarArticles.length > 0 && (
                     <div className="mt-8">
-                      <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">Desafío Bienestar</h3>
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">Desafío Bienestar</h3>
                       <div className="group">
                         <Link to={`/articulo/${bienestarArticles[0].slug}`}>
                           <div className="flex gap-6">
                             <div className="w-1/2 flex flex-col justify-center">
-                              <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-tight text-2xl mb-3">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-tight text-2xl mb-3">
                                 {bienestarArticles[0].title}
                               </h3>
-                              <p className="text-gray-600 text-base line-clamp-4 leading-relaxed font-light">
+                              <p className="text-gray-600 dark:text-gray-400 text-base line-clamp-4 leading-relaxed font-light">
                                 {bienestarArticles[0].excerpt}
                               </p>
                             </div>
-                            <div className="w-1/2 aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm">
-                              <img
+                            <div className="w-1/2 aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                              <BlurImage
                                 src={bienestarArticles[0].image}
                                 alt={bienestarArticles[0].title}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                blurData={bienestarArticles[0].image_blur}
                                 loading="lazy"
                               />
                             </div>
@@ -371,20 +398,20 @@ function Home() {
                       </div>
 
                       {/* Línea separadora gruesa */}
-                      <div className="mt-8 border-t-2 border-gray-900"></div>
+                      <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
                     </div>
                   )}
 
                   {/* Sección promocional Lo Nuestro TV - Siempre visible */}
                   <div className="mt-8">
                     {/* Línea separadora gruesa */}
-                    <div className="border-t-2 border-gray-900"></div>
+                    <div className="border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                     <a
                       href="https://www.lonuestro.com.ar"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block group mt-8 hover:bg-gray-50 transition-colors p-4 -mx-4 rounded-lg"
+                      className="block group mt-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-4 -mx-4 rounded-lg"
                     >
                       <div className="flex items-center gap-4">
                         <img
@@ -394,7 +421,7 @@ function Home() {
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-gray-900 text-base">Lo Nuestro TV</span>
+                            <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Lo Nuestro TV</span>
                             <svg className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
@@ -407,7 +434,7 @@ function Home() {
                     </a>
 
                     {/* Línea separadora gruesa debajo */}
-                    <div className="mt-8 border-t-2 border-gray-900"></div>
+                    <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                     {/* Artículo con título/extracto (40%) e imagen (60%) */}
                     {latestArticles.length > 17 && (
@@ -416,16 +443,16 @@ function Home() {
                           <div className="flex gap-4">
                             {/* Texto - 40% */}
                             <div className="flex-[0.4]">
-                              <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
                                 {latestArticles[17].title}
                               </h3>
-                              <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed font-light">
+                              <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
                                 {latestArticles[17].excerpt}
                               </p>
                             </div>
                             {/* Imagen - 60% */}
                             <div className="flex-[0.6]">
-                              <div className="aspect-[16/9] overflow-hidden bg-gray-100 rounded-sm">
+                              <div className="aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
                                 <img
                                   src={latestArticles[17].image}
                                   alt={latestArticles[17].title}
@@ -440,17 +467,17 @@ function Home() {
                     )}
 
                     {/* Línea separadora gruesa debajo del artículo */}
-                    <div className="mt-8 border-t-2 border-gray-900"></div>
+                    <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                     {/* 2 artículos lado a lado con línea divisoria */}
                     {latestArticles.length > 19 && (
                           <div className="mt-8 overflow-hidden">
-                            <div className="grid grid-cols-2 gap-4 divide-x divide-gray-200">
+                            <div className="grid grid-cols-2 gap-4 divide-x divide-gray-200 dark:divide-gray-800">
                               {/* Artículo izquierda */}
                               <Link to={`/articulo/${latestArticles[18].slug}`} className="group block pr-3">
                                 <div className="flex gap-2 items-center">
                                   <div className="w-16 sm:w-24 flex-shrink-0">
-                                    <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
+                                    <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
                                       <img
                                         src={latestArticles[18].image}
                                         alt={latestArticles[18].title}
@@ -460,7 +487,7 @@ function Home() {
                                     </div>
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-xs sm:text-sm">
+                                    <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-4 leading-snug text-xs sm:text-sm">
                                       {latestArticles[18].title}
                                     </h3>
                                   </div>
@@ -471,7 +498,7 @@ function Home() {
                               <Link to={`/articulo/${latestArticles[19].slug}`} className="group block pl-3">
                                 <div className="flex gap-2 items-center">
                                   <div className="w-16 sm:w-24 flex-shrink-0">
-                                    <div className="aspect-square overflow-hidden bg-gray-100 rounded-sm">
+                                    <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
                                       <img
                                         src={latestArticles[19].image}
                                         alt={latestArticles[19].title}
@@ -481,7 +508,7 @@ function Home() {
                                     </div>
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-4 leading-snug text-xs sm:text-sm">
+                                    <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-4 leading-snug text-xs sm:text-sm">
                                       {latestArticles[19].title}
                                     </h3>
                                   </div>
@@ -494,28 +521,28 @@ function Home() {
                         {/* Línea separadora fina */}
                         {latestArticles.length > 22 && (
                           <>
-                            <div className="mt-8 border-t border-gray-200"></div>
+                            <div className="mt-8 border-t border-gray-200 dark:border-gray-800"></div>
 
                             {/* 3 artículos solo título */}
                             <div className="mt-6">
-                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
+                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200 dark:divide-gray-800">
                                 {/* Artículo 1 */}
                                 <Link to={`/articulo/${latestArticles[20].slug}`} className="group pr-6">
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[20].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 2 */}
                                 <Link to={`/articulo/${latestArticles[21].slug}`} className="group px-6">
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[21].title}
                                   </h3>
                                 </Link>
 
                                 {/* Artículo 3 */}
                                 <Link to={`/articulo/${latestArticles[22].slug}`} className="group pl-6">
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                     {latestArticles[22].title}
                                   </h3>
                                 </Link>
@@ -527,17 +554,17 @@ function Home() {
                         {latestArticles.length > 25 && (
                           <>
                             {/* Línea separadora gruesa */}
-                            <div className="mt-8 border-t-2 border-gray-900"></div>
+                            <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                             {/* Sección CULTURA */}
                             <div className="mt-8">
-                              <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                                 Cultura
                               </h3>
-                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200">
+                              <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200 dark:divide-gray-800">
                                 {/* Artículo 1 */}
                                 <Link to={`/articulo/${latestArticles[23].slug}`} className="group block pr-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
+                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[23].image}
                                       alt={latestArticles[23].title}
@@ -545,17 +572,17 @@ function Home() {
                                       loading="lazy"
                                     />
                                   </div>
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-2 leading-snug text-sm mb-2">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
                                     {latestArticles[23].title}
                                   </h3>
-                                  <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                                     {latestArticles[23].excerpt}
                                   </p>
                                 </Link>
 
                                 {/* Artículo 2 */}
                                 <Link to={`/articulo/${latestArticles[24].slug}`} className="group block px-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
+                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[24].image}
                                       alt={latestArticles[24].title}
@@ -563,17 +590,17 @@ function Home() {
                                       loading="lazy"
                                     />
                                   </div>
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-2 leading-snug text-sm mb-2">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
                                     {latestArticles[24].title}
                                   </h3>
-                                  <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                                     {latestArticles[24].excerpt}
                                   </p>
                                 </Link>
 
                                 {/* Artículo 3 */}
                                 <Link to={`/articulo/${latestArticles[25].slug}`} className="group block pl-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-3">
+                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
                                     <img
                                       src={latestArticles[25].image}
                                       alt={latestArticles[25].title}
@@ -581,10 +608,10 @@ function Home() {
                                       loading="lazy"
                                     />
                                   </div>
-                                  <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-2 leading-snug text-sm mb-2">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
                                     {latestArticles[25].title}
                                   </h3>
-                                  <p className="text-gray-600 text-xs line-clamp-2 leading-relaxed font-light">
+                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
                                     {latestArticles[25].excerpt}
                                   </p>
                                 </Link>
@@ -592,157 +619,57 @@ function Home() {
                             </div>
 
                             {/* Línea separadora gruesa después de Cultura */}
-                            <div className="mt-8 border-t-2 border-gray-900"></div>
+                            <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
-                            {/* Sección Más Noticias - 6 artículos en pares - Solo desktop */}
+                            {/* Sección Más Noticias - Carga dinámica - Solo desktop */}
                             <div className="mt-8 hidden md:block">
-                              <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                                 Más Noticias
                               </h3>
 
-                              {/* Par 1 */}
-                              {latestArticles.length > 27 && (
-                                <div className="grid grid-cols-2 gap-6 pb-6 border-b border-gray-200 relative">
-                                  <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[26].slug}`} className="group block">
-                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                      <img
-                                        src={latestArticles[26].image}
-                                        alt={latestArticles[26].title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        loading="lazy"
-                                      />
-                                    </div>
-                                    <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                      {latestArticles[26].title}
-                                    </h4>
-                                  </Link>
-                                  {latestArticles.length > 28 && (
-                                    <Link to={`/articulo/${latestArticles[27].slug}`} className="group block">
-                                      <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                        <img
-                                          src={latestArticles[27].image}
-                                          alt={latestArticles[27].title}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                          loading="lazy"
-                                        />
+                              {/* Artículos cargados dinámicamente en pares */}
+                              {moreArticles.length > 0 && (
+                                <div className="space-y-0">
+                                  {Array.from({ length: Math.ceil(moreArticles.length / 2) }, (_, i) => {
+                                    const pair = moreArticles.slice(i * 2, i * 2 + 2);
+                                    return (
+                                      <div key={i} className={`grid grid-cols-2 gap-6 py-6 border-b border-gray-200 dark:border-gray-800 relative ${i === 0 ? 'pt-0' : ''}`}>
+                                        <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 dark:bg-gray-700 -ml-[0.5px]"></div>
+                                        {pair.map((article) => (
+                                          <Link key={article.id} to={`/articulo/${article.slug}`} className="group block">
+                                            <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-2">
+                                              <img
+                                                src={article.image}
+                                                alt={article.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                loading="lazy"
+                                              />
+                                            </div>
+                                            <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                                              {article.title}
+                                            </h4>
+                                          </Link>
+                                        ))}
                                       </div>
-                                      <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                        {latestArticles[27].title}
-                                      </h4>
-                                    </Link>
-                                  )}
+                                    );
+                                  })}
                                 </div>
                               )}
 
-                              {/* Par 2 */}
-                              {latestArticles.length > 29 && (
-                                <div className="grid grid-cols-2 gap-6 py-6 border-b border-gray-200 relative">
-                                  <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[28].slug}`} className="group block">
-                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                      <img
-                                        src={latestArticles[28].image}
-                                        alt={latestArticles[28].title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        loading="lazy"
-                                      />
-                                    </div>
-                                    <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                      {latestArticles[28].title}
-                                    </h4>
-                                  </Link>
-                                  {latestArticles.length > 30 && (
-                                    <Link to={`/articulo/${latestArticles[29].slug}`} className="group block">
-                                      <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                        <img
-                                          src={latestArticles[29].image}
-                                          alt={latestArticles[29].title}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                          loading="lazy"
-                                        />
-                                      </div>
-                                      <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                        {latestArticles[29].title}
-                                      </h4>
-                                    </Link>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Par 3 */}
-                              {latestArticles.length > 31 && (
-                                <div className="grid grid-cols-2 gap-6 py-6 border-b border-gray-200 relative">
-                                  <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[30].slug}`} className="group block">
-                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                      <img
-                                        src={latestArticles[30].image}
-                                        alt={latestArticles[30].title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        loading="lazy"
-                                      />
-                                    </div>
-                                    <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                      {latestArticles[30].title}
-                                    </h4>
-                                  </Link>
-                                  {latestArticles.length >= 32 && (
-                                    <Link to={`/articulo/${latestArticles[31].slug}`} className="group block">
-                                      <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                        <img
-                                          src={latestArticles[31].image}
-                                          alt={latestArticles[31].title}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                          loading="lazy"
-                                        />
-                                      </div>
-                                      <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                        {latestArticles[31].title}
-                                      </h4>
-                                    </Link>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Par 4 */}
-                              {latestArticles.length > 33 && (
-                                <div className="grid grid-cols-2 gap-6 pt-6 relative">
-                                  <div className="absolute left-1/2 top-6 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
-                                  <Link to={`/articulo/${latestArticles[32].slug}`} className="group block">
-                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                      <img
-                                        src={latestArticles[32].image}
-                                        alt={latestArticles[32].title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        loading="lazy"
-                                      />
-                                    </div>
-                                    <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                      {latestArticles[32].title}
-                                    </h4>
-                                  </Link>
-                                  {latestArticles.length >= 34 && (
-                                    <Link to={`/articulo/${latestArticles[33].slug}`} className="group block">
-                                      <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                        <img
-                                          src={latestArticles[33].image}
-                                          alt={latestArticles[33].title}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                          loading="lazy"
-                                        />
-                                      </div>
-                                      <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                        {latestArticles[33].title}
-                                      </h4>
-                                    </Link>
-                                  )}
-                                </div>
+                              {/* Botón Ver más noticias */}
+                              {hasMore && (
+                                <button
+                                  onClick={loadMoreArticles}
+                                  disabled={loadingMore}
+                                  className="w-full mt-6 py-3 border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 font-bold text-sm uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {loadingMore ? 'Cargando...' : 'Ver más noticias'}
+                                </button>
                               )}
                             </div>
 
                             {/* Línea separadora gruesa después de Más Noticias */}
-                            <div className="mt-8 border-t-2 border-gray-900"></div>
+                            <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                             {/* Banner publicitario horizontal - solo desktop */}
                             <div className="hidden md:flex mt-8 bg-gray-50 border border-gray-200 p-6 text-center min-h-[250px] flex-col items-center justify-center">
@@ -758,26 +685,27 @@ function Home() {
                 <div className="lg:col-span-4">
                   <div className="space-y-5">
                     {/* Primer artículo - Título + Imagen */}
-                    <div className="group pb-5 border-b border-gray-200">
+                    <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
                       <Link to={`/articulo/${latestArticles[9].slug}`}>
                         <div className="aspect-[16/9] overflow-hidden bg-gray-100 mb-2 rounded-sm">
-                          <img
+                          <BlurImage
                             src={latestArticles[9].image}
                             alt={latestArticles[9].title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            blurData={latestArticles[9].image_blur}
                             loading="lazy"
                           />
                         </div>
-                        <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                        <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                           {latestArticles[9].title}
                         </h4>
                       </Link>
                     </div>
 
                     {/* Segundo artículo - Solo título */}
-                    <div className="group pb-5 border-b border-gray-200">
+                    <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
                       <Link to={`/articulo/${latestArticles[10].slug}`}>
-                        <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                        <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                           {latestArticles[10].title}
                         </h4>
                       </Link>
@@ -785,13 +713,13 @@ function Home() {
 
                     {/* Tercer artículo - Título a la izquierda + Imagen a la derecha */}
                     {latestArticles.length >= 12 && (
-                      <div className="group pb-5 border-b border-gray-200">
+                      <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
                         <Link to={`/articulo/${latestArticles[11].slug}`}>
                           <div className="flex gap-3">
-                            <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-5 leading-snug text-sm w-1/2">
+                            <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-5 leading-snug text-sm w-1/2">
                               {latestArticles[11].title}
                             </h4>
-                            <div className="w-1/2 aspect-square overflow-hidden bg-gray-100 rounded-sm">
+                            <div className="w-1/2 aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
                               <img
                                 src={latestArticles[11].image}
                                 alt={latestArticles[11].title}
@@ -806,9 +734,9 @@ function Home() {
 
                     {/* Cuarto artículo - Solo título */}
                     {latestArticles.length >= 13 && (
-                      <div className="group pb-5 border-b border-gray-200">
+                      <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
                         <Link to={`/articulo/${latestArticles[12].slug}`}>
-                          <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                          <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                             {latestArticles[12].title}
                           </h4>
                         </Link>
@@ -821,10 +749,10 @@ function Home() {
                         {latestArticles.slice(13, 17).map((article, index) => (
                           <div
                             key={article.id}
-                            className={`group ${index % 2 === 0 ? 'border-r border-gray-200 pr-3' : 'pl-3'} ${index < 2 ? 'pb-5 border-b border-gray-200' : 'pt-5'}`}
+                            className={`group ${index % 2 === 0 ? 'border-r border-gray-200 dark:border-gray-800 pr-3' : 'pl-3'} ${index < 2 ? 'pb-5 border-b border-gray-200 dark:border-gray-800' : 'pt-5'}`}
                           >
                             <Link to={`/articulo/${article.slug}`}>
-                              <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-tight text-sm">
+                              <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors leading-tight text-sm">
                                 {article.title}
                               </h4>
                             </Link>
@@ -835,7 +763,7 @@ function Home() {
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-8 border-t-2 border-gray-900"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* Sección Argentinos hasta el tuétano */}
                   <div className="mt-8 text-center">
@@ -844,17 +772,17 @@ function Home() {
                       alt="Argentinos hasta el tuétano"
                       className="w-full mx-auto mb-4"
                     />
-                    <p className="text-sm font-bold text-gray-900 tracking-widest uppercase mb-4">
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-4">
                       ARGENTINOS HASTA EL TUÉTANO
                     </p>
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-4 border-t-2 border-gray-900"></div>
+                  <div className="mt-4 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* NG Insights - Solo visible en DESKTOP */}
                   <div className="mt-8 hidden lg:block">
-                    <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                       NG Insights
                     </h3>
                     {ngInsightsLoading ? (
@@ -862,12 +790,12 @@ function Home() {
                     ) : ngInsightsArticles.length > 0 && (
                       <div className="space-y-4">
                         {/* Primer artículo - Título + Extracto */}
-                        <div className="group pb-4 border-b border-gray-200">
+                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
                           <Link to={`/articulo/${ngInsightsArticles[0].slug}`}>
-                            <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
                               {ngInsightsArticles[0].title}
                             </h3>
-                            <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed font-light">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
                               {ngInsightsArticles[0].excerpt}
                             </p>
                           </Link>
@@ -877,7 +805,7 @@ function Home() {
                         {ngInsightsArticles.length >= 2 && (
                           <div className="group">
                             <Link to={`/articulo/${ngInsightsArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                 {ngInsightsArticles[1].title}
                               </h3>
                             </Link>
@@ -888,9 +816,9 @@ function Home() {
                   </div>
 
                   {/* Newsletter - estilo más minimalista */}
-                  <div id="newsletter" className="border-t-2 border-gray-900 pt-4 scroll-mt-20">
-                    <h3 className="text-base font-serif font-bold mb-3 text-gray-900">Newsletter Diario</h3>
-                    <p className="text-gray-600 text-sm mb-5 leading-relaxed">
+                  <div id="newsletter" className="border-t-2 border-gray-900 dark:border-gray-100 pt-4 scroll-mt-20">
+                    <h3 className="text-base font-serif font-bold mb-3 text-gray-900 dark:text-gray-100">Newsletter Diario</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">
                       Las noticias más importantes cada día en tu casilla
                     </p>
                     <form onSubmit={handleNewsletterSubmit} className="space-y-3">
@@ -900,12 +828,12 @@ function Home() {
                         value={newsletterEmail}
                         onChange={(e) => setNewsletterEmail(e.target.value)}
                         disabled={newsletterStatus === 'loading'}
-                        className="w-full px-4 py-3 border border-gray-300 text-gray-900 text-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:border-gray-900 dark:focus:border-gray-400 focus:ring-1 focus:ring-gray-900 dark:focus:ring-gray-400 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                       />
                       <button
                         type="submit"
                         disabled={newsletterStatus === 'loading'}
-                        className="w-full bg-gray-900 text-white font-semibold px-4 py-3 text-sm hover:bg-gray-800 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 font-semibold px-4 py-3 text-sm hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
                       >
                         {newsletterStatus === 'loading' ? 'Suscribiendo...' : 'Suscribirme'}
                       </button>
@@ -926,135 +854,70 @@ function Home() {
                   </div>
 
                   {/* Banner publicitario */}
-                  <div className="bg-gray-50 border border-gray-200 p-8 text-center mt-8 min-h-[600px] flex flex-col items-center justify-center">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-8 min-h-[600px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
                     <p className="text-xs text-gray-300 mt-1">300x600</p>
                   </div>
 
                   {/* Espacios publicitarios adicionales */}
-                  <div className="bg-gray-50 border border-gray-200 p-8 text-center mt-6 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-6 min-h-[250px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
                     <p className="text-xs text-gray-300 mt-1">300x250</p>
                   </div>
-                  <div className="bg-gray-50 border border-gray-200 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
                     <p className="text-xs text-gray-300 mt-1">300x250</p>
                   </div>
-                  <div className="bg-gray-50 border border-gray-200 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
                     <p className="text-xs text-gray-300 mt-1">300x250</p>
                   </div>
 
                   {/* Sección Más Noticias - Solo mobile */}
                   <div className="mt-8 md:hidden">
-                    <div className="border-t-2 border-gray-900 pt-6">
-                      <h3 className="text-xs font-bold text-gray-900 tracking-widest uppercase mb-6">
+                    <div className="border-t-2 border-gray-900 dark:border-gray-100 pt-6">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                         Más Noticias
                       </h3>
 
-                      {/* Par 1 */}
-                      {latestArticles.length > 27 && (
-                        <div className="grid grid-cols-2 gap-4 pb-6 border-b border-gray-200 relative">
-                          <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[26].slug}`} className="group block">
-                            <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                              <img
-                                src={latestArticles[26].image}
-                                alt={latestArticles[26].title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy"
-                              />
-                            </div>
-                            <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                              {latestArticles[26].title}
-                            </h4>
-                          </Link>
-                          {latestArticles.length > 28 && (
-                            <Link to={`/articulo/${latestArticles[27].slug}`} className="group block">
-                              <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                <img
-                                  src={latestArticles[27].image}
-                                  alt={latestArticles[27].title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  loading="lazy"
-                                />
+                      {/* Artículos cargados dinámicamente en pares */}
+                      {moreArticles.length > 0 && (
+                        <div className="space-y-0">
+                          {Array.from({ length: Math.ceil(moreArticles.length / 2) }, (_, i) => {
+                            const pair = moreArticles.slice(i * 2, i * 2 + 2);
+                            return (
+                              <div key={i} className={`grid grid-cols-2 gap-4 py-6 border-b border-gray-200 dark:border-gray-800 relative ${i === 0 ? 'pt-0' : ''}`}>
+                                <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 dark:bg-gray-700 -ml-[0.5px]"></div>
+                                {pair.map((article) => (
+                                  <Link key={article.id} to={`/articulo/${article.slug}`} className="group block">
+                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-2">
+                                      <img
+                                        src={article.image}
+                                        alt={article.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                      />
+                                    </div>
+                                    <h4 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                                      {article.title}
+                                    </h4>
+                                  </Link>
+                                ))}
                               </div>
-                              <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                {latestArticles[27].title}
-                              </h4>
-                            </Link>
-                          )}
+                            );
+                          })}
                         </div>
                       )}
 
-                      {/* Par 2 */}
-                      {latestArticles.length > 29 && (
-                        <div className="grid grid-cols-2 gap-4 py-6 border-b border-gray-200 relative">
-                          <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[28].slug}`} className="group block">
-                            <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                              <img
-                                src={latestArticles[28].image}
-                                alt={latestArticles[28].title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy"
-                              />
-                            </div>
-                            <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                              {latestArticles[28].title}
-                            </h4>
-                          </Link>
-                          {latestArticles.length > 30 && (
-                            <Link to={`/articulo/${latestArticles[29].slug}`} className="group block">
-                              <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                <img
-                                  src={latestArticles[29].image}
-                                  alt={latestArticles[29].title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  loading="lazy"
-                                />
-                              </div>
-                              <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                {latestArticles[29].title}
-                              </h4>
-                            </Link>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Par 3 */}
-                      {latestArticles.length > 31 && (
-                        <div className="grid grid-cols-2 gap-4 pt-6 relative">
-                          <div className="absolute left-1/2 top-6 bottom-0 w-px bg-gray-200 -ml-[0.5px]"></div>
-                          <Link to={`/articulo/${latestArticles[30].slug}`} className="group block">
-                            <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                              <img
-                                src={latestArticles[30].image}
-                                alt={latestArticles[30].title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy"
-                              />
-                            </div>
-                            <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                              {latestArticles[30].title}
-                            </h4>
-                          </Link>
-                          {latestArticles.length >= 32 && (
-                            <Link to={`/articulo/${latestArticles[31].slug}`} className="group block">
-                              <div className="aspect-[4/3] overflow-hidden bg-gray-100 rounded-sm mb-2">
-                                <img
-                                  src={latestArticles[31].image}
-                                  alt={latestArticles[31].title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  loading="lazy"
-                                />
-                              </div>
-                              <h4 className="font-serif font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-3 leading-snug text-sm">
-                                {latestArticles[31].title}
-                              </h4>
-                            </Link>
-                          )}
-                        </div>
+                      {/* Botón Ver más noticias */}
+                      {hasMore && (
+                        <button
+                          onClick={loadMoreArticles}
+                          disabled={loadingMore}
+                          className="w-full mt-6 py-3 border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 font-bold text-sm uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {loadingMore ? 'Cargando...' : 'Ver más noticias'}
+                        </button>
                       )}
                     </div>
                   </div>
@@ -1068,12 +931,12 @@ function Home() {
       {/* Modal de información confidencial */}
       {showSecureModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-8">
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+                  <h2 className="text-3xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-2">
                     ¿Tenés alguna noticia confidencial?
                   </h2>
                   <p className="text-base text-gray-600">
@@ -1121,7 +984,7 @@ function Home() {
                   </ul>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
+                <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
                   <h3 className="text-xl font-serif font-bold text-gray-900 mb-4">Métodos de contacto seguros</h3>
 
                   {/* Formulario encriptado */}
@@ -1230,7 +1093,7 @@ function Home() {
                               <button
                                 type="button"
                                 onClick={() => setShowSecureForm(false)}
-                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
                               >
                                 Volver
                               </button>

@@ -248,13 +248,13 @@ function AudioPlayer({ articleTitle, articleContent }) {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="border-t border-b border-gray-200 py-4">
+    <div className="border-t border-b border-gray-200 dark:border-gray-800 py-4">
       <div className="flex items-center gap-4">
         {/* Play/Pause */}
         <button
           onClick={togglePlay}
           disabled={!articleContent || isLoading}
-          className="w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+          className="w-10 h-10 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full flex items-center justify-center hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
         >
           {isLoading ? (
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ function AudioPlayer({ articleTitle, articleContent }) {
         {/* Info y progreso */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-gray-700">
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
               {error ? (
                 <span className="text-red-500">{error}</span>
               ) : isLoading ? (
@@ -288,13 +288,13 @@ function AudioPlayer({ articleTitle, articleContent }) {
                 'Escuchar este artículo'
               )}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
           </div>
-          <div className="relative h-1 bg-gray-200 rounded-full">
+          <div className="relative h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
             <div
-              className="absolute h-full bg-gray-900 rounded-full transition-all"
+              className="absolute h-full bg-gray-900 dark:bg-gray-100 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -302,17 +302,17 @@ function AudioPlayer({ articleTitle, articleContent }) {
 
         {/* Velocidad */}
         <div className="relative group flex-shrink-0">
-          <button className="text-xs font-medium text-gray-600 hover:text-gray-900 px-2 py-1 rounded transition-colors">
+          <button className="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 px-2 py-1 rounded transition-colors">
             {speed}x
           </button>
           <div className="absolute bottom-full right-0 mb-1 hidden group-hover:block z-10">
-            <div className="bg-white border border-gray-200 rounded shadow-lg py-1">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg py-1">
               {speeds.map((s) => (
                 <button
                   key={s}
                   onClick={() => handleSpeedChange(s)}
-                  className={`block w-full text-left px-3 py-1 text-xs hover:bg-gray-100 ${
-                    speed === s ? 'font-bold text-gray-900' : 'text-gray-600'
+                  className={`block w-full text-left px-3 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                    speed === s ? 'font-bold text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'
                   }`}
                 >
                   {s}x
@@ -326,7 +326,7 @@ function AudioPlayer({ articleTitle, articleContent }) {
         {(isPlaying || isPaused) && (
           <button
             onClick={stop}
-            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex-shrink-0"
             title="Detener"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

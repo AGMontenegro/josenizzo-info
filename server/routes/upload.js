@@ -78,7 +78,14 @@ async function optimizeImage(buffer, originalName) {
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
   const fileName = `uploads/${nameWithoutExt}-${uniqueSuffix}.webp`;
 
-  return { buffer: optimized, fileName, contentType: 'image/webp' };
+  // Generar blur placeholder (20px de ancho, base64)
+  const blurBuffer = await sharp(buffer)
+    .resize(20, null, { fit: 'inside' })
+    .webp({ quality: 40 })
+    .toBuffer();
+  const blurBase64 = blurBuffer.toString('base64');
+
+  return { buffer: optimized, fileName, contentType: 'image/webp', blurBase64 };
 }
 
 // Función para comprimir video con FFmpeg
@@ -205,7 +212,8 @@ router.post('/', verifyToken, requireAdmin, upload.single('image'), async (req, 
       filename: processedFile.fileName,
       originalSize: req.file.size,
       optimizedSize: processedFile.buffer.length,
-      savings: `${((1 - processedFile.buffer.length / req.file.size) * 100).toFixed(1)}%`
+      savings: `${((1 - processedFile.buffer.length / req.file.size) * 100).toFixed(1)}%`,
+      blurBase64: processedFile.blurBase64 || null
     });
   } catch (error) {
     console.error('Error al procesar archivo:', error);

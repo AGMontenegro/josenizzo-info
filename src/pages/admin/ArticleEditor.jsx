@@ -21,6 +21,7 @@ function ArticleEditor() {
     excerpt: '',
     content: '',
     image: '',
+    image_blur: '',
     category: 'Economía',
     author_name: '',
     featured: false,
@@ -51,6 +52,7 @@ function ArticleEditor() {
         excerpt: article.excerpt || '',
         content: article.content || '',
         image: article.image || '',
+        image_blur: article.image_blur || '',
         category: article.category || 'Economía',
         author_name: article.author_name || '',
         featured: !!article.featured,
@@ -259,8 +261,10 @@ function ArticleEditor() {
             formDataUpload.append('video', file);
 
             const API_URL = import.meta.env.VITE_API_URL || '/api';
+            const videoToken = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/upload/video`, {
               method: 'POST',
+              headers: videoToken ? { 'Authorization': `Bearer ${videoToken}` } : {},
               body: formDataUpload
             });
 
@@ -400,8 +404,10 @@ function ArticleEditor() {
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
 
+      const token = localStorage.getItem('token');
       const response = await fetch('/api/upload', {
         method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         body: formDataUpload
       });
 
@@ -413,7 +419,7 @@ function ArticleEditor() {
       const data = await response.json();
 
       // Use relative URL for images - works in both dev and production
-      setFormData(prev => ({ ...prev, image: data.url }));
+      setFormData(prev => ({ ...prev, image: data.url, image_blur: data.blurBase64 || '' }));
     } catch (err) {
       setError('Error al subir la imagen: ' + err.message);
     } finally {

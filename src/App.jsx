@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
@@ -15,11 +16,15 @@ import ArticleEditor from './pages/admin/ArticleEditor';
 import NewsletterSubscribers from './pages/admin/NewsletterSubscribers';
 import SendNewsletter from './pages/admin/SendNewsletter';
 import NewsletterStats from './pages/admin/NewsletterStats';
+import AnalyticsDashboard from './pages/admin/AnalyticsDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import NotificationBanner from './components/NotificationBanner';
 
 function App() {
   return (
+    <ThemeProvider>
     <Router>
+      <NotificationBanner />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
@@ -43,8 +48,10 @@ function App() {
         <Route path="/admin/newsletter" element={<ProtectedRoute><NewsletterSubscribers /></ProtectedRoute>} />
         <Route path="/admin/newsletter/send" element={<ProtectedRoute><SendNewsletter /></ProtectedRoute>} />
         <Route path="/admin/newsletter/stats" element={<ProtectedRoute><NewsletterStats /></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 

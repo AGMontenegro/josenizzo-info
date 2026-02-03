@@ -99,6 +99,10 @@ Allow: /
 
 # Sitemap
 Sitemap: ${siteUrl}/sitemap.xml
+Sitemap: ${siteUrl}/news-sitemap.xml
+
+# RSS Feed
+# ${siteUrl}/feed.xml
 
 # Bloquear admin
 Disallow: /admin/
@@ -160,6 +164,63 @@ router.get('/news', async (_req, res) => {
   } catch (error) {
     console.error('Error generating news sitemap:', error);
     res.status(500).send('Error generating news sitemap');
+  }
+});
+
+// GET /feed.xml - RSS 2.0 feed
+router.get('/feed', async (_req, res) => {
+  try {
+    const siteUrl = 'https://josenizzo.info';
+
+    const articles = await db.allAsync(
+      `SELECT slug, title, excerpt, category, created_at, image
+       FROM articles
+       WHERE published = 1
+       ORDER BY created_at DESC
+       LIMIT 50`
+    );
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">\n';
+    xml += '  <channel>\n';
+    xml += `    <title>josenizzo.info</title>\n`;
+    xml += `    <link>${siteUrl}</link>\n`;
+    xml += `    <description>Noticias de última hora, análisis y cobertura en profundidad de política, economía, deportes y más.</description>\n`;
+    xml += `    <language>es-ar</language>\n`;
+    xml += `    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n`;
+    xml += `    <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml" />\n`;
+
+    for (const article of articles) {
+      const pubDate = new Date(article.created_at).toUTCString();
+      const link = `${siteUrl}/articulo/${article.slug}`;
+      const title = article.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const description = (article.excerpt || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      xml += '    <item>\n';
+      xml += `      <title>${title}</title>\n`;
+      xml += `      <link>${link}</link>\n`;
+      xml += `      <guid isPermaLink="true">${link}</guid>\n`;
+      xml += `      <pubDate>${pubDate}</pubDate>\n`;
+      xml += `      <description>${description}</description>\n`;
+      if (article.category) {
+        xml += `      <category>${article.category}</category>\n`;
+      }
+      if (article.image) {
+        const imageUrl = article.image.startsWith('http') ? article.image : `${siteUrl}${article.image}`;
+        xml += `      <media:content url="${imageUrl}" medium="image" />\n`;
+      }
+      xml += '    </item>\n';
+    }
+
+    xml += '  </channel>\n';
+    xml += '</rss>';
+
+    res.header('Content-Type', 'application/rss+xml; charset=utf-8');
+    res.header('Cache-Control', 'public, max-age=1800');
+    res.send(xml);
+  } catch (error) {
+    console.error('Error generating RSS feed:', error);
+    res.status(500).send('Error generating RSS feed');
   }
 });
 

@@ -5,6 +5,7 @@ import socialMediaService from '../services/socialMediaService.js';
 import { validateArticleContent, logSecurityEvent } from '../middleware/security.js';
 import { cacheOrFetch, KEYS, invalidateArticles } from '../utils/cache.js';
 import { verifyToken, requireAdmin } from './auth.js';
+import { sendBreakingNotification } from './notifications.js';
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.get('/',
   try {
     const page = req.query.page || 1;
     const limit = req.query.limit || 20;
-    const offset = (page - 1) * limit;
+    const offset = req.query.offset != null ? parseInt(req.query.offset) : (page - 1) * limit;
     const category = req.query.category;
     const search = req.query.search;
 
@@ -43,9 +44,15 @@ router.get('/',
       }
 
       if (search) {
-        query += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
-        const searchTerm = `%${search}%`;
-        params.push(searchTerm, searchTerm, searchTerm);
+        // Usar FULLTEXT en MySQL, LIKE como fallback en SQLite
+        if (db.type === 'mysql') {
+          query += ' AND MATCH(title, excerpt) AGAINST(? IN BOOLEAN MODE)';
+          params.push(search + '*');
+        } else {
+          query += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+          const searchTerm = `%${search}%`;
+          params.push(searchTerm, searchTerm, searchTerm);
+        }
       }
 
       query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
@@ -59,9 +66,14 @@ router.get('/',
         countParams.push(category);
       }
       if (search) {
-        countQuery += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
-        const searchTerm = `%${search}%`;
-        countParams.push(searchTerm, searchTerm, searchTerm);
+        if (db.type === 'mysql') {
+          countQuery += ' AND MATCH(title, excerpt) AGAINST(? IN BOOLEAN MODE)';
+          countParams.push(search + '*');
+        } else {
+          countQuery += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+          const searchTerm = `%${search}%`;
+          countParams.push(searchTerm, searchTerm, searchTerm);
+        }
       }
 
       const { total } = await db.getAsync(countQuery, countParams);
@@ -185,6 +197,7 @@ router.post('/',
       excerpt,
       content,
       image,
+      image_blur,
       category,
       author_name,
       featured,
@@ -205,9 +218,9 @@ router.post('/',
 
     // Insertar artículo
     const result = await db.runAsync(
-      `INSERT INTO articles (title, slug, excerpt, content, image, category, author_name, featured, breaking, badge, read_time, published)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, slug, excerpt, content, image, category, author_name, featured ? 1 : 0, breaking ? 1 : 0, badge || null, read_time || 5, published ? 1 : 0]
+      `INSERT INTO articles (title, slug, excerpt, content, image, image_blur, category, author_name, featured, breaking, badge, read_time, published)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, slug, excerpt, content, image, image_blur || null, category, author_name, featured ? 1 : 0, breaking ? 1 : 0, badge || null, read_time || 5, published ? 1 : 0]
     );
 
     // MySQL usa insertId, SQLite usa lastID
@@ -215,6 +228,14 @@ router.post('/',
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [articleId]);
     invalidateArticles();
+
+    // Enviar push notification si es breaking news
+    if (breaking && published) {
+      sendBreakingNotification(article).catch(err =>
+        console.error('Error sending breaking push:', err)
+      );
+    }
+
     res.status(201).json(article);
   } catch (error) {
     console.error('Error al crear artículo:', error);
@@ -245,6 +266,7 @@ router.put('/:id',
       excerpt,
       content,
       image,
+      image_blur,
       category,
       featured,
       breaking,
@@ -255,10 +277,10 @@ router.put('/:id',
 
     await db.runAsync(
       `UPDATE articles
-       SET title = ?, excerpt = ?, content = ?, image = ?, category = ?,
+       SET title = ?, excerpt = ?, content = ?, image = ?, image_blur = ?, category = ?,
            featured = ?, breaking = ?, badge = ?, updated_at = CURRENT_TIMESTAMP
        WHERE id = ?`,
-      [title, excerpt, content, image, category, featured, breaking, badge, req.params.id]
+      [title, excerpt, content, image, image_blur || null, category, featured, breaking, badge, req.params.id]
     );
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);

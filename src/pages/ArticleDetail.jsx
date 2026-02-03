@@ -13,6 +13,7 @@ import AudioPlayer from '../components/AudioPlayer';
 import ShareButtons from '../components/ShareButtons';
 import SEO from '../components/SEO';
 import LoadingSpinner from '../components/LoadingSpinner';
+import BlurImage from '../components/BlurImage';
 import { useArticle, useArticles } from '../hooks/useArticles';
 
 function ArticleDetail() {
@@ -59,7 +60,7 @@ function ArticleDetail() {
   if (error || !article) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
           {error || 'Artículo no encontrado'}
         </h1>
         <Link to="/" className="text-red-600 hover:text-red-700 font-semibold">
@@ -75,7 +76,7 @@ function ArticleDetail() {
   const formattedDate = format(new Date(date), "d 'de' MMMM 'de' yyyy", { locale: es });
 
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-950">
       <SEO
         title={article.title}
         description={article.excerpt}
@@ -90,13 +91,13 @@ function ArticleDetail() {
         <article className="max-w-3xl mx-auto">
           {/* Breadcrumb */}
           <nav className="mb-6 text-sm flex items-center gap-2">
-            <Link to="/" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
               Inicio
             </Link>
-            <span className="text-gray-400">/</span>
+            <span className="text-gray-400 dark:text-gray-600">/</span>
             <Link
               to={`/categoria/${article.category.toLowerCase()}`}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               {article.category}
             </Link>
@@ -115,17 +116,17 @@ function ArticleDetail() {
           )}
 
           {/* Título */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gray-900 mb-6 leading-[1.1]">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gray-900 dark:text-gray-100 mb-6 leading-[1.1]">
             {article.title}
           </h1>
 
           {/* Bajada/Excerpt */}
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed font-serif">
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed font-serif">
             {article.excerpt}
           </p>
 
           {/* Autor y fecha */}
-          <div className="mb-8 pb-8 border-b border-gray-200">
+          <div className="mb-8 pb-8 border-b border-gray-200 dark:border-gray-800">
             <AuthorInfo
               author={article.author || article.author_name}
               date={formattedDate}
@@ -136,10 +137,11 @@ function ArticleDetail() {
           {/* Imagen principal */}
           {article.image && (
             <div className="mb-8">
-              <img
+              <BlurImage
                 src={article.image}
                 alt={article.title}
                 className="w-full rounded-lg shadow-lg"
+                blurData={article.image_blur}
               />
             </div>
           )}
@@ -147,22 +149,22 @@ function ArticleDetail() {
           {/* Contenido del artículo */}
           <ZenMode>
             <div
-              className="prose prose-lg max-w-none prose-headings:font-display prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto prose-img:mx-auto prose-strong:text-gray-900 prose-strong:font-semibold prose-ul:my-6 prose-ol:my-6 [&_img]:max-w-full [&_img]:h-auto [&_img]:mx-auto [&_img]:block [&_img]:my-6"
+              className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-display prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto prose-img:mx-auto prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold prose-ul:my-6 prose-ol:my-6 [&_img]:max-w-full [&_img]:h-auto [&_img]:mx-auto [&_img]:block [&_img]:my-6"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
           </ZenMode>
 
           {/* Compartir artículo */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
+          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
             <ShareButtons article={article} />
           </div>
 
           {/* Seguir tema */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
+          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-1">¿Te interesa este tema?</h3>
-                <p className="text-xs text-gray-500">Recibí notificaciones de nuevos artículos</p>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">¿Te interesa este tema?</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Recibí notificaciones de nuevos artículos</p>
               </div>
               <TopicTracker topic={article.category} />
             </div>
@@ -181,8 +183,8 @@ function ArticleDetail() {
 
           {/* Artículos relacionados */}
           {filteredRelatedArticles.length > 0 && (
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-800">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 pb-3 border-b-2 border-blue-600">
                 Artículos Relacionados
               </h3>
               <div className="space-y-4">
@@ -194,9 +196,9 @@ function ArticleDetail() {
           )}
 
           {/* Banner publicitario */}
-          <div className="bg-gray-100 border border-gray-200 p-8 text-center rounded-lg sticky top-24">
-            <p className="text-gray-500 font-semibold">Espacio Publicitario</p>
-            <p className="text-sm text-gray-400 mt-2">300x600</p>
+          <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center rounded-lg sticky top-24">
+            <p className="text-gray-500 dark:text-gray-400 font-semibold">Espacio Publicitario</p>
+            <p className="text-sm text-gray-400 dark:text-gray-600 mt-2">300x600</p>
           </div>
         </aside>
       </div>

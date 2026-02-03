@@ -50,15 +50,15 @@ function RadioPlayer() {
       <div className="fixed bottom-4 right-4 z-50">
         {/* Panel expandido */}
         {isExpanded && (
-          <div className="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-64 mb-2">
+          <div className="absolute bottom-16 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 w-64 mb-2">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <img src="/logos/FM_93.5.png" alt="FM Lo Nuestro 93.5" className="h-8 w-auto object-contain flex-shrink-0" />
-                <h4 className="font-bold text-gray-800 text-sm self-center">FM Lo Nuestro 93.5</h4>
+                <h4 className="font-bold text-gray-800 dark:text-gray-100 text-sm self-center">FM Lo Nuestro 93.5</h4>
               </div>
               <button
                 onClick={() => setIsExpanded(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -87,7 +87,7 @@ function RadioPlayer() {
                 )}
               </button>
               <div className="flex-1">
-                <p className={`text-sm font-medium ${isPlaying ? 'text-green-600' : 'text-gray-600'}`}>
+                <p className={`text-sm font-medium ${isPlaying ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                   {isPlaying ? 'En vivo' : 'Detenido'}
                 </p>
                 {isPlaying && (
@@ -114,7 +114,7 @@ function RadioPlayer() {
                 step="0.1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="flex-1 h-1 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
               />
             </div>
           </div>

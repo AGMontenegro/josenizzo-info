@@ -9,55 +9,55 @@ function Terms() {
         url="/terminos"
       />
 
-      <div className="bg-white">
+      <div className="bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto px-6 py-16">
           {/* Header */}
-          <div className="mb-12 border-b border-gray-200 pb-8">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">
+          <div className="mb-12 border-b border-gray-200 dark:border-gray-800 pb-8">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
               Términos y Condiciones
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Última actualización: {new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
 
           {/* Content */}
-          <div className="prose prose-lg max-w-none space-y-8">
+          <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Aceptación de los Términos
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Al acceder y usar <strong>josenizzo.info</strong>, aceptás estos términos y condiciones
                 en su totalidad. Si no estás de acuerdo con estos términos, no deberías usar este sitio web.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Uso del Sitio
               </h2>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 mt-6">
                 Uso Permitido
               </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Podés usar este sitio para:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Leer y consumir contenido informativo</li>
                 <li>Suscribirte al newsletter</li>
                 <li>Compartir artículos en redes sociales</li>
                 <li>Contactarnos mediante los formularios disponibles</li>
               </ul>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 mt-6">
                 Uso Prohibido
               </h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 No está permitido:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Reproducir, distribuir o modificar el contenido sin autorización</li>
                 <li>Usar el sitio para fines ilegales o no autorizados</li>
                 <li>Intentar acceder a áreas restringidas del sitio</li>
@@ -68,28 +68,28 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Propiedad Intelectual
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Todo el contenido publicado en josenizzo.info, incluyendo textos, imágenes, gráficos,
                 logos, videos y código, está protegido por derechos de autor y otras leyes de propiedad
                 intelectual.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 El uso no autorizado de cualquier material de este sitio puede violar leyes de derechos
                 de autor, marcas registradas y otras leyes aplicables.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Contenido del Usuario
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Si envías comentarios, sugerencias o cualquier otro contenido al sitio:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Garantizás que tenés derecho a enviar ese contenido</li>
                 <li>Nos otorgás una licencia no exclusiva para usar, modificar y publicar ese contenido</li>
                 <li>Aceptás que podemos remover contenido inapropiado sin previo aviso</li>
@@ -98,10 +98,10 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Exactitud de la Información
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Nos esforzamos por proporcionar información precisa y actualizada. Sin embargo, no
                 garantizamos que toda la información sea completamente exacta, completa o actual.
                 El contenido se proporciona "tal cual" sin garantías de ningún tipo.
@@ -109,10 +109,10 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Enlaces a Sitios de Terceros
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Nuestro sitio puede contener enlaces a sitios web de terceros. No controlamos ni somos
                 responsables del contenido, políticas de privacidad o prácticas de sitios de terceros.
                 El acceso a esos sitios es bajo tu propio riesgo.
@@ -120,13 +120,13 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Limitación de Responsabilidad
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 En la máxima medida permitida por la ley, josenizzo.info no será responsable por:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Daños directos, indirectos, incidentales o consecuentes</li>
                 <li>Pérdida de datos, ingresos o ganancias</li>
                 <li>Interrupciones del servicio o errores técnicos</li>
@@ -135,10 +135,10 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Indemnización
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Aceptás indemnizar y mantener indemne a josenizzo.info, sus propietarios, empleados y
                 colaboradores de cualquier reclamo, daño, pérdida o gasto (incluyendo honorarios legales)
                 que surja de tu uso del sitio o violación de estos términos.
@@ -146,10 +146,10 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Modificaciones del Servicio
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Nos reservamos el derecho de modificar, suspender o discontinuar cualquier parte del
                 sitio en cualquier momento sin previo aviso. No seremos responsables ante vos ni ante
                 terceros por cualquier modificación, suspensión o discontinuación del sitio.
@@ -157,10 +157,10 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Cambios a los Términos
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Podemos actualizar estos términos ocasionalmente. Los cambios entrarán en vigor
                 inmediatamente después de su publicación en el sitio. Tu uso continuado del sitio
                 después de los cambios constituye tu aceptación de los nuevos términos.
@@ -168,45 +168,45 @@ function Terms() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Ley Aplicable
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Estos términos se rigen por las leyes de la República Argentina. Cualquier disputa
                 relacionada con estos términos será resuelta en los tribunales competentes de Argentina.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Terminación
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Podemos terminar o suspender tu acceso al sitio inmediatamente, sin previo aviso o
                 responsabilidad, por cualquier razón, incluyendo si violás estos términos.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Divisibilidad
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Si alguna disposición de estos términos se considera inválida o inaplicable, las
                 disposiciones restantes continuarán en pleno vigor y efecto.
               </p>
             </section>
 
-            <section className="bg-gray-50 p-8 rounded-lg">
-              <h2 className="text-2xl font-serif font-bold text-gray-900 mb-4">
+            <section className="bg-gray-50 dark:bg-gray-900 p-8 rounded-lg">
+              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Contacto
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Si tenés preguntas sobre estos términos y condiciones, contactanos:
               </p>
-              <p className="text-gray-700">
+              <p className="text-gray-700 dark:text-gray-300">
                 <strong>Email:</strong>{' '}
-                <a href="mailto:josenizzo@gmail.com" className="text-blue-600 hover:underline">
+                <a href="mailto:josenizzo@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">
                   josenizzo@gmail.com
                 </a>
               </p>

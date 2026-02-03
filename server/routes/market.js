@@ -60,14 +60,19 @@ router.get('/all', async (req, res) => {
       return res.json(marketCache.data);
     }
 
-    // Hacer TODAS las llamadas en paralelo
-    const [oficialRes, blueRes, goldRes, crude, brent, naturalGas] = await Promise.allSettled([
+    // Hacer TODAS las llamadas en paralelo (incluye clima)
+    const weatherUrl = process.env.OPENWEATHER_API_KEY
+      ? `https://api.openweathermap.org/data/2.5/weather?q=Neuquen,AR&units=metric&lang=es&appid=${process.env.OPENWEATHER_API_KEY}`
+      : null;
+
+    const [oficialRes, blueRes, goldRes, crude, brent, naturalGas, weatherRes] = await Promise.allSettled([
       fetchWithTimeout('https://dolarapi.com/v1/dolares/oficial', {}, 5000),
       fetchWithTimeout('https://dolarapi.com/v1/dolares/blue', {}, 5000),
       fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd', {}, 5000),
       fetchYahooPrice('CL=F', 63.00),
       fetchYahooPrice('BZ=F', 66.00),
       fetchYahooPrice('NG=F', 3.50),
+      weatherUrl ? fetchWithTimeout(weatherUrl, {}, 5000) : Promise.resolve(null),
     ]);
 
     // Procesar dólar oficial
@@ -93,6 +98,22 @@ router.get('/all', async (req, res) => {
       } catch {}
     }
 
+    // Procesar clima
+    let weather = { temp: 24, condition: 'Parcialmente nublado', location: 'Neuquén', icon: '02d' };
+    if (weatherRes.status === 'fulfilled' && weatherRes.value && weatherRes.value.ok) {
+      try {
+        const weatherData = await weatherRes.value.json();
+        weather = {
+          temp: Math.round(weatherData.main.temp),
+          condition: weatherData.weather[0].description,
+          location: 'Neuquén',
+          icon: weatherData.weather[0].icon,
+          humidity: weatherData.main.humidity,
+          wind: Math.round(weatherData.wind.speed * 3.6) // m/s a km/h
+        };
+      } catch {}
+    }
+
     const result = {
       dolar: {
         oficial: { compra: dolarOficial.compra, venta: dolarOficial.venta },
@@ -107,6 +128,7 @@ router.get('/all', async (req, res) => {
         brent: brent.status === 'fulfilled' ? brent.value : { price: 66.00, change: 0 },
         naturalGas: naturalGas.status === 'fulfilled' ? naturalGas.value : { price: 3.50, change: 0 },
       },
+      weather,
       timestamp: now
     };
 
@@ -125,6 +147,7 @@ router.get('/all', async (req, res) => {
         brent: { price: 66.00, change: 0 },
         naturalGas: { price: 3.50, change: 0 },
       },
+      weather: { temp: 24, condition: 'Parcialmente nublado', location: 'Neuquén', icon: '02d' },
       timestamp: Date.now()
     });
   }

@@ -28,14 +28,14 @@ function ShareButtons({ article, url }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-gray-700 mr-2">Compartir:</span>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Compartir:</span>
 
       {/* Twitter/X */}
       <a
         href={shareLinks.twitter}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-gray-100 hover:bg-black hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-black hover:text-white transition-all duration-300"
         aria-label="Compartir en Twitter"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@ function ShareButtons({ article, url }) {
         href={shareLinks.facebook}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-all duration-300"
         aria-label="Compartir en Facebook"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@ function ShareButtons({ article, url }) {
         href={shareLinks.whatsapp}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-gray-100 hover:bg-green-500 hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-green-500 hover:text-white transition-all duration-300"
         aria-label="Compartir en WhatsApp"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ function ShareButtons({ article, url }) {
         href={shareLinks.telegram}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-gray-100 hover:bg-blue-500 hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-500 hover:text-white transition-all duration-300"
         aria-label="Compartir en Telegram"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ function ShareButtons({ article, url }) {
         href={shareLinks.linkedin}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-gray-100 hover:bg-blue-700 hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-700 hover:text-white transition-all duration-300"
         aria-label="Compartir en LinkedIn"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -98,7 +98,7 @@ function ShareButtons({ article, url }) {
       {/* Email */}
       <a
         href={shareLinks.email}
-        className="p-2 rounded-full bg-gray-100 hover:bg-gray-700 hover:text-white transition-all duration-300"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-700 hover:text-white transition-all duration-300"
         aria-label="Compartir por email"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@ function ShareButtons({ article, url }) {
       {/* Copiar enlace */}
       <button
         onClick={copyToClipboard}
-        className="p-2 rounded-full bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-300 relative"
+        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-all duration-300 relative"
         aria-label="Copiar enlace"
       >
         {copied ? (
