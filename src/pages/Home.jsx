@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
 import LoadingSpinner from '../components/LoadingSpinner';
 import HomeSkeleton from '../components/HomeSkeleton';
@@ -15,9 +15,7 @@ function Home() {
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
   const [moreArticles, setMoreArticles] = useState([]);
-  const [moreOffset, setMoreOffset] = useState(26); // Start after the initial 26
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [showSecureModal, setShowSecureModal] = useState(false);
   const [showSecureForm, setShowSecureForm] = useState(false);
   const [secureFormData, setSecureFormData] = useState({
@@ -106,49 +104,21 @@ function Home() {
     }
   };
 
-  const loadMoreArticles = useCallback(async () => {
-    if (loadingMore || !hasMore) return;
-    setLoadingMore(true);
-    try {
-      const data = await articlesAPI.getAll({ offset: moreOffset, limit: 8 });
-      const newArticles = data.articles || [];
-      if (newArticles.length === 0) {
-        setHasMore(false);
-      } else {
-        setMoreArticles(prev => [...prev, ...newArticles]);
-        setMoreOffset(prev => prev + newArticles.length);
-        if (newArticles.length < 8) setHasMore(false);
+  // Cargar 8 artículos adicionales (4 pares) al montar
+  useEffect(() => {
+    const fetchMoreArticles = async () => {
+      setLoadingMore(true);
+      try {
+        const data = await articlesAPI.getAll({ offset: 26, limit: 8 });
+        setMoreArticles(data.articles || []);
+      } catch (err) {
+        console.error('Error loading more articles:', err);
+      } finally {
+        setLoadingMore(false);
       }
-    } catch (err) {
-      console.error('Error loading more articles:', err);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [moreOffset, loadingMore, hasMore]);
-
-  // Auto-cargar artículos al montar
-  useEffect(() => {
-    if (moreArticles.length === 0 && hasMore && !loadingMore) {
-      loadMoreArticles();
-    }
-  }, [loadMoreArticles, moreArticles.length, hasMore, loadingMore]);
-
-  // Infinite scroll: cargar más al llegar al final
-  const loaderRefDesktop = useRef(null);
-  const loaderRefMobile = useRef(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasMore && !loadingMore) {
-          loadMoreArticles();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (loaderRefDesktop.current) observer.observe(loaderRefDesktop.current);
-    if (loaderRefMobile.current) observer.observe(loaderRefMobile.current);
-    return () => observer.disconnect();
-  }, [hasMore, loadingMore, loadMoreArticles]);
+    };
+    fetchMoreArticles();
+  }, []);
 
   return (
     <>
@@ -681,8 +651,6 @@ function Home() {
                                 </div>
                               )}
 
-                              {/* Infinite scroll trigger */}
-                              <div ref={loaderRefDesktop} className="h-4" />
                               {loadingMore && (
                                 <p className="text-center text-gray-400 text-sm py-4">Cargando...</p>
                               )}
@@ -929,8 +897,6 @@ function Home() {
                         </div>
                       )}
 
-                      {/* Infinite scroll trigger */}
-                      <div ref={loaderRefMobile} className="h-4" />
                       {loadingMore && (
                         <p className="text-center text-gray-400 text-sm py-4">Cargando...</p>
                       )}
