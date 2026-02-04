@@ -146,6 +146,11 @@ function ArticleDetail() {
             </div>
           )}
 
+          {/* Audio Player */}
+          <div className="mb-8">
+            <AudioPlayer articleTitle={article.title} articleContent={article.content} />
+          </div>
+
           {/* Contenido del artículo */}
           <ZenMode>
             <div
@@ -168,11 +173,6 @@ function ArticleDetail() {
               </div>
               <TopicTracker topic={article.category} />
             </div>
-          </div>
-
-          {/* Audio Player */}
-          <div className="mt-8">
-            <AudioPlayer articleTitle={article.title} articleContent={article.content} />
           </div>
 
 
