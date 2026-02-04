@@ -6,7 +6,7 @@ import HomeSkeleton from '../components/HomeSkeleton';
 import RoadStatusWidget from '../components/RoadStatusWidget';
 import BlurImage from '../components/BlurImage';
 import { useFeaturedArticles, useArticles, useTrendingArticles, useArticlesByCategory } from '../hooks/useArticles';
-import { newsletterAPI } from '../services/api';
+import { newsletterAPI, articlesAPI } from '../services/api';
 
 function Home() {
   const { articles: featuredArticles, loading: featuredLoading } = useFeaturedArticles(3);
