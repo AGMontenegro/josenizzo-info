@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import SEO from '../components/SEO';
 import LoadingSpinner from '../components/LoadingSpinner';
 import HomeSkeleton from '../components/HomeSkeleton';
@@ -106,7 +106,8 @@ function Home() {
     }
   };
 
-  const loadMoreArticles = async () => {
+  const loadMoreArticles = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
       const data = await articlesAPI.getAll({ offset: moreOffset, limit: 8 });
@@ -123,7 +124,31 @@ function Home() {
     } finally {
       setLoadingMore(false);
     }
-  };
+  }, [moreOffset, loadingMore, hasMore]);
+
+  // Auto-cargar artículos al montar
+  useEffect(() => {
+    if (moreArticles.length === 0 && hasMore && !loadingMore) {
+      loadMoreArticles();
+    }
+  }, [loadMoreArticles, moreArticles.length, hasMore, loadingMore]);
+
+  // Infinite scroll: cargar más al llegar al final
+  const loaderRefDesktop = useRef(null);
+  const loaderRefMobile = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore && !loadingMore) {
+          loadMoreArticles();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (loaderRefDesktop.current) observer.observe(loaderRefDesktop.current);
+    if (loaderRefMobile.current) observer.observe(loaderRefMobile.current);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, loadMoreArticles]);
 
   return (
     <>
@@ -656,15 +681,10 @@ function Home() {
                                 </div>
                               )}
 
-                              {/* Botón Ver más noticias */}
-                              {hasMore && (
-                                <button
-                                  onClick={loadMoreArticles}
-                                  disabled={loadingMore}
-                                  className="w-full mt-6 py-3 border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 font-bold text-sm uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {loadingMore ? 'Cargando...' : 'Ver más noticias'}
-                                </button>
+                              {/* Infinite scroll trigger */}
+                              <div ref={loaderRefDesktop} className="h-4" />
+                              {loadingMore && (
+                                <p className="text-center text-gray-400 text-sm py-4">Cargando...</p>
                               )}
                             </div>
 
@@ -909,15 +929,10 @@ function Home() {
                         </div>
                       )}
 
-                      {/* Botón Ver más noticias */}
-                      {hasMore && (
-                        <button
-                          onClick={loadMoreArticles}
-                          disabled={loadingMore}
-                          className="w-full mt-6 py-3 border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 font-bold text-sm uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {loadingMore ? 'Cargando...' : 'Ver más noticias'}
-                        </button>
+                      {/* Infinite scroll trigger */}
+                      <div ref={loaderRefMobile} className="h-4" />
+                      {loadingMore && (
+                        <p className="text-center text-gray-400 text-sm py-4">Cargando...</p>
                       )}
                     </div>
                   </div>
