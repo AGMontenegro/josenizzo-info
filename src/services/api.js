@@ -6,7 +6,12 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 async function handleResponse(response) {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Error desconocido' }));
-    throw new Error(error.error || `HTTP ${response.status}`);
+    let message = error.error || `HTTP ${response.status}`;
+    if (error.details && error.details.length > 0) {
+      const fields = error.details.map(d => d.msg || d.path).join(', ');
+      message += `: ${fields}`;
+    }
+    throw new Error(message);
   }
   return response.json();
 }

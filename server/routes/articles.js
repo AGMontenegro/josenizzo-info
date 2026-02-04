@@ -178,8 +178,8 @@ router.get('/slug/:slug',
 router.post('/',
   verifyToken, requireAdmin,
   body('title').trim().isLength({ min: 5, max: 300 }).withMessage('Título debe tener entre 5 y 300 caracteres'),
-  body('slug').matches(/^[a-z0-9-]+$/).isLength({ min: 5, max: 300 }).withMessage('Slug inválido'),
-  body('excerpt').optional().trim().isLength({ max: 500 }),
+  body('slug').customSanitizer(v => v.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/^-+|-+$/g, '')).matches(/^[a-z0-9-]+$/).isLength({ min: 5, max: 300 }).withMessage('Slug inválido'),
+  body('excerpt').optional().trim().isLength({ max: 1000 }),
   body('content').isLength({ min: 10 }).custom((value) => {
     const validation = validateArticleContent(value);
     if (!validation.valid) throw new Error(validation.message);
@@ -252,7 +252,7 @@ router.put('/:id',
   verifyToken, requireAdmin,
   param('id').isInt({ min: 1 }),
   body('title').trim().isLength({ min: 5, max: 300 }),
-  body('excerpt').optional().trim().isLength({ max: 500 }),
+  body('excerpt').optional().trim().isLength({ max: 1000 }),
   body('content').isLength({ min: 10 }).custom((value) => {
     const validation = validateArticleContent(value);
     if (!validation.valid) throw new Error(validation.message);
