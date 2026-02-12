@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
@@ -9,6 +10,10 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Subscription from './pages/Subscription';
+import ReaderLogin from './pages/auth/Login';
+import ReaderRegister from './pages/auth/Register';
+import ReaderProfile from './pages/auth/Profile';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminArticlesList from './pages/admin/ArticlesList';
@@ -23,6 +28,7 @@ import NotificationBanner from './components/NotificationBanner';
 function App() {
   return (
     <ThemeProvider>
+    <AuthProvider>
     <Router>
       <NotificationBanner />
       <Routes>
@@ -36,7 +42,13 @@ function App() {
           <Route path="contacto" element={<Contact />} />
           <Route path="privacidad" element={<Privacy />} />
           <Route path="terminos" element={<Terms />} />
+          <Route path="suscripcion" element={<Subscription />} />
+          <Route path="perfil" element={<ReaderProfile />} />
         </Route>
+
+        {/* Reader Auth Routes (outside MainLayout for cleaner UI) */}
+        <Route path="/login" element={<ReaderLogin />} />
+        <Route path="/registro" element={<ReaderRegister />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
@@ -51,6 +63,7 @@ function App() {
         <Route path="/admin/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
       </Routes>
     </Router>
+    </AuthProvider>
     </ThemeProvider>
   );
 }

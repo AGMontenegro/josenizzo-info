@@ -75,7 +75,7 @@ router.post('/register', async (req, res) => {
     const token = jwt.sign(
       { id: result.lastID, email, role: 'reader' },
       SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '30d' } // 30 días para mejor UX
     );
 
     res.status(201).json({
@@ -133,7 +133,7 @@ router.post('/login',
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       SECRET,
-      { expiresIn: '24h' } // Reducido a 24h por seguridad
+      { expiresIn: '30d' } // 30 días para mejor UX, la suscripción se verifica en cada request
     );
 
     res.json({

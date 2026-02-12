@@ -254,6 +254,38 @@ async function initializeTables(db) {
       )
     `);
 
+    // Tabla de suscripciones premium
+    await db.runAsync(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id ${intType} PRIMARY KEY ${autoIncrement},
+        user_id ${intType} NOT NULL,
+        plan VARCHAR(50) NOT NULL DEFAULT 'monthly',
+        status VARCHAR(50) NOT NULL DEFAULT 'active',
+        payment_provider VARCHAR(50),
+        payment_id VARCHAR(255),
+        amount DECIMAL(10,2),
+        currency VARCHAR(10) DEFAULT 'ARS',
+        starts_at ${dateType} NOT NULL,
+        expires_at ${dateType} NOT NULL,
+        cancelled_at ${dateType},
+        created_at ${dateType},
+        updated_at ${dateType}
+      )
+    `);
+
+    // Índices para suscripciones
+    if (isMySQL) {
+      try {
+        await db.runAsync('CREATE INDEX idx_subs_user ON subscriptions(user_id)');
+      } catch (e) { /* ya existe */ }
+      try {
+        await db.runAsync('CREATE INDEX idx_subs_status ON subscriptions(status)');
+      } catch (e) { /* ya existe */ }
+      try {
+        await db.runAsync('CREATE INDEX idx_subs_expires ON subscriptions(expires_at)');
+      } catch (e) { /* ya existe */ }
+    }
+
     // Migraciones: agregar columnas y índices si no existen
     if (isMySQL) {
       // Columna image_blur para blur placeholders

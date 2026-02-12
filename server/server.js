@@ -29,6 +29,7 @@ import sitemapRoutes from './routes/sitemap.js';
 import notificationRoutes from './routes/notifications.js';
 import analyticsRoutes from './routes/analytics.js';
 import ampRoutes from './routes/amp.js';
+import subscriptionRoutes from './routes/subscriptions.js';
 import { openGraphMiddleware } from './middleware/openGraph.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -155,6 +156,7 @@ app.use('/api/roads', roadsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // Ruta AMP
 app.use('/amp/articulo', ampRoutes);

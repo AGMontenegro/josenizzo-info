@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import HomeSkeleton from '../components/HomeSkeleton';
 import RoadStatusWidget from '../components/RoadStatusWidget';
 import BlurImage from '../components/BlurImage';
+import PremiumBadge from '../components/PremiumBadge';
 import { useFeaturedArticles, useArticles, useTrendingArticles, useArticlesByCategory } from '../hooks/useArticles';
 import { newsletterAPI, articlesAPI } from '../services/api';
 
@@ -206,9 +207,12 @@ function Home() {
 
                   {/* Sección GUERRA ESPIRITUAL */}
                   <div className="mt-8">
-                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
-                      Guerra Espiritual
-                    </h3>
+                    <div className="flex items-center gap-2 mb-6">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
+                        Guerra Espiritual
+                      </h3>
+                      <PremiumBadge small />
+                    </div>
                     {guerraEspiritualLoading ? (
                       <LoadingSpinner className="py-10" />
                     ) : guerraEspiritualArticles.length > 0 ? (

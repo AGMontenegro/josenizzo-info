@@ -1,11 +1,14 @@
 import express from 'express';
 import { body, param, query, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import db from '../config/database.js';
 import socialMediaService from '../services/socialMediaService.js';
 import { validateArticleContent, logSecurityEvent } from '../middleware/security.js';
 import { cacheOrFetch, KEYS, invalidateArticles } from '../utils/cache.js';
 import { verifyToken, requireAdmin } from './auth.js';
 import { sendBreakingNotification } from './notifications.js';
+import { isPremiumCategory } from '../config/premiumCategories.js';
+import { checkUserSubscription } from './subscriptions.js';
 
 const router = express.Router();
 
@@ -163,6 +166,30 @@ router.get('/slug/:slug',
 
     if (!article) {
       return res.status(404).json({ error: 'Artículo no encontrado' });
+    }
+
+    // Verificar si es contenido premium
+    if (isPremiumCategory(article.category)) {
+      let hasSubscription = false;
+
+      // Verificar token si existe
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.split(' ')[1];
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-change-in-production');
+          hasSubscription = await checkUserSubscription(decoded.id);
+        } catch (e) {
+          // Token inválido, usuario no autenticado
+        }
+      }
+
+      // Si no tiene suscripción, ocultar contenido
+      if (!hasSubscription) {
+        article.content = null;
+        article.is_premium = true;
+        article.requires_subscription = true;
+      }
     }
 
     // Incrementar vistas en background (no bloquea la respuesta)
