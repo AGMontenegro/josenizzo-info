@@ -880,6 +880,7 @@ function ArticleEditor() {
                 <option value="Deportes">Deportes</option>
                 <option value="Desafío Bienestar">Desafío Bienestar</option>
                 <option value="Planeta extremo">Planeta extremo</option>
+                <option value="Guerra Espiritual">Guerra Espiritual</option>
               </select>
             </div>
 

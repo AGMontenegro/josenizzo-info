@@ -14,6 +14,7 @@ function Home() {
   const { articles: trendingArticles, loading: trendingLoading } = useTrendingArticles(5);
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
+  const { articles: guerraEspiritualArticles, loading: guerraEspiritualLoading } = useArticlesByCategory('GUERRA_ESPIRITUAL', 2);
   const [moreArticles, setMoreArticles] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showSecureModal, setShowSecureModal] = useState(false);
@@ -208,9 +209,38 @@ function Home() {
                     <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
                       Guerra Espiritual
                     </h3>
-                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
-                      <p className="text-gray-400 font-medium text-sm">Próximamente</p>
-                    </div>
+                    {guerraEspiritualLoading ? (
+                      <LoadingSpinner className="py-10" />
+                    ) : guerraEspiritualArticles.length > 0 ? (
+                      <div className="space-y-4">
+                        {/* Primer artículo - Título + Extracto */}
+                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
+                          <Link to={`/articulo/${guerraEspiritualArticles[0].slug}`}>
+                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                              {guerraEspiritualArticles[0].title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
+                              {guerraEspiritualArticles[0].excerpt}
+                            </p>
+                          </Link>
+                        </div>
+
+                        {/* Segundo artículo - Solo título */}
+                        {guerraEspiritualArticles.length >= 2 && (
+                          <div className="group">
+                            <Link to={`/articulo/${guerraEspiritualArticles[1].slug}`}>
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                                {guerraEspiritualArticles[1].title}
+                              </h3>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
+                        <p className="text-gray-400 font-medium text-sm">Próximamente</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Línea separadora más oscura */}

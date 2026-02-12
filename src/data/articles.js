@@ -4,6 +4,7 @@
 // Última actualización: 19/1/2026, 12:28:23
 
 export const categories = {
+  GUERRA_ESPIRITUAL: 'Guerra Espiritual',
   SOCIEDAD: 'Sociedad',
   NG_INSIGHTS: 'NG Insights',
   INTERNACIONAL: 'Internacional',
