@@ -203,6 +203,19 @@ function Home() {
                   {/* Línea separadora más oscura */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
+                  {/* Sección GUERRA ESPIRITUAL */}
+                  <div className="mt-8">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
+                      Guerra Espiritual
+                    </h3>
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
+                      <p className="text-gray-400 font-medium text-sm">Próximamente</p>
+                    </div>
+                  </div>
+
+                  {/* Línea separadora más oscura */}
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+
                   {/* Llamado a acción para denuncias confidenciales */}
                   <button
                     onClick={() => setShowSecureModal(true)}
