@@ -40,6 +40,8 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
         importScripts: ['/sw-push.js'],
         runtimeCaching: [
           {
