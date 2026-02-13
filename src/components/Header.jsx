@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
   const { dark, toggleTheme } = useTheme();
+  const { isAuthenticated, user } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume] = useState(0.8);
   const audioRef = useRef(null);
@@ -51,9 +53,13 @@ function Header() {
           </p>
           {/* Links y Radio - menos en móvil */}
           <div className="flex items-center gap-2 md:gap-4 text-xs text-gray-600 dark:text-gray-400">
-            <a href="/#newsletter" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Newsletter</a>
+            <Link to="/suscripcion" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Suscripción</Link>
             <span className="text-gray-300 dark:text-gray-700">|</span>
-            <Link to="/contacto" className="hidden sm:inline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contacto</Link>
+            {isAuthenticated ? (
+              <Link to="/perfil" className="hidden sm:inline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{user?.name || 'Mi cuenta'}</Link>
+            ) : (
+              <Link to="/login" className="hidden sm:inline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Iniciar sesión</Link>
+            )}
             <span className="hidden sm:inline text-gray-300 dark:text-gray-700">|</span>
             {/* Dark mode toggle */}
             <button

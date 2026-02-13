@@ -9,7 +9,8 @@ function Subscription() {
     {
       id: 'monthly',
       name: 'Mensual',
-      price: 2999,
+      price: 10,
+      currency: 'USD',
       period: '/mes',
       description: 'Perfecto para probar',
       features: [
@@ -23,14 +24,15 @@ function Subscription() {
     {
       id: 'yearly',
       name: 'Anual',
-      price: 29990,
+      price: 100,
+      currency: 'USD',
       period: '/año',
       description: '2 meses gratis',
       features: [
         'Acceso a Guerra Espiritual',
         'Acceso a Planeta Extremo',
         'Sin publicidad en contenido premium',
-        'Ahorrás $5.998 al año',
+        'Ahorrás USD $20 al año',
         'Soporte prioritario'
       ],
       popular: true
@@ -143,7 +145,7 @@ function Subscription() {
 
                   <div className="text-center mb-6">
                     <span className="text-5xl font-bold text-gray-900 dark:text-white">
-                      ${plan.price.toLocaleString('es-AR')}
+                      USD ${plan.price}
                     </span>
                     <span className="text-gray-500 dark:text-gray-400">{plan.period}</span>
                   </div>

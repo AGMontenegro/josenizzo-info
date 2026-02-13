@@ -89,7 +89,7 @@ function Paywall({ article }) {
 
         {/* Precio */}
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-          Desde <span className="font-semibold text-gray-900 dark:text-white">$2.999/mes</span>
+          Desde <span className="font-semibold text-gray-900 dark:text-white">USD $10/mes</span>
         </p>
       </div>
     </div>

@@ -19,16 +19,16 @@ const PLANS = {
   monthly: {
     id: 'monthly',
     name: 'Mensual',
-    price: 2999,
-    currency: 'ARS',
+    price: 10,
+    currency: 'USD',
     duration_days: 30,
     description: 'Acceso completo por 1 mes'
   },
   yearly: {
     id: 'yearly',
     name: 'Anual',
-    price: 29990,
-    currency: 'ARS',
+    price: 100,
+    currency: 'USD',
     duration_days: 365,
     description: 'Acceso completo por 1 año (2 meses gratis)'
   }

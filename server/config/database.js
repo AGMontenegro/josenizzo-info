@@ -264,7 +264,7 @@ async function initializeTables(db) {
         payment_provider VARCHAR(50),
         payment_id VARCHAR(255),
         amount DECIMAL(10,2),
-        currency VARCHAR(10) DEFAULT 'ARS',
+        currency VARCHAR(10) DEFAULT 'USD',
         starts_at ${dateType} NOT NULL,
         expires_at ${dateType} NOT NULL,
         cancelled_at ${dateType},
