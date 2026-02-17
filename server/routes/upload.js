@@ -7,6 +7,7 @@ import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
 import os from 'os';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { validateFileMagicBytes, scanFileForMalware, logSecurityEvent } from '../middleware/security.js';
 import { verifyToken, requireAdmin } from './auth.js';
 
@@ -264,6 +265,54 @@ router.post('/video', verifyToken, requireAdmin, upload.single('video'), async (
   } catch (error) {
     console.error('Error al procesar video:', error);
     res.status(500).json({ error: 'Error al procesar el video: ' + error.message });
+  }
+});
+
+// POST /api/upload/video/presign - Generar URL pre-firmada para subir video directamente a Spaces
+router.post('/video/presign', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { fileName: originalName, fileSize } = req.body;
+
+    if (!originalName) {
+      return res.status(400).json({ error: 'Se requiere el nombre del archivo' });
+    }
+
+    if (fileSize && fileSize > 100 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El video no puede superar los 100MB' });
+    }
+
+    // Generar nombre sanitizado (mismo patrón que compressVideo)
+    const ext = path.extname(originalName).toLowerCase() || '.mp4';
+    const nameWithoutExt = path.basename(originalName, path.extname(originalName))
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .substring(0, 50);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const key = `videos/${nameWithoutExt}-${uniqueSuffix}${ext}`;
+
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      ContentType: `video/${ext.slice(1)}`,
+      ACL: 'public-read',
+    });
+
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 }); // 15 min
+
+    const fileUrl = `https://${BUCKET_NAME}.nyc3.cdn.digitaloceanspaces.com/${key}`;
+
+    logSecurityEvent(req, 'VIDEO_PRESIGN', { filename: originalName, size: fileSize });
+
+    res.json({
+      success: true,
+      uploadUrl,
+      fileUrl,
+      fileName: key,
+    });
+  } catch (error) {
+    console.error('Error al generar URL pre-firmada:', error);
+    res.status(500).json({ error: 'Error al generar URL de subida: ' + error.message });
   }
 });
 
