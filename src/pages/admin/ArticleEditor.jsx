@@ -142,8 +142,10 @@ function ArticleEditor() {
             formDataUpload.append('image', file);
 
             const API_URL = import.meta.env.VITE_API_URL || '/api';
+            const token = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/upload`, {
               method: 'POST',
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {},
               body: formDataUpload
             });
 
