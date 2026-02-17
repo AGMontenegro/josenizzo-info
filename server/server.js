@@ -76,7 +76,9 @@ app.use(helmet({
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
+  crossOriginOpenerPolicy: false, // Para permitir comunicación con iframes de YouTube
   permissionsPolicy: false, // Desactivar para permitir YouTube embeds (autoplay, accelerometer, etc.)
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }, // YouTube necesita el referrer para validar embeds
 }));
 
 // Rate limiting general - 100 requests por minuto
