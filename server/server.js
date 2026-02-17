@@ -76,6 +76,7 @@ app.use(helmet({
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
+  permissionsPolicy: false, // Desactivar para permitir YouTube embeds (autoplay, accelerometer, etc.)
 }));
 
 // Rate limiting general - 100 requests por minuto
