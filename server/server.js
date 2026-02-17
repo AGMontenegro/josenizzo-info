@@ -72,7 +72,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
       frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://www.facebook.com"],
       mediaSrc: ["'self'", "https:", "blob:", "data:"],
-      connectSrc: ["'self'", "blob:", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org"],
+      connectSrc: ["'self'", "blob:", "https://fonts.googleapis.com", "https://fonts.gstatic.com", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org"],
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
