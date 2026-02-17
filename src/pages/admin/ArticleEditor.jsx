@@ -216,7 +216,7 @@ function ArticleEditor() {
           const videoId = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
           if (videoId) {
             // YouTube embed con branding minimizado: modestbranding=1, rel=0 (no videos de otros canales)
-            insertedText = `\n<figure class="video-container"><iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0" frameborder="0" allowfullscreen></iframe></figure>\n\n`;
+            insertedText = `\n<figure class="video-container"><iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></figure>\n\n`;
           }
         } else if (videoUrl.includes('facebook.com') || videoUrl.includes('fb.watch')) {
           // Facebook video embed
