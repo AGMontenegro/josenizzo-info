@@ -256,56 +256,41 @@ function ArticleEditor() {
           }
 
           try {
+            const statusMsg = `Subiendo y comprimiendo video (${(file.size / 1024 / 1024).toFixed(1)}MB)... Esto puede tardar unos minutos.`;
+            alert(statusMsg);
+
+            const formDataUpload = new FormData();
+            formDataUpload.append('video', file);
+
             const API_URL = import.meta.env.VITE_API_URL || '/api';
             const videoToken = localStorage.getItem('token');
-
-            // Paso 1: Obtener URL pre-firmada del servidor
-            const presignRes = await fetch(`${API_URL}/upload/video/presign`, {
+            const response = await fetch(`${API_URL}/upload/video`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(videoToken ? { 'Authorization': `Bearer ${videoToken}` } : {}),
-              },
-              body: JSON.stringify({ fileName: file.name, fileSize: file.size }),
+              headers: videoToken ? { 'Authorization': `Bearer ${videoToken}` } : {},
+              body: formDataUpload
             });
 
-            if (!presignRes.ok) {
-              const errorData = await presignRes.json();
-              throw new Error(errorData.error || 'Error al preparar la subida');
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Error al subir el video');
             }
 
-            const { uploadUrl, fileUrl } = await presignRes.json();
+            const data = await response.json();
 
-            // Paso 2: Subir directamente a DigitalOcean Spaces con progreso
-            alert(`Subiendo video (${(file.size / 1024 / 1024).toFixed(1)}MB) directamente al servidor de archivos...\nEsto puede tardar unos minutos según tu conexión.`);
-
-            const uploadRes = await new Promise((resolve, reject) => {
-              const xhr = new XMLHttpRequest();
-              xhr.open('PUT', uploadUrl);
-              xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
-              xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
-              xhr.onerror = () => reject(new Error('Error de red al subir el video'));
-              xhr.send(file);
-            });
-
-            if (!uploadRes.ok) {
-              throw new Error(`Error al subir el video (HTTP ${uploadRes.status})`);
-            }
-
-            // Paso 3: Insertar el video en el contenido
+            // Insertar el video en el contenido
             const currentContent = formData.content;
             const textarea = document.getElementById('content');
             const cursorPos = textarea.selectionStart;
             const beforeText = currentContent.substring(0, cursorPos);
             const afterText = currentContent.substring(cursorPos);
-            const insertText = `\n<figure class="video-container"><video controls src="${fileUrl}" width="100%"></video></figure>\n\n`;
+            const insertText = `\n<figure class="video-container"><video controls src="${data.url}" width="100%"></video></figure>\n\n`;
 
             setFormData(prev => ({
               ...prev,
               content: beforeText + insertText + afterText
             }));
 
-            alert(`✅ Video subido! (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+            alert(`✅ Video subido!\nOriginal: ${(data.originalSize / 1024 / 1024).toFixed(1)}MB\nComprimido: ${(data.optimizedSize / 1024 / 1024).toFixed(1)}MB\nAhorro: ${data.savings}`);
 
             setTimeout(() => {
               textarea.focus();
