@@ -343,8 +343,8 @@
   article .instagram-container iframe {
     width: 400px;
     max-width: 100%;
-    height: 700px;
-    min-height: 700px;
+    height: 900px;
+    min-height: 900px;
     border-radius: 12px;
   }
 
