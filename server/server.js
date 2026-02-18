@@ -70,7 +70,7 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
-      frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://www.facebook.com"],
+      frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://www.facebook.com", "https://www.instagram.com"],
       mediaSrc: ["'self'", "https:", "blob:", "data:"],
       connectSrc: ["'self'", "blob:", "https://fonts.googleapis.com", "https://fonts.gstatic.com", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org"],
     },

@@ -209,7 +209,7 @@ function ArticleEditor() {
         insertedText = `<ol>\n  <li>${selectedText || 'Elemento 1'}</li>\n  <li>Elemento 2</li>\n  <li>Elemento 3</li>\n</ol>\n\n`;
         break;
       case 'video':
-        const videoUrl = prompt('Ingresa el enlace del video (YouTube, Facebook, Twitter, etc.):');
+        const videoUrl = prompt('Ingresa el enlace del video (YouTube, Instagram, Facebook, Twitter, etc.):');
         if (!videoUrl) return;
 
         if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
@@ -232,6 +232,11 @@ function ArticleEditor() {
           cleanUrl = cleanUrl.replace('x.com', 'twitter.com');
 
           insertedText = `\n<blockquote class="twitter-tweet"><p lang="es" dir="ltr"></p>&mdash; <a href="${cleanUrl}">${cleanUrl}</a></blockquote>\n\n`;
+        } else if (videoUrl.includes('instagram.com')) {
+          // Instagram embed - extraer URL del post/reel
+          let instaUrl = videoUrl.split('?')[0]; // Limpiar parámetros
+          if (!instaUrl.endsWith('/')) instaUrl += '/';
+          insertedText = `\n<figure class="video-container"><iframe src="${instaUrl}embed/" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen></iframe></figure>\n\n`;
         } else {
           insertedText = `\n<figure class="video-container"><video controls src="${videoUrl}" width="100%"></video></figure>\n\n`;
         }
@@ -250,8 +255,8 @@ function ArticleEditor() {
             return;
           }
 
-          if (file.size > 20 * 1024 * 1024) {
-            alert('El video no puede superar los 20MB. Comprimilo antes con HandBrake u otra herramienta.');
+          if (file.size > 100 * 1024 * 1024) {
+            alert('El video no puede superar los 100MB.');
             return;
           }
 

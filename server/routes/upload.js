@@ -277,8 +277,8 @@ router.post('/video/presign', verifyToken, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Se requiere el nombre del archivo' });
     }
 
-    if (fileSize && fileSize > 20 * 1024 * 1024) {
-      return res.status(400).json({ error: 'El video no puede superar los 20MB' });
+    if (fileSize && fileSize > 100 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El video no puede superar los 100MB' });
     }
 
     // Generar nombre sanitizado (mismo patrón que compressVideo)

@@ -123,7 +123,7 @@ export function sanitizeHtml(html) {
     .replace(/javascript:/gi, '')
     .replace(/on\w+\s*=/gi, '')
     .replace(/data:/gi, 'data-blocked:')
-    .replace(/<iframe(?!.*(?:youtube\.com|platform\.twitter\.com))[^>]*>/gi, '');
+    .replace(/<iframe(?!.*(?:youtube\.com|platform\.twitter\.com|instagram\.com|facebook\.com))[^>]*>/gi, '');
 }
 
 /**
