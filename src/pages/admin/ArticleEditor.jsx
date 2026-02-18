@@ -250,47 +250,62 @@ function ArticleEditor() {
             return;
           }
 
-          if (file.size > 100 * 1024 * 1024) {
-            alert('El video no puede superar los 100MB antes de compresión');
+          if (file.size > 20 * 1024 * 1024) {
+            alert('El video no puede superar los 20MB. Comprimilo antes con HandBrake u otra herramienta.');
             return;
           }
 
           try {
-            const statusMsg = `Subiendo y comprimiendo video (${(file.size / 1024 / 1024).toFixed(1)}MB)... Esto puede tardar unos minutos.`;
-            alert(statusMsg);
-
-            const formDataUpload = new FormData();
-            formDataUpload.append('video', file);
-
             const API_URL = import.meta.env.VITE_API_URL || '/api';
             const videoToken = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/upload/video`, {
+
+            // Paso 1: Obtener URL pre-firmada del servidor
+            const presignRes = await fetch(`${API_URL}/upload/video/presign`, {
               method: 'POST',
-              headers: videoToken ? { 'Authorization': `Bearer ${videoToken}` } : {},
-              body: formDataUpload
+              headers: {
+                'Content-Type': 'application/json',
+                ...(videoToken ? { 'Authorization': `Bearer ${videoToken}` } : {}),
+              },
+              body: JSON.stringify({ fileName: file.name, fileSize: file.size }),
             });
 
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || 'Error al subir el video');
+            if (!presignRes.ok) {
+              const errorData = await presignRes.json();
+              throw new Error(errorData.error || 'Error al preparar la subida');
             }
 
-            const data = await response.json();
+            const { uploadUrl, fileUrl } = await presignRes.json();
 
-            // Insertar el video en el contenido
+            // Paso 2: Subir directamente a DigitalOcean Spaces
+            alert(`Subiendo video (${(file.size / 1024 / 1024).toFixed(1)}MB)...\nEsto puede tardar según tu conexión.`);
+
+            const uploadRes = await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('PUT', uploadUrl);
+              xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+              xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
+              xhr.onerror = () => reject(new Error('Error de red al subir el video'));
+              xhr.send(file);
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Error al subir el video (HTTP ${uploadRes.status})`);
+            }
+
+            // Paso 3: Insertar el video en el contenido
             const currentContent = formData.content;
             const textarea = document.getElementById('content');
             const cursorPos = textarea.selectionStart;
             const beforeText = currentContent.substring(0, cursorPos);
             const afterText = currentContent.substring(cursorPos);
-            const insertText = `\n<figure class="video-container"><video controls src="${data.url}" width="100%"></video></figure>\n\n`;
+            const insertText = `\n<figure class="video-container"><video controls src="${fileUrl}" width="100%"></video></figure>\n\n`;
 
             setFormData(prev => ({
               ...prev,
               content: beforeText + insertText + afterText
             }));
 
-            alert(`✅ Video subido!\nOriginal: ${(data.originalSize / 1024 / 1024).toFixed(1)}MB\nComprimido: ${(data.optimizedSize / 1024 / 1024).toFixed(1)}MB\nAhorro: ${data.savings}`);
+            alert(`✅ Video subido! (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
 
             setTimeout(() => {
               textarea.focus();
