@@ -236,7 +236,7 @@ function ArticleEditor() {
           // Instagram embed - extraer URL del post/reel
           let instaUrl = videoUrl.split('?')[0]; // Limpiar parámetros
           if (!instaUrl.endsWith('/')) instaUrl += '/';
-          insertedText = `\n<figure class="video-container"><iframe src="${instaUrl}embed/" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen></iframe></figure>\n\n`;
+          insertedText = `\n<figure class="video-container" style="display:flex;justify-content:center;"><iframe src="${instaUrl}embed/" width="400" height="700" frameborder="0" scrolling="no" allowtransparency="true" allowfullscreen style="max-width:100%;border-radius:12px;"></iframe></figure>\n\n`;
         } else {
           insertedText = `\n<figure class="video-container"><video controls src="${videoUrl}" width="100%"></video></figure>\n\n`;
         }
