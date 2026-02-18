@@ -335,6 +335,19 @@
     border-radius: 8px;
   }
 
+  article .instagram-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  article .instagram-container iframe {
+    width: 400px;
+    max-width: 100%;
+    height: 700px;
+    min-height: 700px;
+    border-radius: 12px;
+  }
+
   article video {
     width: 100%;
     max-width: 100%;
