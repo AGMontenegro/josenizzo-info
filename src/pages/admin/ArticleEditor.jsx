@@ -138,24 +138,38 @@ function ArticleEditor() {
           }
 
           try {
-            const formDataUpload = new FormData();
-            formDataUpload.append('image', file);
-
             const API_URL = import.meta.env.VITE_API_URL || '/api';
             const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/upload`, {
+
+            // Obtener URL pre-firmada
+            const presignRes = await fetch(`${API_URL}/upload/image/presign`, {
               method: 'POST',
-              headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-              body: formDataUpload
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+              },
+              body: JSON.stringify({ fileName: file.name, fileSize: file.size, fileType: file.type }),
             });
 
-            if (!response.ok) {
-              throw new Error('Error al subir la imagen');
+            if (!presignRes.ok) {
+              const err = await presignRes.json();
+              throw new Error(err.error || 'Error al preparar la subida');
             }
 
-            const data = await response.json();
-            // Use relative URL for images - works in both dev and production
-            const imageUrl = data.url;
+            const { uploadUrl, fileUrl } = await presignRes.json();
+
+            // Subir directamente a Spaces
+            const uploadRes = await fetch(uploadUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': file.type },
+              body: file,
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Error al subir la imagen (HTTP ${uploadRes.status})`);
+            }
+
+            const imageUrl = fileUrl;
 
             // Insertar la imagen en el contenido
             const currentContent = formData.content;
@@ -322,6 +336,80 @@ function ArticleEditor() {
           }
         };
         videoInput.click();
+        return;
+      case 'uploadAudio':
+        const audioInput = document.createElement('input');
+        audioInput.type = 'file';
+        audioInput.accept = 'audio/*';
+        audioInput.onchange = async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          if (!file.type.startsWith('audio/')) {
+            alert('Solo se permiten archivos de audio');
+            return;
+          }
+
+          if (file.size > 100 * 1024 * 1024) {
+            alert('El audio no puede superar los 100MB');
+            return;
+          }
+
+          try {
+            const API_URL = import.meta.env.VITE_API_URL || '/api';
+            const audioToken = localStorage.getItem('token');
+
+            const presignRes = await fetch(`${API_URL}/upload/audio/presign`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(audioToken ? { 'Authorization': `Bearer ${audioToken}` } : {}),
+              },
+              body: JSON.stringify({ fileName: file.name, fileSize: file.size, fileType: file.type }),
+            });
+
+            if (!presignRes.ok) {
+              const err = await presignRes.json();
+              throw new Error(err.error || 'Error al preparar la subida');
+            }
+
+            const { uploadUrl, fileUrl } = await presignRes.json();
+
+            alert(`Subiendo audio (${(file.size / 1024 / 1024).toFixed(1)}MB)...`);
+
+            const uploadRes = await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('PUT', uploadUrl);
+              xhr.setRequestHeader('Content-Type', file.type);
+              xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
+              xhr.onerror = () => reject(new Error('Error de red al subir el audio'));
+              xhr.send(file);
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Error al subir el audio (HTTP ${uploadRes.status})`);
+            }
+
+            const currentContent = formData.content;
+            const textarea = document.getElementById('content');
+            const cursorPos = textarea.selectionStart;
+            const beforeText = currentContent.substring(0, cursorPos);
+            const afterText = currentContent.substring(cursorPos);
+            const insertText = `\n<figure class="audio-container"><audio controls src="${fileUrl}"></audio></figure>\n\n`;
+
+            setFormData(prev => ({ ...prev, content: beforeText + insertText + afterText }));
+            alert(`✅ Audio subido! (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+
+            setTimeout(() => {
+              textarea.focus();
+              const newPos = cursorPos + insertText.length;
+              textarea.setSelectionRange(newPos, newPos);
+            }, 100);
+          } catch (error) {
+            alert('Error al subir el audio: ' + error.message);
+          }
+        };
+        audioInput.click();
         return;
       case 'twitter':
         const tweetUrl = prompt('Ingresa la URL del tweet completa de Twitter/X:');
@@ -697,9 +785,17 @@ function ArticleEditor() {
                 type="button"
                 onClick={() => insertElement('uploadVideo')}
                 className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm"
-                title="Subir video desde PC (max 100MB, se comprime a 20MB)"
+                title="Subir video desde PC (max 100MB)"
               >
                 📤
+              </button>
+              <button
+                type="button"
+                onClick={() => insertElement('uploadAudio')}
+                className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm"
+                title="Subir audio desde PC (mp3, wav, etc. max 100MB)"
+              >
+                🎵
               </button>
               <div className="w-px bg-gray-300 mx-1"></div>
               <button

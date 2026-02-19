@@ -316,6 +316,88 @@ router.post('/video/presign', verifyToken, requireAdmin, async (req, res) => {
   }
 });
 
+// POST /api/upload/image/presign - URL pre-firmada para subir imagen directamente a Spaces
+router.post('/image/presign', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { fileName: originalName, fileSize, fileType } = req.body;
+
+    if (!originalName) {
+      return res.status(400).json({ error: 'Se requiere el nombre del archivo' });
+    }
+
+    if (fileSize && fileSize > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'La imagen no puede superar los 5MB' });
+    }
+
+    const ext = path.extname(originalName).toLowerCase() || '.jpg';
+    const nameWithoutExt = path.basename(originalName, path.extname(originalName))
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .substring(0, 50);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const key = `uploads/${nameWithoutExt}-${uniqueSuffix}${ext}`;
+
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      ContentType: fileType || `image/${ext.slice(1)}`,
+      ACL: 'public-read',
+    });
+
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 }); // 5 min
+    const fileUrl = `https://${BUCKET_NAME}.nyc3.cdn.digitaloceanspaces.com/${key}`;
+
+    logSecurityEvent(req, 'IMAGE_PRESIGN', { filename: originalName, size: fileSize });
+
+    res.json({ success: true, uploadUrl, fileUrl, fileName: key });
+  } catch (error) {
+    console.error('Error al generar URL pre-firmada para imagen:', error);
+    res.status(500).json({ error: 'Error al generar URL de subida: ' + error.message });
+  }
+});
+
+// POST /api/upload/audio/presign - URL pre-firmada para subir audio directamente a Spaces
+router.post('/audio/presign', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { fileName: originalName, fileSize, fileType } = req.body;
+
+    if (!originalName) {
+      return res.status(400).json({ error: 'Se requiere el nombre del archivo' });
+    }
+
+    if (fileSize && fileSize > 100 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El audio no puede superar los 100MB' });
+    }
+
+    const ext = path.extname(originalName).toLowerCase() || '.mp3';
+    const nameWithoutExt = path.basename(originalName, path.extname(originalName))
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .substring(0, 50);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const key = `audio/${nameWithoutExt}-${uniqueSuffix}${ext}`;
+
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      ContentType: fileType || `audio/${ext.slice(1)}`,
+      ACL: 'public-read',
+    });
+
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 }); // 15 min
+    const fileUrl = `https://${BUCKET_NAME}.nyc3.cdn.digitaloceanspaces.com/${key}`;
+
+    logSecurityEvent(req, 'AUDIO_PRESIGN', { filename: originalName, size: fileSize });
+
+    res.json({ success: true, uploadUrl, fileUrl, fileName: key });
+  } catch (error) {
+    console.error('Error al generar URL pre-firmada para audio:', error);
+    res.status(500).json({ error: 'Error al generar URL de subida: ' + error.message });
+  }
+});
+
 // Error handler para multer
 router.use((error, _req, res, next) => {
   if (error instanceof multer.MulterError) {

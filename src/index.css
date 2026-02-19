@@ -348,6 +348,15 @@
     border-radius: 12px;
   }
 
+  article .audio-container {
+    margin: 1.5rem 0;
+  }
+
+  article .audio-container audio {
+    width: 100%;
+    border-radius: 8px;
+  }
+
   article video {
     width: 100%;
     max-width: 100%;
