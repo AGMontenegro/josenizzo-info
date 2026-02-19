@@ -138,17 +138,35 @@ function ArticleEditor() {
           }
 
           try {
+            // Convertir a WebP en el navegador (max 1200px, calidad 80%)
+            const webpBlob = await new Promise((resolve, reject) => {
+              const img = new Image();
+              img.onload = () => {
+                const maxWidth = 1200;
+                const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Error al convertir imagen')), 'image/webp', 0.8);
+              };
+              img.onerror = () => reject(new Error('Error al cargar la imagen'));
+              img.src = URL.createObjectURL(file);
+            });
+
+            const webpName = file.name.replace(/\.[^.]+$/, '.webp');
+
             const API_URL = import.meta.env.VITE_API_URL || '/api';
             const token = localStorage.getItem('token');
 
-            // Obtener URL pre-firmada (evita el límite del proxy de DigitalOcean)
+            // Obtener URL pre-firmada
             const presignRes = await fetch(`${API_URL}/upload/image/presign`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
               },
-              body: JSON.stringify({ fileName: file.name, fileSize: file.size, fileType: file.type }),
+              body: JSON.stringify({ fileName: webpName, fileSize: webpBlob.size, fileType: 'image/webp' }),
             });
 
             if (!presignRes.ok) {
@@ -158,11 +176,11 @@ function ArticleEditor() {
 
             const { uploadUrl, fileUrl } = await presignRes.json();
 
-            // Subir directamente a Spaces
+            // Subir WebP directamente a Spaces
             const uploadRes = await fetch(uploadUrl, {
               method: 'PUT',
-              headers: { 'Content-Type': file.type },
-              body: file,
+              headers: { 'Content-Type': 'image/webp' },
+              body: webpBlob,
             });
 
             if (!uploadRes.ok) {
