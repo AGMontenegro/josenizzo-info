@@ -138,38 +138,24 @@ function ArticleEditor() {
           }
 
           try {
+            const formDataUpload = new FormData();
+            formDataUpload.append('image', file);
+
             const API_URL = import.meta.env.VITE_API_URL || '/api';
             const token = localStorage.getItem('token');
-
-            // Obtener URL pre-firmada
-            const presignRes = await fetch(`${API_URL}/upload/image/presign`, {
+            const response = await fetch(`${API_URL}/upload`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify({ fileName: file.name, fileSize: file.size, fileType: file.type }),
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+              body: formDataUpload
             });
 
-            if (!presignRes.ok) {
-              const err = await presignRes.json();
-              throw new Error(err.error || 'Error al preparar la subida');
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(errorData.error || 'Error al subir la imagen');
             }
 
-            const { uploadUrl, fileUrl } = await presignRes.json();
-
-            // Subir directamente a Spaces
-            const uploadRes = await fetch(uploadUrl, {
-              method: 'PUT',
-              headers: { 'Content-Type': file.type },
-              body: file,
-            });
-
-            if (!uploadRes.ok) {
-              throw new Error(`Error al subir la imagen (HTTP ${uploadRes.status})`);
-            }
-
-            const imageUrl = fileUrl;
+            const data = await response.json();
+            const imageUrl = data.url;
 
             // Insertar la imagen en el contenido
             const currentContent = formData.content;
