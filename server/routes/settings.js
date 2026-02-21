@@ -1,46 +1,57 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import db from '../config/database.js';
 import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SETTINGS_FILE = path.join(__dirname, '..', 'data', 'settings.json');
 
-function readSettings() {
+// Crear tabla si no existe al iniciar
+async function initSettingsTable() {
   try {
-    if (!fs.existsSync(SETTINGS_FILE)) {
-      return { editorVideoUrl: '' };
-    }
-    return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf-8'));
-  } catch {
-    return { editorVideoUrl: '' };
+    await db.runAsync(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        key_name VARCHAR(100) PRIMARY KEY,
+        value TEXT NOT NULL DEFAULT '',
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+  } catch (err) {
+    console.error('Error creando tabla site_settings:', err.message);
   }
 }
-
-function writeSettings(data) {
-  const dir = path.dirname(SETTINGS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(SETTINGS_FILE, JSON.stringify(data, null, 2));
-}
+initSettingsTable();
 
 // GET /api/settings/editor-video - Público
-router.get('/editor-video', (_req, res) => {
-  const settings = readSettings();
-  res.json({ editorVideoUrl: settings.editorVideoUrl || '' });
+router.get('/editor-video', async (_req, res) => {
+  try {
+    const row = await db.getAsync(
+      'SELECT value FROM site_settings WHERE key_name = ?',
+      ['editor_video_url']
+    );
+    res.set('Cache-Control', 'no-store');
+    res.json({ editorVideoUrl: row?.value || '' });
+  } catch (err) {
+    console.error('Error leyendo setting:', err.message);
+    res.json({ editorVideoUrl: '' });
+  }
 });
 
 // PUT /api/settings/editor-video - Solo admin
-router.put('/editor-video', verifyToken, requireAdmin, (req, res) => {
+router.put('/editor-video', verifyToken, requireAdmin, async (req, res) => {
   const { editorVideoUrl } = req.body;
   if (typeof editorVideoUrl !== 'string') {
     return res.status(400).json({ error: 'URL inválida' });
   }
-  const settings = readSettings();
-  settings.editorVideoUrl = editorVideoUrl.trim();
-  writeSettings(settings);
-  res.json({ success: true, editorVideoUrl: settings.editorVideoUrl });
+  try {
+    await db.runAsync(
+      `INSERT INTO site_settings (key_name, value) VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE value = VALUES(value)`,
+      ['editor_video_url', editorVideoUrl.trim()]
+    );
+    res.json({ success: true, editorVideoUrl: editorVideoUrl.trim() });
+  } catch (err) {
+    console.error('Error guardando setting:', err.message);
+    res.status(500).json({ error: 'Error al guardar la configuración' });
+  }
 });
 
 export default router;
