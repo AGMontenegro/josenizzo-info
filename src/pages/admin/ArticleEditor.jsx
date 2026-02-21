@@ -179,7 +179,7 @@ function ArticleEditor() {
             // Subir WebP directamente a Spaces
             const uploadRes = await fetch(uploadUrl, {
               method: 'PUT',
-              headers: { 'Content-Type': 'image/webp' },
+              headers: { 'Content-Type': 'image/webp', 'x-amz-acl': 'public-read' },
               body: webpBlob,
             });
 
@@ -320,6 +320,7 @@ function ArticleEditor() {
               const xhr = new XMLHttpRequest();
               xhr.open('PUT', uploadUrl);
               xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+              xhr.setRequestHeader('x-amz-acl', 'public-read');
               xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
               xhr.onerror = () => reject(new Error('Error de red al subir el video'));
               xhr.send(file);
@@ -399,6 +400,7 @@ function ArticleEditor() {
               const xhr = new XMLHttpRequest();
               xhr.open('PUT', uploadUrl);
               xhr.setRequestHeader('Content-Type', file.type);
+              xhr.setRequestHeader('x-amz-acl', 'public-read');
               xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
               xhr.onerror = () => reject(new Error('Error de red al subir el audio'));
               xhr.send(file);
