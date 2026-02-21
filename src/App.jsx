@@ -22,6 +22,7 @@ import NewsletterSubscribers from './pages/admin/NewsletterSubscribers';
 import SendNewsletter from './pages/admin/SendNewsletter';
 import NewsletterStats from './pages/admin/NewsletterStats';
 import AnalyticsDashboard from './pages/admin/AnalyticsDashboard';
+import SiteSettings from './pages/admin/SiteSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationBanner from './components/NotificationBanner';
 
@@ -61,6 +62,7 @@ function App() {
         <Route path="/admin/newsletter/send" element={<ProtectedRoute><SendNewsletter /></ProtectedRoute>} />
         <Route path="/admin/newsletter/stats" element={<ProtectedRoute><NewsletterStats /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute><SiteSettings /></ProtectedRoute>} />
       </Routes>
     </Router>
     </AuthProvider>

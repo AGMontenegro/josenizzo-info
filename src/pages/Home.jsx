@@ -12,6 +12,7 @@ import { newsletterAPI, articlesAPI } from '../services/api';
 function Home() {
   const { articles: featuredArticles, loading: featuredLoading } = useFeaturedArticles(3);
   const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 26 });
+  const [editorVideoUrl, setEditorVideoUrl] = useState('');
   const { articles: trendingArticles, loading: trendingLoading } = useTrendingArticles(5);
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
@@ -105,6 +106,14 @@ function Home() {
       }, 5000);
     }
   };
+
+  // Cargar video de la sección Editor
+  useEffect(() => {
+    fetch('/api/settings/editor-video')
+      .then(r => r.json())
+      .then(data => setEditorVideoUrl(data.editorVideoUrl || ''))
+      .catch(() => {});
+  }, []);
 
   // Cargar 8 artículos adicionales (4 pares) al montar
   useEffect(() => {
@@ -357,7 +366,7 @@ function Home() {
 
           {/* Editor's Picks - Layout con columna de Sociedad */}
           {!latestLoading && latestArticles.length >= 14 && (
-            <section className="mb-0 mt-8 lg:-mt-20">
+            <section className="mb-0 mt-8">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
@@ -396,15 +405,38 @@ function Home() {
                       </div>
                     </div>
 
-                    {/* Columna derecha - Espacio para videos (2/3) */}
-                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 flex items-center justify-center md:col-span-2 min-h-[200px] md:min-h-0">
-                      <div className="text-center">
-                        <svg className="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-gray-400 font-medium text-sm">Espacio Videos</p>
-                      </div>
+                    {/* Columna derecha - Video Editor (2/3) */}
+                    <div className="md:col-span-2 min-h-[200px]">
+                      {editorVideoUrl ? (
+                        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                          {editorVideoUrl.includes('youtube.com/embed') ? (
+                            <iframe
+                              className="absolute top-0 left-0 w-full h-full"
+                              src={editorVideoUrl}
+                              title="Editor - Video"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              style={{ border: 'none' }}
+                            />
+                          ) : (
+                            <video
+                              className="absolute top-0 left-0 w-full h-full bg-black"
+                              src={editorVideoUrl}
+                              controls
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center h-full min-h-[200px]">
+                          <div className="text-center">
+                            <svg className="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-gray-400 font-medium text-sm">Espacio Videos</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

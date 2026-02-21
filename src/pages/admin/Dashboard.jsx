@@ -178,6 +178,15 @@ function Dashboard() {
             </svg>
             Analytics
           </Link>
+          <Link
+            to="/admin/settings"
+            className="px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.82V15.18a1 1 0 01-1.447.894L15 14M3 8h12v8H3a1 1 0 01-1-1V9a1 1 0 011-1z" />
+            </svg>
+            Video Editor
+          </Link>
         </div>
 
         {/* Recent Articles */}
