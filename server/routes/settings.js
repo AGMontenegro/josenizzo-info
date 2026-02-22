@@ -4,21 +4,20 @@ import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
-// Crear tabla si no existe al iniciar
-async function initSettingsTable() {
+async function ensureTable() {
   try {
     await db.runAsync(`
       CREATE TABLE IF NOT EXISTS site_settings (
         key_name VARCHAR(100) PRIMARY KEY,
-        value TEXT NOT NULL DEFAULT '',
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        value VARCHAR(2000) NOT NULL DEFAULT '',
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
   } catch (err) {
     console.error('Error creando tabla site_settings:', err.message);
   }
 }
-initSettingsTable();
+ensureTable();
 
 // GET /api/settings/editor-video - Público
 router.get('/editor-video', async (_req, res) => {
@@ -42,6 +41,7 @@ router.put('/editor-video', verifyToken, requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'URL inválida' });
   }
   try {
+    await ensureTable();
     await db.runAsync(
       `INSERT INTO site_settings (key_name, value) VALUES (?, ?)
        ON DUPLICATE KEY UPDATE value = VALUES(value)`,
@@ -50,7 +50,7 @@ router.put('/editor-video', verifyToken, requireAdmin, async (req, res) => {
     res.json({ success: true, editorVideoUrl: editorVideoUrl.trim() });
   } catch (err) {
     console.error('Error guardando setting:', err.message);
-    res.status(500).json({ error: 'Error al guardar la configuración' });
+    res.status(500).json({ error: 'Error al guardar: ' + err.message });
   }
 });
 
