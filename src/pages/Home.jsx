@@ -146,7 +146,7 @@ function Home() {
             {(featuredLoading || latestLoading) ? (
               <HomeSkeleton />
             ) : featuredArticles.length > 0 && latestArticles.length >= 6 && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:items-start">
                 {/* Columna IZQUIERDA - Layout horizontal con imagen central más grande */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
