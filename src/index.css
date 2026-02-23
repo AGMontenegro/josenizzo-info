@@ -85,12 +85,14 @@
 
   /* Imágenes de autor - limitar tamaño SOLO para fotos de autor específicas */
   article img[src*="Analia_photo"],
+  article img[src*="jninfo"],
   article img[src*="Jose_photo"],
   article img[src*="José_photo"],
   article img[src*="JoseNizzo"],
   article img[src*="José_Nizzo"],
   article img[src*="generation-04998e15"],
   article figure img[src*="Analia_photo"],
+  article figure img[src*="jninfo"],
   article figure img[src*="Jose_photo"],
   article figure img[src*="José_photo"],
   article figure img[src*="JoseNizzo"],
@@ -109,6 +111,7 @@
 
   /* Wrapper de foto de autor con figure - SOLO para fotos de autor */
   article figure:has(img[src*="Analia_photo"]),
+  article figure:has(img[src*="jninfo"]),
   article figure:has(img[src*="Jose_photo"]),
   article figure:has(img[src*="José_photo"]),
   article figure:has(img[src*="JoseNizzo"]),
@@ -124,6 +127,7 @@
 
   /* Firma de autor - texto que sigue a la foto - SOLO para fotos de autor */
   article figure:has(img[src*="Analia_photo"]) + p,
+  article figure:has(img[src*="jninfo"]) + p,
   article figure:has(img[src*="Jose_photo"]) + p,
   article figure:has(img[src*="José_photo"]) + p,
   article figure:has(img[src*="JoseNizzo"]) + p,
