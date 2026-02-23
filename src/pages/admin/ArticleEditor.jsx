@@ -610,7 +610,7 @@ function ArticleEditor() {
       authorName = 'Analía Montenegro';
       template = `<p>Primer párrafo introductorio del artículo...</p>
 
-<figure><a href="https://i0.wp.com/josenizzo.info/wp-content/uploads/2025/09/Analia_photo_JN.jpeg?ssl=1"><img src="https://i0.wp.com/josenizzo.info/wp-content/uploads/2025/09/Analia_photo_JN.jpeg?resize=688%2C840&#038;ssl=1" alt="" /></a></figure>
+<figure><img src="/logos/Analía_jninfo.jpeg" alt="Analía Montenegro" /></figure>
 
 <p>Por Analía Montenegro | josenizzo.info</p>
 
