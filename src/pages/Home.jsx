@@ -6,14 +6,13 @@ import HomeSkeleton from '../components/HomeSkeleton';
 import RoadStatusWidget from '../components/RoadStatusWidget';
 import BlurImage from '../components/BlurImage';
 import PremiumBadge from '../components/PremiumBadge';
-import { useFeaturedArticles, useArticles, useTrendingArticles, useArticlesByCategory } from '../hooks/useArticles';
+import { useFeaturedArticles, useArticles, useArticlesByCategory } from '../hooks/useArticles';
 import { newsletterAPI, articlesAPI } from '../services/api';
 
 function Home() {
   const { articles: featuredArticles, loading: featuredLoading } = useFeaturedArticles(3);
   const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 26 });
   const [editorVideoUrl, setEditorVideoUrl] = useState('');
-  const { articles: trendingArticles, loading: trendingLoading } = useTrendingArticles(5);
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
   const { articles: guerraEspiritualArticles, loading: guerraEspiritualLoading } = useArticlesByCategory('GUERRA_ESPIRITUAL', 2);
@@ -359,6 +358,42 @@ function Home() {
 
                   {/* Línea separadora más oscura */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+
+                  {/* NG Insights */}
+                  <div className="mt-8">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
+                      NG Insights
+                    </h3>
+                    {ngInsightsLoading ? (
+                      <LoadingSpinner className="py-10" />
+                    ) : ngInsightsArticles.length > 0 && (
+                      <div className="space-y-4">
+                        {ngInsightsArticles.slice(0, 2).map((article, index) => (
+                          <div key={article.id} className={`group ${index === 0 ? 'pb-4 border-b border-gray-200 dark:border-gray-800' : ''}`}>
+                            <Link to={`/articulo/${article.slug}`}>
+                              {article.image && (
+                                <div className="aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-2">
+                                  <BlurImage
+                                    src={article.image}
+                                    alt={article.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    blurData={article.image_blur}
+                                    loading="lazy"
+                                  />
+                                </div>
+                              )}
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-1">
+                                {article.title}
+                              </h3>
+                              <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
+                                {article.excerpt}
+                              </p>
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -847,41 +882,6 @@ function Home() {
                   {/* Línea separadora más oscura */}
                   <div className="mt-4 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
-                  {/* NG Insights - Solo visible en DESKTOP */}
-                  <div className="mt-8 hidden lg:block">
-                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
-                      NG Insights
-                    </h3>
-                    {ngInsightsLoading ? (
-                      <LoadingSpinner className="py-10" />
-                    ) : ngInsightsArticles.length > 0 && (
-                      <div className="space-y-4">
-                        {/* Primer artículo - Título + Extracto */}
-                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
-                          <Link to={`/articulo/${ngInsightsArticles[0].slug}`}>
-                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
-                              {ngInsightsArticles[0].title}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
-                              {ngInsightsArticles[0].excerpt}
-                            </p>
-                          </Link>
-                        </div>
-
-                        {/* Segundo artículo - Solo título */}
-                        {ngInsightsArticles.length >= 2 && (
-                          <div className="group">
-                            <Link to={`/articulo/${ngInsightsArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
-                                {ngInsightsArticles[1].title}
-                              </h3>
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
                   {/* Newsletter - estilo más minimalista */}
                   <div id="newsletter" className="border-t-2 border-gray-900 dark:border-gray-100 pt-4 scroll-mt-20">
                     <h3 className="text-base font-serif font-bold mb-3 text-gray-900 dark:text-gray-100">Newsletter Diario</h3>
@@ -1181,7 +1181,7 @@ function Home() {
                             Tu mensaje ha sido encriptado y enviado de forma segura.
                           </p>
                           <p className="text-xs text-gray-500 mt-2">
-                            Código: <span className="font-mono font-bold">#{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                            Código: <span className="font-mono font-bold">#{Math.random().toString(36).substring(2, 11).toUpperCase()}</span>
                           </p>
                         </div>
                       )}
