@@ -367,22 +367,21 @@ function Home() {
                     {ngInsightsLoading ? (
                       <LoadingSpinner className="py-10" />
                     ) : ngInsightsArticles.length > 0 && (
-                      <div className="space-y-4">
-                        {ngInsightsArticles.slice(0, 2).map((article, index) => (
-                          <div key={article.id} className={`group ${index === 0 ? 'pb-4 border-b border-gray-200 dark:border-gray-800' : ''}`}>
+                      <div className="grid grid-cols-2 gap-3 relative">
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700 -ml-[0.5px]"></div>
+                        {ngInsightsArticles.slice(0, 2).map((article) => (
+                          <div key={article.id} className="group">
                             <Link to={`/articulo/${article.slug}`}>
-                              {article.image && (
-                                <div className="aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-2">
-                                  <BlurImage
-                                    src={article.image}
-                                    alt={article.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    blurData={article.image_blur}
-                                    loading="lazy"
-                                  />
-                                </div>
-                              )}
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                              <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800 mb-2 rounded-sm">
+                                <BlurImage
+                                  src={article.image}
+                                  alt={article.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  blurData={article.image_blur}
+                                  loading="lazy"
+                                />
+                              </div>
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-tight text-sm">
                                 {article.title}
                               </h3>
                             </Link>
