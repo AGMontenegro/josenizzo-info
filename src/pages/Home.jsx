@@ -357,11 +357,11 @@ function Home() {
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+                  <div className="mt-4 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* NG Insights */}
-                  <div className="mt-8">
-                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-6">
+                  <div className="mt-4">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase mb-3">
                       NG Insights
                     </h3>
                     {ngInsightsLoading ? (
@@ -392,7 +392,7 @@ function Home() {
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+                  <div className="mt-4 border-t-2 border-gray-900 dark:border-gray-100"></div>
                 </div>
               </div>
             )}
