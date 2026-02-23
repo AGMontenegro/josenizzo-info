@@ -382,12 +382,9 @@ function Home() {
                                   />
                                 </div>
                               )}
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-1">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
                                 {article.title}
                               </h3>
-                              <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
-                                {article.excerpt}
-                              </p>
                             </Link>
                           </div>
                         ))}
@@ -404,7 +401,7 @@ function Home() {
 
           {/* Editor's Picks - Layout con columna de Sociedad */}
           {!latestLoading && latestArticles.length >= 14 && (
-            <section className="mb-0 mt-0">
+            <section className="mb-0">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
