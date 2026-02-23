@@ -13,7 +13,6 @@ function ArticleEditor() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [shareToSocial, setShareToSocial] = useState(false);
-  const [socialShareResult, setSocialShareResult] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
