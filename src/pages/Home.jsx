@@ -142,7 +142,7 @@ function Home() {
       <div className="bg-white dark:bg-gray-950 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-0">
           {/* Hero Section - Estilo NYT exacto */}
-          <section className="mb-16">
+          <section className="mb-0">
             {(featuredLoading || latestLoading) ? (
               <HomeSkeleton />
             ) : featuredArticles.length > 0 && latestArticles.length >= 6 && (
@@ -366,7 +366,7 @@ function Home() {
 
           {/* Editor's Picks - Layout con columna de Sociedad */}
           {!latestLoading && latestArticles.length >= 14 && (
-            <section className="mb-0 mt-8">
+            <section className="mb-0 mt-0">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
