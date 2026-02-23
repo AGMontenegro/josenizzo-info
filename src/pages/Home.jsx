@@ -394,6 +394,9 @@ function Home() {
                       </div>
                     )}
                   </div>
+
+                  {/* Línea separadora más oscura */}
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
                 </div>
               </div>
             )}
