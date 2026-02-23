@@ -56,11 +56,11 @@ function Header() {
             <Link to="/suscripcion" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Suscripción</Link>
             <span className="text-gray-300 dark:text-gray-700">|</span>
             {isAuthenticated ? (
-              <Link to="/perfil" className="hidden sm:inline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{user?.name || 'Mi cuenta'}</Link>
+              <Link to="/perfil" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{user?.name || 'Mi cuenta'}</Link>
             ) : (
-              <Link to="/login" className="hidden sm:inline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Iniciar sesión</Link>
+              <Link to="/login" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Ingresar</Link>
             )}
-            <span className="hidden sm:inline text-gray-300 dark:text-gray-700">|</span>
+            <span className="text-gray-300 dark:text-gray-700">|</span>
             {/* Dark mode toggle */}
             <button
               onClick={toggleTheme}

@@ -406,7 +406,7 @@ function Home() {
                     </div>
 
                     {/* Columna derecha - Video Editor (2/3) */}
-                    <div className="md:col-span-2 min-h-[200px]">
+                    <div className="md:col-span-2 min-h-[200px] md:pt-6">
                       {editorVideoUrl ? (
                         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                           {editorVideoUrl.includes('youtube.com/embed') ? (
