@@ -14,6 +14,7 @@ const DB_TYPE = process.env.DB_TYPE || 'sqlite';
 
 let db;
 let dbType = DB_TYPE;
+let dbReady = null; // Promise que resuelve cuando la DB está lista
 
 // Wrapper para unificar la interfaz de SQLite y MySQL
 class DatabaseWrapper {
@@ -329,38 +330,68 @@ async function initializeTables(db) {
   }
 }
 
-// Inicializar la base de datos
+// Inicializar la base de datos con reintentos
 async function initializeDatabase() {
-  try {
-    if (DB_TYPE === 'mysql') {
-      db = await initializeMySQL();
-    } else {
-      db = await initializeSQLite();
-    }
+  const maxRetries = 6;
+  const baseDelay = 5000; // 5 segundos base
 
-    await initializeTables(db);
-    return db;
-  } catch (error) {
-    console.error('❌ Error al inicializar base de datos:', error);
-    throw error;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (DB_TYPE === 'mysql') {
+        db = await initializeMySQL();
+      } else {
+        db = await initializeSQLite();
+      }
+
+      await initializeTables(db);
+      return db;
+    } catch (error) {
+      console.error(`❌ Error al inicializar base de datos (intento ${attempt}/${maxRetries}):`, error.message);
+
+      if (attempt < maxRetries) {
+        const delay = baseDelay * attempt; // 5s, 10s, 15s, 20s, 25s
+        console.log(`⏳ Reintentando conexión en ${delay / 1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        console.error('❌ No se pudo conectar a la base de datos después de todos los intentos.');
+        throw error;
+      }
+    }
   }
 }
 
-// Inicializar y exportar
-const dbPromise = initializeDatabase();
+// Obtener la instancia de DB, reintentando si la conexión anterior falló
+async function getDatabase() {
+  if (db) return db;
+  if (!dbReady) {
+    dbReady = initializeDatabase().catch(err => {
+      dbReady = null; // Permitir nuevo intento en la próxima llamada
+      throw err;
+    });
+  }
+  return dbReady;
+}
 
-export { dbPromise };
+// Iniciar conexión al arrancar
+dbReady = initializeDatabase().then(result => {
+  db = result;
+  return result;
+}).catch(err => {
+  dbReady = null;
+  console.error('❌ Fallo definitivo al conectar la base de datos:', err.message);
+});
+
 export default {
   async runAsync(...args) {
-    const database = await dbPromise;
+    const database = await getDatabase();
     return database.runAsync(...args);
   },
   async getAsync(...args) {
-    const database = await dbPromise;
+    const database = await getDatabase();
     return database.getAsync(...args);
   },
   async allAsync(...args) {
-    const database = await dbPromise;
+    const database = await getDatabase();
     return database.allAsync(...args);
   },
   getType() {
