@@ -560,7 +560,6 @@ function ArticleEditor() {
     e.preventDefault();
     setError('');
     setSaving(true);
-    setSocialShareResult(null);
 
     try {
       const token = localStorage.getItem('token');
@@ -577,7 +576,6 @@ function ArticleEditor() {
       if (shareToSocial && formData.published) {
         try {
           const shareResult = await articlesAPI.shareToSocialMedia(articleId, token);
-          setSocialShareResult(shareResult);
 
           if (shareResult.results?.facebook?.success) {
             alert('✅ Artículo guardado y publicado en Facebook!');
