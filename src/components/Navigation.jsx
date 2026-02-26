@@ -1,10 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { categories } from '../data/articles';
 import SearchBar from './SearchBar';
 
 function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const handleHomeClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume] = useState(0.8);
   const audioRef = useRef(null);
@@ -35,6 +43,7 @@ function Navigation() {
           <div className="flex items-center space-x-6">
             <Link
               to="/"
+              onClick={handleHomeClick}
               className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
             >
               Inicio
@@ -105,7 +114,7 @@ function Navigation() {
             <div className="space-y-1">
               <Link
                 to="/"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => { setIsMenuOpen(false); handleHomeClick(e); }}
                 className="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
                 Inicio

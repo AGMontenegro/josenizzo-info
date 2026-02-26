@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +6,14 @@ import { useAuth } from '../contexts/AuthContext';
 function Header() {
   const { dark, toggleTheme } = useTheme();
   const { isAuthenticated, user } = useAuth();
+  const location = useLocation();
+
+  const handleHomeClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume] = useState(0.8);
   const audioRef = useRef(null);
@@ -109,7 +117,7 @@ function Header() {
       <div className="bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto px-3 md:px-4">
           <div className="flex flex-col items-center justify-center py-4 md:py-8 border-b border-gray-100 dark:border-gray-800">
-            <Link to="/" className="flex flex-col items-center hover:opacity-90 transition-opacity">
+            <Link to="/" onClick={handleHomeClick} className="flex flex-col items-center hover:opacity-90 transition-opacity">
               <img
                 src="/logos/logo_jn.png"
                 alt="josenizzo.info - El diario de la Patria"
