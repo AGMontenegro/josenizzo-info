@@ -371,4 +371,24 @@
   article .twitter-tweet {
     margin: 1.5rem auto !important;
   }
+
+  /* Dark mode: override inline color styles in article content */
+  .dark article p,
+  .dark article li,
+  .dark article span,
+  .dark article h1,
+  .dark article h2,
+  .dark article h3,
+  .dark article h4,
+  .dark article td,
+  .dark article th,
+  .dark .prose p,
+  .dark .prose li,
+  .dark .prose span,
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4 {
+    color: inherit !important;
+  }
 }
