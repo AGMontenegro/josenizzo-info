@@ -20,11 +20,6 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: '/logos/logo_jn.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
             src: '/logos/logo512.png',
             sizes: '512x512',
             type: 'image/png'
