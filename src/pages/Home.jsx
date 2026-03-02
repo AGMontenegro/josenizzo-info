@@ -451,6 +451,22 @@ function Home() {
 
                   {/* Línea separadora más oscura */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+
+                  {/* Banner NG Group */}
+                  <div className="mt-8">
+                    <a href="https://www.nggroup.com.ar" target="_blank" rel="noopener noreferrer" className="block group">
+                      <div className="bg-gray-950 dark:bg-gray-900 border border-gray-800 p-6 flex flex-col items-center justify-center gap-4 min-h-[180px] hover:bg-gray-800 transition-colors duration-300">
+                        <img
+                          src="/logos/NGGroup.png"
+                          alt="NG Group"
+                          className="w-40 object-contain"
+                        />
+                        <p className="text-gray-400 text-xs tracking-widest uppercase text-center">
+                          Conocé el grupo empresarial
+                        </p>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               </div>
             )}
