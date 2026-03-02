@@ -299,72 +299,6 @@ function Home() {
                   {/* Línea separadora más oscura después de "Tenés un dato?" */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
-                  {/* Sección PLANETA EXTREMO */}
-                  <div className="mt-8">
-                    <div className="flex items-center gap-2 mb-6">
-                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
-                        Planeta Extremo
-                      </h3>
-                      <PremiumBadge small />
-                    </div>
-                    {planetaExtremoLoading ? (
-                      <LoadingSpinner className="py-10" />
-                    ) : planetaExtremoArticles.length > 0 ? (
-                      <div className="space-y-4">
-                        {/* Primer artículo - Título + Extracto + Imagen */}
-                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
-                          <Link to={`/articulo/${planetaExtremoArticles[0].slug}`}>
-                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
-                              {planetaExtremoArticles[0].title}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light mb-2">
-                              {planetaExtremoArticles[0].excerpt}
-                            </p>
-                            {planetaExtremoArticles[0].image && (
-                              <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
-                                <BlurImage
-                                  src={planetaExtremoArticles[0].image}
-                                  alt={planetaExtremoArticles[0].title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  blurData={planetaExtremoArticles[0].image_blur}
-                                  loading="lazy"
-                                />
-                              </div>
-                            )}
-                          </Link>
-                        </div>
-                        {/* Segundo artículo - Título + Imagen */}
-                        {planetaExtremoArticles.length >= 2 && (
-                          <div className="group">
-                            <Link to={`/articulo/${planetaExtremoArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-2">
-                                {planetaExtremoArticles[1].title}
-                              </h3>
-                              {planetaExtremoArticles[1].image && (
-                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
-                                  <BlurImage
-                                    src={planetaExtremoArticles[1].image}
-                                    alt={planetaExtremoArticles[1].title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    blurData={planetaExtremoArticles[1].image_blur}
-                                    loading="lazy"
-                                  />
-                                </div>
-                              )}
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
-                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible para suscripción</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Línea separadora final */}
-                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
-
                 </div>
 
                 {/* Columna DERECHA - Layout vertical con imágenes más pequeñas */}
@@ -450,6 +384,70 @@ function Home() {
                   </div>
 
                   {/* Línea separadora más oscura */}
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+
+                  {/* Sección PLANETA EXTREMO */}
+                  <div className="mt-8">
+                    <div className="flex items-center gap-2 mb-6">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
+                        Planeta Extremo
+                      </h3>
+                      <PremiumBadge small />
+                    </div>
+                    {planetaExtremoLoading ? (
+                      <LoadingSpinner className="py-10" />
+                    ) : planetaExtremoArticles.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
+                          <Link to={`/articulo/${planetaExtremoArticles[0].slug}`}>
+                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                              {planetaExtremoArticles[0].title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light mb-2">
+                              {planetaExtremoArticles[0].excerpt}
+                            </p>
+                            {planetaExtremoArticles[0].image && (
+                              <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                <BlurImage
+                                  src={planetaExtremoArticles[0].image}
+                                  alt={planetaExtremoArticles[0].title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  blurData={planetaExtremoArticles[0].image_blur}
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </div>
+                        {planetaExtremoArticles.length >= 2 && (
+                          <div className="group">
+                            <Link to={`/articulo/${planetaExtremoArticles[1].slug}`}>
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-2">
+                                {planetaExtremoArticles[1].title}
+                              </h3>
+                              {planetaExtremoArticles[1].image && (
+                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                  <BlurImage
+                                    src={planetaExtremoArticles[1].image}
+                                    alt={planetaExtremoArticles[1].title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    blurData={planetaExtremoArticles[1].image_blur}
+                                    loading="lazy"
+                                  />
+                                </div>
+                              )}
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
+                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible para suscripción</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Línea separadora final */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
                 </div>
               </div>
@@ -842,7 +840,7 @@ function Home() {
                 </div>
 
                 {/* Columna derecha - Artículos */}
-                <div className="lg:col-span-4 lg:pt-6">
+                <div className="lg:col-span-4">
                   <div className="space-y-5">
                     {/* Primer artículo - Título + Imagen */}
                     <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
