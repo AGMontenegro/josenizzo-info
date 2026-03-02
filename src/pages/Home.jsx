@@ -273,7 +273,7 @@ function Home() {
                       </div>
                     ) : (
                       <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
-                        <p className="text-gray-400 font-medium text-sm">Próximamente</p>
+                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible para suscripción</p>
                       </div>
                     )}
                   </div>
