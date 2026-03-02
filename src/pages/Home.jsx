@@ -16,6 +16,7 @@ function Home() {
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
   const { articles: guerraEspiritualArticles, loading: guerraEspiritualLoading } = useArticlesByCategory('GUERRA_ESPIRITUAL', 2);
+  const { articles: planetaExtremoArticles, loading: planetaExtremoLoading } = useArticlesByCategory('PLANETA_EXTREMO', 2);
   const [moreArticles, setMoreArticles] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showSecureModal, setShowSecureModal] = useState(false);
@@ -225,25 +226,47 @@ function Home() {
                       <LoadingSpinner className="py-10" />
                     ) : guerraEspiritualArticles.length > 0 ? (
                       <div className="space-y-4">
-                        {/* Primer artículo - Título + Extracto */}
+                        {/* Primer artículo - Título + Extracto + Imagen */}
                         <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
                           <Link to={`/articulo/${guerraEspiritualArticles[0].slug}`}>
                             <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
                               {guerraEspiritualArticles[0].title}
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light mb-2">
                               {guerraEspiritualArticles[0].excerpt}
                             </p>
+                            {guerraEspiritualArticles[0].image && (
+                              <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                <BlurImage
+                                  src={guerraEspiritualArticles[0].image}
+                                  alt={guerraEspiritualArticles[0].title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  blurData={guerraEspiritualArticles[0].image_blur}
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
                           </Link>
                         </div>
 
-                        {/* Segundo artículo - Solo título */}
+                        {/* Segundo artículo - Título + Imagen */}
                         {guerraEspiritualArticles.length >= 2 && (
                           <div className="group">
                             <Link to={`/articulo/${guerraEspiritualArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-2">
                                 {guerraEspiritualArticles[1].title}
                               </h3>
+                              {guerraEspiritualArticles[1].image && (
+                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                  <BlurImage
+                                    src={guerraEspiritualArticles[1].image}
+                                    alt={guerraEspiritualArticles[1].title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    blurData={guerraEspiritualArticles[1].image_blur}
+                                    loading="lazy"
+                                  />
+                                </div>
+                              )}
                             </Link>
                           </div>
                         )}
@@ -274,6 +297,72 @@ function Home() {
                   </button>
 
                   {/* Línea separadora más oscura después de "Tenés un dato?" */}
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+
+                  {/* Sección PLANETA EXTREMO */}
+                  <div className="mt-8">
+                    <div className="flex items-center gap-2 mb-6">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
+                        Planeta Extremo
+                      </h3>
+                      <PremiumBadge small />
+                    </div>
+                    {planetaExtremoLoading ? (
+                      <LoadingSpinner className="py-10" />
+                    ) : planetaExtremoArticles.length > 0 ? (
+                      <div className="space-y-4">
+                        {/* Primer artículo - Título + Extracto + Imagen */}
+                        <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
+                          <Link to={`/articulo/${planetaExtremoArticles[0].slug}`}>
+                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                              {planetaExtremoArticles[0].title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light mb-2">
+                              {planetaExtremoArticles[0].excerpt}
+                            </p>
+                            {planetaExtremoArticles[0].image && (
+                              <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                <BlurImage
+                                  src={planetaExtremoArticles[0].image}
+                                  alt={planetaExtremoArticles[0].title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  blurData={planetaExtremoArticles[0].image_blur}
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </div>
+                        {/* Segundo artículo - Título + Imagen */}
+                        {planetaExtremoArticles.length >= 2 && (
+                          <div className="group">
+                            <Link to={`/articulo/${planetaExtremoArticles[1].slug}`}>
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-2">
+                                {planetaExtremoArticles[1].title}
+                              </h3>
+                              {planetaExtremoArticles[1].image && (
+                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                  <BlurImage
+                                    src={planetaExtremoArticles[1].image}
+                                    alt={planetaExtremoArticles[1].title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    blurData={planetaExtremoArticles[1].image_blur}
+                                    loading="lazy"
+                                  />
+                                </div>
+                              )}
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
+                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible para suscripción</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Línea separadora final */}
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                 </div>
@@ -369,7 +458,7 @@ function Home() {
 
           {/* Editor's Picks - Layout con columna de Sociedad */}
           {!latestLoading && latestArticles.length >= 14 && (
-            <section className="mb-0">
+            <section className="mt-8 mb-0">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
@@ -709,8 +798,9 @@ function Home() {
                                 <div className="space-y-0">
                                   {Array.from({ length: Math.ceil(moreArticles.length / 2) }, (_, i) => {
                                     const pair = moreArticles.slice(i * 2, i * 2 + 2);
+                                    const isLast = i === Math.ceil(moreArticles.length / 2) - 1;
                                     return (
-                                      <div key={i} className={`grid grid-cols-2 gap-6 py-6 border-b border-gray-200 dark:border-gray-800 relative ${i === 0 ? 'pt-0' : ''}`}>
+                                      <div key={i} className={`grid grid-cols-2 gap-6 py-6 relative ${i === 0 ? 'pt-0' : ''} ${isLast ? '' : 'border-b border-gray-200 dark:border-gray-800'}`}>
                                         <div className="absolute left-1/2 top-0 bottom-6 w-px bg-gray-200 dark:bg-gray-700 -ml-[0.5px]"></div>
                                         {pair.map((article) => (
                                           <Link key={article.id} to={`/articulo/${article.slug}`} className="group block">
@@ -738,8 +828,8 @@ function Home() {
                               )}
                             </div>
 
-                            {/* Línea separadora gruesa después de Más Noticias */}
-                            <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
+                            {/* Línea separadora gruesa después de Más Noticias - solo desktop */}
+                            <div className="hidden md:block mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                             {/* Banner publicitario horizontal - solo desktop */}
                             <div className="hidden md:flex mt-8 bg-gray-50 border border-gray-200 p-6 text-center min-h-[250px] flex-col items-center justify-center">
