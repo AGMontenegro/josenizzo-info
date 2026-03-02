@@ -163,6 +163,7 @@ function ArticleDetail() {
               <ZenMode>
                 <div
                   className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-display prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto prose-img:mx-auto prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-semibold prose-ul:my-6 prose-ol:my-6 [&_img]:max-w-full [&_img]:h-auto [&_img]:mx-auto [&_img]:block [&_img]:my-6"
+                  itemProp="articleBody"
                   dangerouslySetInnerHTML={{ __html: article.content }}
                 />
               </ZenMode>
