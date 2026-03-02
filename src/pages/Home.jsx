@@ -462,7 +462,7 @@ function Home() {
                           className="w-40 object-contain"
                         />
                         <p className="text-gray-400 text-xs tracking-widest uppercase text-center">
-                          Conocé el grupo empresarial
+                          Conocé nuestra consultora
                         </p>
                       </div>
                     </a>
