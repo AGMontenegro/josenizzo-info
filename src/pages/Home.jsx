@@ -842,7 +842,7 @@ function Home() {
                 </div>
 
                 {/* Columna derecha - Artículos */}
-                <div className="lg:col-span-4">
+                <div className="lg:col-span-4 lg:pt-6">
                   <div className="space-y-5">
                     {/* Primer artículo - Título + Imagen */}
                     <div className="group pb-5 border-b border-gray-200 dark:border-gray-800">
