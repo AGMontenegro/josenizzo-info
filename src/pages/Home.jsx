@@ -333,20 +333,12 @@ function Home() {
                     {ngInsightsLoading ? (
                       <LoadingSpinner className="py-10" />
                     ) : ngInsightsArticles.length > 0 && (
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3 relative">
                         {ngInsightsArticles.slice(0, 2).map((article, index) => (
                           <div key={article.id} className="group">
                             <Link to={`/articulo/${article.slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors leading-tight text-base mb-1">
-                                {article.title}
-                              </h3>
-                              {index === 0 && article.excerpt && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-2">
-                                  {article.excerpt}
-                                </p>
-                              )}
                               {article.image && (
-                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mt-2">
+                                <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-2">
                                   <BlurImage
                                     src={article.image}
                                     alt={article.title}
@@ -356,16 +348,20 @@ function Home() {
                                   />
                                 </div>
                               )}
+                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors leading-tight text-sm">
+                                {article.title}
+                              </h3>
                             </Link>
-                            {index === 0 && <div className="mt-4 border-t border-gray-200 dark:border-gray-700"></div>}
                           </div>
                         ))}
+                        {/* Separador vertical entre columnas */}
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700 -translate-x-1/2"></div>
                       </div>
                     )}
                   </div>
 
                   {/* Línea separadora más oscura */}
-                  <div className="mt-4 border-t-2 border-gray-900 dark:border-gray-100"></div>
+                  <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
                 </div>
               </div>
             )}
