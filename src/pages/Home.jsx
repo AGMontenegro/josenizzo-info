@@ -458,7 +458,7 @@ function Home() {
 
           {/* Editor's Picks - Layout con columna de Sociedad */}
           {!latestLoading && latestArticles.length >= 14 && (
-            <section className="mt-8 mb-0">
+            <section className="mb-0">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Columna izquierda - Artículos verticales (mismo ancho que Hero izquierda) */}
                 <div className="lg:col-span-8 lg:border-r border-gray-200 dark:border-gray-800 lg:pr-8">
