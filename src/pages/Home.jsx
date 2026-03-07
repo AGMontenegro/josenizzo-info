@@ -11,7 +11,8 @@ import { newsletterAPI, articlesAPI } from '../services/api';
 
 function Home() {
   const { articles: featuredArticles, loading: featuredLoading } = useFeaturedArticles(3);
-  const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 26 });
+  const { articles: latestArticles, loading: latestLoading } = useArticles({ limit: 23 });
+  const { articles: culturaArticles } = useArticlesByCategory('CULTURA', 3);
   const [editorVideoUrl, setEditorVideoUrl] = useState('');
   const { articles: bienestarArticles } = useArticlesByCategory('DESAFIO_BIENESTAR', 1);
   const { articles: ngInsightsArticles, loading: ngInsightsLoading } = useArticlesByCategory('NG_INSIGHTS', 2);
@@ -733,7 +734,7 @@ function Home() {
                           </>
                         )}
 
-                        {latestArticles.length > 25 && (
+                        {culturaArticles.length > 0 && (
                           <>
                             {/* Línea separadora gruesa */}
                             <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
@@ -744,59 +745,28 @@ function Home() {
                                 Cultura
                               </h3>
                               <div className="grid grid-cols-3 gap-6 divide-x divide-gray-200 dark:divide-gray-800">
-                                {/* Artículo 1 */}
-                                <Link to={`/articulo/${latestArticles[23].slug}`} className="group block pr-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
-                                    <img
-                                      src={latestArticles[23].image}
-                                      alt={latestArticles[23].title}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                      loading="lazy"
-                                    />
-                                  </div>
-                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
-                                    {latestArticles[23].title}
-                                  </h3>
-                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
-                                    {latestArticles[23].excerpt}
-                                  </p>
-                                </Link>
-
-                                {/* Artículo 2 */}
-                                <Link to={`/articulo/${latestArticles[24].slug}`} className="group block px-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
-                                    <img
-                                      src={latestArticles[24].image}
-                                      alt={latestArticles[24].title}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                      loading="lazy"
-                                    />
-                                  </div>
-                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
-                                    {latestArticles[24].title}
-                                  </h3>
-                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
-                                    {latestArticles[24].excerpt}
-                                  </p>
-                                </Link>
-
-                                {/* Artículo 3 */}
-                                <Link to={`/articulo/${latestArticles[25].slug}`} className="group block pl-3">
-                                  <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
-                                    <img
-                                      src={latestArticles[25].image}
-                                      alt={latestArticles[25].title}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                      loading="lazy"
-                                    />
-                                  </div>
-                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
-                                    {latestArticles[25].title}
-                                  </h3>
-                                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
-                                    {latestArticles[25].excerpt}
-                                  </p>
-                                </Link>
+                                {culturaArticles.map((article, index) => (
+                                  <Link
+                                    key={article.id}
+                                    to={`/articulo/${article.slug}`}
+                                    className={`group block ${index === 0 ? 'pr-3' : index === 1 ? 'px-3' : 'pl-3'}`}
+                                  >
+                                    <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm mb-3">
+                                      <img
+                                        src={article.image}
+                                        alt={article.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                      />
+                                    </div>
+                                    <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-snug text-sm mb-2">
+                                      {article.title}
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 leading-relaxed font-light">
+                                      {article.excerpt}
+                                    </p>
+                                  </Link>
+                                ))}
                               </div>
                             </div>
 
