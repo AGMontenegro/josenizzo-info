@@ -26,9 +26,12 @@ function SendNewsletter() {
 
       // Cargar stats de suscriptores
       const API_URL = import.meta.env.VITE_API_URL || '/api';
-      const response = await fetch(`${API_URL}/newsletter/subscribers`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/newsletter/subscribers`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const subscribersData = await response.json();
-      setStats(subscribersData.stats);
+      setStats(subscribersData.stats || { total: 0, active: 0 });
 
       // Cargar templates disponibles
       const templatesResponse = await fetch(`${API_URL}/newsletter/templates`);
@@ -64,10 +67,12 @@ function SendNewsletter() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/newsletter/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           articleIds: selectedArticles,

@@ -13,9 +13,15 @@ function NewsletterStats() {
     try {
       setLoading(true);
       const API_URL = import.meta.env.VITE_API_URL || '/api';
-      const response = await fetch(`${API_URL}/newsletter/stats`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/newsletter/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) {
+        throw new Error('Error al cargar estadísticas');
+      }
       const data = await response.json();
-      setStats(data.sends);
+      setStats(data.sends || []);
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
