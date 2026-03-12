@@ -140,6 +140,11 @@ export async function openGraphMiddleware(req, res, next) {
     return next();
   }
 
+  // Saltar requests de assets (JS, CSS, imágenes, fuentes, etc.)
+  if (/\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|map|json|xml|txt)$/i.test(req.path)) {
+    return next();
+  }
+
   try {
     let ogTags = '';
     let pageTitle = `${SITE_NAME} - El diario de la Patria`;

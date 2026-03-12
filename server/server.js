@@ -145,6 +145,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Servir archivos estáticos (para imágenes subidas)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '7d' }));
 
+// Open Graph: debe ir ANTES de express.static para interceptar crawlers en la homepage
+app.use(openGraphMiddleware);
+
 // Servir el frontend compilado (dist) en producción
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath, { maxAge: '1y', immutable: true }));
@@ -210,9 +213,6 @@ app.use((err, req, res, _next) => {
     message: process.env.NODE_ENV === 'development' ? err.message : 'Algo salió mal'
   });
 });
-
-// Open Graph: inyectar meta tags para crawlers de redes sociales
-app.use(openGraphMiddleware);
 
 // Todas las demás rutas sirven el frontend (SPA)
 app.use((_req, res) => {
