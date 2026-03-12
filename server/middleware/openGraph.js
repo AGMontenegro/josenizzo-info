@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const SITE_URL = 'https://josenizzo.info';
 const SITE_NAME = 'josenizzo.info';
-const DEFAULT_IMAGE = `${SITE_URL}/logos/JN_fondo_negro.jpeg`;
+const DEFAULT_IMAGE = `${SITE_URL}/logos/logo512.png`;
 const DEFAULT_DESCRIPTION = 'Noticias de última hora, análisis y cobertura en profundidad de política, economía, deportes y más.';
 
 // User agents de crawlers de redes sociales
