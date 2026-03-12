@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const SITE_URL = 'https://josenizzo.info';
 const SITE_NAME = 'josenizzo.info';
-const DEFAULT_IMAGE = `${SITE_URL}/vite.svg`;
+const DEFAULT_IMAGE = `${SITE_URL}/logos/logo512.png`;
 const DEFAULT_DESCRIPTION = 'Noticias de última hora, análisis y cobertura en profundidad de política, economía, deportes y más.';
 
 // User agents de crawlers de redes sociales
@@ -164,6 +164,9 @@ export async function openGraphMiddleware(req, res, next) {
     // Inyectar las meta tags en el HTML
     let html = getHtmlTemplate();
     html = html.replace('<title>josenizzo.info - El diario de la Patria</title>', `<title>${escapeHtml(pageTitle)}</title>`);
+    // Eliminar OG tags estáticos del template para evitar duplicados
+    html = html.replace(/<meta\s+property="og:[^"]*"[^/]*\/>/gi, '');
+    html = html.replace(/<meta\s+name="twitter:[^"]*"[^/]*\/>/gi, '');
     html = html.replace('</head>', `${ogTags}\n  </head>`);
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
