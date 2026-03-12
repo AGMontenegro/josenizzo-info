@@ -17,7 +17,7 @@ function SEO({
   const siteUrl = 'https://josenizzo.info';
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
   const defaultDescription = 'Portal de noticias y análisis de actualidad en Argentina y el mundo';
-  const defaultImage = `${siteUrl}/logos/josenizzo-og.png`;
+  const defaultImage = `${siteUrl}/logos/logo512.png`;
 
   useEffect(() => {
     // JSON-LD Structured Data para Google News
@@ -44,7 +44,7 @@ function SEO({
           name: siteTitle,
           logo: {
             '@type': 'ImageObject',
-            url: `${siteUrl}/logos/josenizzo-logo.png`
+            url: `${siteUrl}/logos/logo512.png`
           }
         },
         mainEntityOfPage: {
@@ -84,7 +84,7 @@ function SEO({
             url: siteUrl,
             logo: {
               '@type': 'ImageObject',
-              url: `${siteUrl}/logos/josenizzo-logo.png`
+              url: `${siteUrl}/logos/logo512.png`
             },
             sameAs: [
               'https://twitter.com/josenizzo',
