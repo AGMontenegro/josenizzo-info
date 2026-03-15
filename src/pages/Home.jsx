@@ -621,8 +621,11 @@ function Home() {
                     <div className="mt-6">
                       <video
                         src="/videos/Promo_ Plataf.mp4"
-                        controls
+                        autoPlay
+                        muted
+                        loop
                         playsInline
+                        controls
                         className="w-full"
                       />
                     </div>
