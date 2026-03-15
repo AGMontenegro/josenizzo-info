@@ -131,9 +131,18 @@ router.get('/news', async (_req, res) => {
       `SELECT slug, title, created_at, category
        FROM articles
        WHERE published = 1
-         AND created_at >= datetime('now', '-2 days')
+         AND created_at >= DATE_SUB(NOW(), INTERVAL 2 DAY)
        ORDER BY created_at DESC
        LIMIT 1000`
+    ).catch(() =>
+      db.allAsync(
+        `SELECT slug, title, created_at, category
+         FROM articles
+         WHERE published = 1
+           AND created_at >= datetime('now', '-2 days')
+         ORDER BY created_at DESC
+         LIMIT 1000`
+      )
     );
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
