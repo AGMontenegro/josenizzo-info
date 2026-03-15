@@ -469,15 +469,6 @@ function Home() {
                     </a>
                   </div>
 
-                  {/* Video Plataforma Lo Nuestro */}
-                  <div className="mt-6">
-                    <video
-                      src="/videos/Promo_ Plataf.mp4"
-                      controls
-                      playsInline
-                      className="w-full"
-                    />
-                  </div>
                 </div>
               </div>
             )}
@@ -625,6 +616,16 @@ function Home() {
                         </div>
                       </div>
                     </a>
+
+                    {/* Video Plataforma Lo Nuestro */}
+                    <div className="mt-6">
+                      <video
+                        src="/videos/Promo_ Plataf.mp4"
+                        controls
+                        playsInline
+                        className="w-full"
+                      />
+                    </div>
 
                     {/* Línea separadora gruesa debajo */}
                     <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
