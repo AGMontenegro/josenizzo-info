@@ -170,7 +170,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/amp/articulo', ampRoutes);
 
 // Rutas SEO (sitemap, robots.txt)
-app.use('/sitemap.xml', sitemapRoutes);
+app.use('/sitemap.xml', (req, _res, next) => { req.url = '/'; next(); }, sitemapRoutes);
 app.use('/news-sitemap.xml', (req, _res, next) => { req.url = '/news'; next(); }, sitemapRoutes);
 app.use('/robots.txt', (req, _res, next) => { req.url = '/robots'; next(); }, sitemapRoutes);
 app.use('/feed.xml', (req, _res, next) => { req.url = '/feed'; next(); }, sitemapRoutes);
