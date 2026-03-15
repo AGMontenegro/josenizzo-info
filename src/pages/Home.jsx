@@ -591,43 +591,46 @@ function Home() {
                     {/* Línea separadora gruesa */}
                     <div className="border-t-2 border-gray-900 dark:border-gray-100"></div>
 
-                    <a
-                      href="https://www.lonuestro.com.ar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block group mt-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-4 -mx-4 rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <img
-                          src="/logos/logo_lonuestro_tv.webp"
-                          alt="Lo Nuestro TV"
-                          className="w-24 h-24 rounded-lg shadow-sm object-cover"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Lo Nuestro TV</span>
-                            <svg className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
+                    <div className="mt-8 flex gap-4 items-start">
+                      {/* Logo + texto como link */}
+                      <a
+                        href="https://www.lonuestro.com.ar"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 group flex flex-col gap-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors p-3 -mx-3 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src="/logos/logo_lonuestro_tv.webp"
+                            alt="Lo Nuestro TV"
+                            className="w-16 h-16 rounded-lg shadow-sm object-cover flex-shrink-0"
+                          />
+                          <div>
+                            <div className="flex items-center gap-1 mb-1">
+                              <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Lo Nuestro TV</span>
+                              <svg className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                              ¡La TV que querés ver! Contenido 100% gratuito y entretenimiento sin límites
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-600 font-light leading-relaxed">
-                            ¡La TV que querés ver! Contenido 100% gratuito y entretenimiento sin límites
-                          </p>
                         </div>
-                      </div>
-                    </a>
+                      </a>
 
-                    {/* Video Plataforma Lo Nuestro */}
-                    <div className="mt-6">
-                      <video
-                        src="/videos/Promo_ Plataf.mp4"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        controls
-                        className="w-full"
-                      />
+                      {/* Video vertical */}
+                      <div className="w-28 flex-shrink-0">
+                        <video
+                          src="/videos/Promo_ Plataf.mp4"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          controls
+                          className="w-full rounded-lg"
+                        />
+                      </div>
                     </div>
 
                     {/* Línea separadora gruesa debajo */}
