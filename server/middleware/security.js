@@ -450,6 +450,33 @@ export function secureCompare(a, b) {
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
+// ========== SUSPICIOUS ROUTES BLOCKING ==========
+
+const SUSPICIOUS_PATHS = [
+  /^\/wp-admin/i, /^\/wp-login/i, /^\/wp-content/i, /^\/wordpress/i,
+  /^\/phpmyadmin/i, /^\/pma/i, /^\/mysql/i, /^\/adminer/i,
+  /^\/\.env/i, /^\/\.git/i, /^\/\.htaccess/i, /^\/\.well-known\/acme/i,
+  /^\/config\./i, /^\/configuration\./i, /^\/setup\./i,
+  /^\/admin\.php/i, /^\/login\.php/i, /^\/index\.php/i,
+  /^\/shell/i, /^\/cmd/i, /^\/c99/i, /^\/r57/i,
+  /^\/cgi-bin/i, /^\/xmlrpc\.php/i, /^\/wlwmanifest/i,
+  /^\/boaform/i, /^\/telescope/i, /^\/actuator/i,
+  /\/etc\/passwd/i, /\/etc\/shadow/i, /\/proc\/self/i,
+];
+
+/**
+ * Block known attack paths silently
+ */
+export function blockSuspiciousRoutes(req, res, next) {
+  const path = req.path;
+  if (SUSPICIOUS_PATHS.some(pattern => pattern.test(path))) {
+    logSecurityEvent(req, 'SUSPICIOUS_ROUTE_BLOCKED');
+    trackSuspiciousActivity(req.ip || 'unknown');
+    return res.status(404).end();
+  }
+  next();
+}
+
 // ========== EXPORT COMBINED MIDDLEWARE ==========
 
 /**
@@ -458,6 +485,7 @@ export function secureCompare(a, b) {
 export function applySecurityMiddleware(app) {
   app.use(checkBlockedIP);
   app.use(securityHeaders);
+  app.use(blockSuspiciousRoutes);
   app.use(sqlInjectionCheck);
   // sanitizeBody is applied selectively to non-article routes
 }

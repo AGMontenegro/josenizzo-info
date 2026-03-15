@@ -4,6 +4,21 @@ import { verifyToken, requireAdmin } from './auth.js';
 
 const router = express.Router();
 
+const BOT_PATTERNS = [
+  /googlebot/i, /bingbot/i, /slurp/i, /duckduckbot/i, /baiduspider/i,
+  /yandexbot/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i,
+  /whatsapp/i, /telegrambot/i, /applebot/i, /semrushbot/i, /ahrefsbot/i,
+  /mj12bot/i, /dotbot/i, /petalbot/i, /bytespider/i, /gptbot/i,
+  /claudebot/i, /anthropic/i, /scrapy/i, /python-requests/i, /curl\//i,
+  /wget\//i, /libwww/i, /jakarta/i, /java\//i, /go-http/i, /httpclient/i,
+  /nikto/i, /sqlmap/i, /nessus/i, /nmap/i, /masscan/i, /zgrab/i,
+];
+
+function isBot(userAgent) {
+  if (!userAgent) return true;
+  return BOT_PATTERNS.some(pattern => pattern.test(userAgent));
+}
+
 // POST /api/analytics/track - Registrar pageview
 router.post('/track', async (req, res) => {
   try {
@@ -12,6 +27,11 @@ router.post('/track', async (req, res) => {
 
     const ip = req.ip || req.connection?.remoteAddress || '';
     const userAgent = req.get('User-Agent') || '';
+
+    // No registrar bots
+    if (isBot(userAgent)) {
+      return res.json({ success: true, skipped: true });
+    }
 
     await db.runAsync(
       'INSERT INTO page_views (path, referrer, article_id, ip_hash, user_agent, duration) VALUES (?, ?, ?, ?, ?, ?)',
