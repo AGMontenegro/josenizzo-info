@@ -1,37 +1,28 @@
-import express from 'express';
 import db from '../config/database.js';
 
-const router = express.Router();
+const SITE_URL = 'https://josenizzo.info';
 
-// GET /sitemap.xml - Sitemap dinámico para SEO
-router.get('/', async (_req, res) => {
+// GET /sitemap.xml
+export async function handleSitemap(_req, res) {
   try {
-    const siteUrl = 'https://josenizzo.info';
-
-    // Obtener todos los artículos publicados
     const articles = await db.allAsync(
       'SELECT slug, updated_at, created_at, category FROM articles WHERE published = 1 ORDER BY created_at DESC'
     );
-
-    // Obtener categorías únicas
     const categories = await db.allAsync(
       'SELECT DISTINCT category FROM articles WHERE published = 1 AND category IS NOT NULL'
     );
 
-    // Generar XML del sitemap
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
     xml += '        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"\n';
     xml += '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
 
-    // Página principal
     xml += `  <url>
-    <loc>${siteUrl}/</loc>
+    <loc>${SITE_URL}/</loc>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>\n`;
 
-    // Páginas estáticas
     const staticPages = [
       { path: '/contacto', priority: '0.5', changefreq: 'monthly' },
       { path: '/privacidad', priority: '0.3', changefreq: 'yearly' },
@@ -40,29 +31,25 @@ router.get('/', async (_req, res) => {
 
     for (const page of staticPages) {
       xml += `  <url>
-    <loc>${siteUrl}${page.path}</loc>
+    <loc>${SITE_URL}${page.path}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>\n`;
     }
 
-    // Páginas de categorías
     for (const cat of categories) {
       if (cat.category) {
         xml += `  <url>
-    <loc>${siteUrl}/categoria/${cat.category.toLowerCase()}</loc>
+    <loc>${SITE_URL}/categoria/${cat.category.toLowerCase()}</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>\n`;
       }
     }
 
-    // Artículos
     for (const article of articles) {
       const lastmod = article.updated_at || article.created_at;
       const formattedDate = new Date(lastmod).toISOString().split('T')[0];
-
-      // Determinar prioridad basada en antigüedad
       const articleDate = new Date(article.created_at);
       const daysSincePublished = (Date.now() - articleDate.getTime()) / (1000 * 60 * 60 * 24);
       let priority = '0.6';
@@ -71,7 +58,7 @@ router.get('/', async (_req, res) => {
       else if (daysSincePublished < 30) priority = '0.7';
 
       xml += `  <url>
-    <loc>${siteUrl}/articulo/${article.slug}</loc>
+    <loc>${SITE_URL}/articulo/${article.slug}</loc>
     <lastmod>${formattedDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${priority}</priority>
@@ -79,54 +66,18 @@ router.get('/', async (_req, res) => {
     }
 
     xml += '</urlset>';
-
     res.header('Content-Type', 'application/xml');
-    res.header('Cache-Control', 'public, max-age=3600'); // Cache 1 hora
+    res.header('Cache-Control', 'public, max-age=3600');
     res.send(xml);
   } catch (error) {
     console.error('Error generating sitemap:', error);
     res.status(500).send('Error generating sitemap');
   }
-});
+}
 
-// GET /robots.txt - Robots.txt dinámico
-router.get('/robots', (_req, res) => {
-  const siteUrl = 'https://josenizzo.info';
-
-  const robotsTxt = `# josenizzo.info - Robots.txt
-User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: ${siteUrl}/sitemap.xml
-Sitemap: ${siteUrl}/news-sitemap.xml
-
-# RSS Feed
-# ${siteUrl}/feed.xml
-
-# Bloquear admin
-Disallow: /admin/
-Disallow: /api/
-
-# Permitir crawlers de noticias
-User-agent: Googlebot-News
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 1
-`;
-
-  res.header('Content-Type', 'text/plain');
-  res.send(robotsTxt);
-});
-
-// GET /news-sitemap.xml - Sitemap específico para Google News (últimas 48hs)
-router.get('/news', async (_req, res) => {
+// GET /news-sitemap.xml
+export async function handleNewsSitemap(_req, res) {
   try {
-    const siteUrl = 'https://josenizzo.info';
-
-    // Google News solo indexa artículos de las últimas 48 horas
     const articles = await db.allAsync(
       `SELECT slug, title, created_at, category
        FROM articles
@@ -151,9 +102,8 @@ router.get('/news', async (_req, res) => {
 
     for (const article of articles) {
       const pubDate = new Date(article.created_at).toISOString();
-
       xml += `  <url>
-    <loc>${siteUrl}/articulo/${article.slug}</loc>
+    <loc>${SITE_URL}/articulo/${article.slug}</loc>
     <news:news>
       <news:publication>
         <news:name>josenizzo.info</news:name>
@@ -166,21 +116,44 @@ router.get('/news', async (_req, res) => {
     }
 
     xml += '</urlset>';
-
     res.header('Content-Type', 'application/xml');
-    res.header('Cache-Control', 'public, max-age=900'); // Cache 15 minutos
+    res.header('Cache-Control', 'public, max-age=900');
     res.send(xml);
   } catch (error) {
     console.error('Error generating news sitemap:', error);
     res.status(500).send('Error generating news sitemap');
   }
-});
+}
 
-// GET /feed.xml - RSS 2.0 feed
-router.get('/feed', async (_req, res) => {
+// GET /robots.txt
+export function handleRobots(_req, res) {
+  const robotsTxt = `# josenizzo.info - Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: ${SITE_URL}/sitemap.xml
+Sitemap: ${SITE_URL}/news-sitemap.xml
+
+# Bloquear admin
+Disallow: /admin/
+Disallow: /api/
+
+# Permitir crawlers de noticias
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+`;
+  res.header('Content-Type', 'text/plain');
+  res.send(robotsTxt);
+}
+
+// GET /feed.xml
+export async function handleFeed(_req, res) {
   try {
-    const siteUrl = 'https://josenizzo.info';
-
     const articles = await db.allAsync(
       `SELECT slug, title, excerpt, category, created_at, image
        FROM articles
@@ -193,15 +166,15 @@ router.get('/feed', async (_req, res) => {
     xml += '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">\n';
     xml += '  <channel>\n';
     xml += `    <title>josenizzo.info</title>\n`;
-    xml += `    <link>${siteUrl}</link>\n`;
+    xml += `    <link>${SITE_URL}</link>\n`;
     xml += `    <description>Noticias de última hora, análisis y cobertura en profundidad de política, economía, deportes y más.</description>\n`;
     xml += `    <language>es-ar</language>\n`;
     xml += `    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n`;
-    xml += `    <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml" />\n`;
+    xml += `    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />\n`;
 
     for (const article of articles) {
       const pubDate = new Date(article.created_at).toUTCString();
-      const link = `${siteUrl}/articulo/${article.slug}`;
+      const link = `${SITE_URL}/articulo/${article.slug}`;
       const title = article.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const description = (article.excerpt || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -211,11 +184,9 @@ router.get('/feed', async (_req, res) => {
       xml += `      <guid isPermaLink="true">${link}</guid>\n`;
       xml += `      <pubDate>${pubDate}</pubDate>\n`;
       xml += `      <description>${description}</description>\n`;
-      if (article.category) {
-        xml += `      <category>${article.category}</category>\n`;
-      }
+      if (article.category) xml += `      <category>${article.category}</category>\n`;
       if (article.image) {
-        const imageUrl = article.image.startsWith('http') ? article.image : `${siteUrl}${article.image}`;
+        const imageUrl = article.image.startsWith('http') ? article.image : `${SITE_URL}${article.image}`;
         xml += `      <media:content url="${imageUrl}" medium="image" />\n`;
       }
       xml += '    </item>\n';
@@ -223,7 +194,6 @@ router.get('/feed', async (_req, res) => {
 
     xml += '  </channel>\n';
     xml += '</rss>';
-
     res.header('Content-Type', 'application/rss+xml; charset=utf-8');
     res.header('Cache-Control', 'public, max-age=1800');
     res.send(xml);
@@ -231,6 +201,4 @@ router.get('/feed', async (_req, res) => {
     console.error('Error generating RSS feed:', error);
     res.status(500).send('Error generating RSS feed');
   }
-});
-
-export default router;
+}

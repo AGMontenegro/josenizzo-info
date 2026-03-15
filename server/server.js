@@ -25,7 +25,7 @@ import uploadRoutes from './routes/upload.js';
 import marketRoutes from './routes/market.js';
 import roadsRoutes from './routes/roads.js';
 import contactRoutes from './routes/contact.js';
-import sitemapRoutes from './routes/sitemap.js';
+import { handleSitemap, handleNewsSitemap, handleRobots, handleFeed } from './routes/sitemap.js';
 import notificationRoutes from './routes/notifications.js';
 import analyticsRoutes from './routes/analytics.js';
 import ampRoutes from './routes/amp.js';
@@ -170,10 +170,10 @@ app.use('/api/settings', settingsRoutes);
 app.use('/amp/articulo', ampRoutes);
 
 // Rutas SEO (sitemap, robots.txt)
-app.use('/sitemap.xml', (req, _res, next) => { req.url = '/'; next(); }, sitemapRoutes);
-app.use('/news-sitemap.xml', (req, _res, next) => { req.url = '/news'; next(); }, sitemapRoutes);
-app.use('/robots.txt', (req, _res, next) => { req.url = '/robots'; next(); }, sitemapRoutes);
-app.use('/feed.xml', (req, _res, next) => { req.url = '/feed'; next(); }, sitemapRoutes);
+app.get('/sitemap.xml', handleSitemap);
+app.get('/news-sitemap.xml', handleNewsSitemap);
+app.get('/robots.txt', handleRobots);
+app.get('/feed.xml', handleFeed);
 
 // Ruta de salud
 app.get('/api/health', (_req, res) => {
