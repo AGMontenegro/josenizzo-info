@@ -620,7 +620,7 @@ function Home() {
                       </a>
 
                       {/* Video vertical */}
-                      <div className="w-28 flex-shrink-0">
+                      <div className="w-36 flex-shrink-0">
                         <video
                           src="/videos/Promo_ Plataf.mp4"
                           autoPlay
