@@ -468,6 +468,16 @@ function Home() {
                       </div>
                     </a>
                   </div>
+
+                  {/* Video Plataforma Lo Nuestro */}
+                  <div className="mt-6">
+                    <video
+                      src="/videos/Promo_ Plataf.mp4"
+                      controls
+                      playsInline
+                      className="w-full"
+                    />
+                  </div>
                 </div>
               </div>
             )}
