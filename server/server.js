@@ -70,10 +70,10 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://platform.twitter.com", "https://syndication.twitter.com", "https://www.googletagmanager.com"],
       frameSrc: ["'self'", "https://platform.twitter.com", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://www.facebook.com", "https://www.instagram.com"],
       mediaSrc: ["'self'", "https:", "blob:", "data:"],
-      connectSrc: ["'self'", "blob:", "https://fonts.googleapis.com", "https://fonts.gstatic.com", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org", "https://*.digitaloceanspaces.com"],
+      connectSrc: ["'self'", "blob:", "https://fonts.googleapis.com", "https://fonts.gstatic.com", "https://api.twitter.com", "https://dolarapi.com", "https://api.coingecko.com", "https://query1.finance.yahoo.com", "https://api.openweathermap.org", "https://*.digitaloceanspaces.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://www.googletagmanager.com"],
     },
   },
   crossOriginEmbedderPolicy: false, // Para permitir embeds de Twitter/YouTube
