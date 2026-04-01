@@ -6,16 +6,14 @@ const SITE_URL = 'https://josenizzo.info';
 export async function handleSitemap(_req, res) {
   try {
     const articles = await db.allAsync(
-      'SELECT slug, updated_at, created_at, category FROM articles WHERE published = 1 ORDER BY created_at DESC'
+      'SELECT slug, updated_at, created_at, category FROM articles WHERE published = 1 ORDER BY created_at DESC LIMIT 500'
     );
     const categories = await db.allAsync(
       'SELECT DISTINCT category FROM articles WHERE published = 1 AND category IS NOT NULL'
     );
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
-    xml += '        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"\n';
-    xml += '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
     xml += `  <url>
     <loc>${SITE_URL}/</loc>
