@@ -26,6 +26,7 @@ import SiteSettings from './pages/admin/SiteSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationBanner from './components/NotificationBanner';
 import NewsletterPopup from './components/NewsletterPopup';
+import PWAInstallBanner from './components/PWAInstallBanner';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
     <Router>
       <NotificationBanner />
       <NewsletterPopup />
+      <PWAInstallBanner />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
