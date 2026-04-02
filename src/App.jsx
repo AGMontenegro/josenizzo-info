@@ -25,6 +25,7 @@ import AnalyticsDashboard from './pages/admin/AnalyticsDashboard';
 import SiteSettings from './pages/admin/SiteSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotificationBanner from './components/NotificationBanner';
+import NewsletterPopup from './components/NewsletterPopup';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
     <AuthProvider>
     <Router>
       <NotificationBanner />
+      <NewsletterPopup />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
