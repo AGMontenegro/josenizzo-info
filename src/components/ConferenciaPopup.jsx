@@ -24,12 +24,12 @@ function ConferenciaPopup() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 9999 }}
       onClick={handleClose}
     >
       <div
-        className="relative max-w-sm w-full"
+        className="relative max-w-lg w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button
