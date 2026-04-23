@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 function ConferenciaPopup() {
   const [show, setShow] = useState(false);
@@ -22,10 +23,10 @@ function ConferenciaPopup() {
 
   if (!show) return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 flex items-center justify-center p-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 9999 }}
+      style={{ backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 99999 }}
       onClick={handleClose}
     >
       <div
@@ -34,7 +35,8 @@ function ConferenciaPopup() {
       >
         <button
           onClick={handleClose}
-          className="absolute -top-3 -right-3 z-10 bg-white text-gray-900 rounded-full w-8 h-8 flex items-center justify-center shadow-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+          className="absolute -top-3 -right-3 bg-white text-gray-900 rounded-full w-8 h-8 flex items-center justify-center shadow-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+          style={{ zIndex: 100000 }}
         >
           ×
         </button>
@@ -48,7 +50,8 @@ function ConferenciaPopup() {
           Tocá la imagen para reservar por WhatsApp
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
