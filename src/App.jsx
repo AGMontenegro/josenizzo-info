@@ -27,6 +27,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import NotificationBanner from './components/NotificationBanner';
 import NewsletterPopup from './components/NewsletterPopup';
 import PWAInstallBanner from './components/PWAInstallBanner';
+import ConferenciaPopup from './components/ConferenciaPopup';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       <NotificationBanner />
       <NewsletterPopup />
       <PWAInstallBanner />
+      <ConferenciaPopup />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
