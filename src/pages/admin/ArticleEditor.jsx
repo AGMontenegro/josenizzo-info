@@ -27,8 +27,10 @@ function ArticleEditor() {
     breaking: false,
     badge: '',
     read_time: 5,
-    published: true
+    published: true,
+    tags: []
   });
+  const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -58,7 +60,8 @@ function ArticleEditor() {
         breaking: !!article.breaking,
         badge: article.badge || '',
         read_time: article.read_time || 5,
-        published: !!article.published
+        published: !!article.published,
+        tags: Array.isArray(article.tags) ? article.tags : []
       });
     } catch (err) {
       setError('Error al cargar el artículo: ' + err.message);
@@ -706,11 +709,16 @@ function ArticleEditor() {
             </p>
           </div>
 
-          {/* Excerpt */}
+          {/* Excerpt / Meta Description */}
           <div>
-            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-2">
-              Resumen/Extracto *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700">
+                Meta Description / Resumen *
+              </label>
+              <span className={`text-xs font-medium ${formData.excerpt.length > 160 ? 'text-red-500' : formData.excerpt.length >= 140 ? 'text-green-600' : 'text-gray-400'}`}>
+                {formData.excerpt.length}/160
+              </span>
+            </div>
             <textarea
               id="excerpt"
               name="excerpt"
@@ -718,9 +726,61 @@ function ArticleEditor() {
               onChange={handleChange}
               required
               rows={3}
+              maxLength={320}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Breve resumen del artículo (aparecerá en las tarjetas)"
+              placeholder="Resumen de ~150 caracteres. Aparece en Google y en las tarjetas del sitio."
             />
+            <p className="text-xs text-gray-400 mt-1">Google muestra hasta 160 caracteres. El rango ideal es 140–160.</p>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags / Etiquetas</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.map((tag) => (
+                <span key={tag} className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))}
+                    className="text-blue-500 hover:text-blue-700 font-bold leading-none"
+                  >×</button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+                    e.preventDefault();
+                    const newTag = tagInput.trim().toLowerCase();
+                    if (!formData.tags.includes(newTag)) {
+                      setFormData(prev => ({ ...prev, tags: [...prev.tags, newTag] }));
+                    }
+                    setTagInput('');
+                  }
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                placeholder="Escribí un tag y presioná Enter o coma"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const newTag = tagInput.trim().toLowerCase();
+                  if (newTag && !formData.tags.includes(newTag)) {
+                    setFormData(prev => ({ ...prev, tags: [...prev.tags, newTag] }));
+                  }
+                  setTagInput('');
+                }}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
+              >
+                Agregar
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Ej: economía, política, argentina. Separá con Enter o coma.</p>
           </div>
 
           {/* Contenido */}

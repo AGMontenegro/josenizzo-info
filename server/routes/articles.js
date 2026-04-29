@@ -132,6 +132,34 @@ router.get('/trending', async (req, res) => {
   }
 });
 
+// Helper: obtener tags de un artículo
+async function getArticleTags(articleId) {
+  try {
+    const rows = await db.allAsync(
+      'SELECT t.name FROM tags t JOIN article_tags at ON t.id = at.tag_id WHERE at.article_id = ?',
+      [articleId]
+    );
+    return rows.map(r => r.name);
+  } catch { return []; }
+}
+
+// Helper: guardar tags de un artículo (reemplaza los existentes)
+async function saveArticleTags(articleId, tags) {
+  if (!Array.isArray(tags)) return;
+  await db.runAsync('DELETE FROM article_tags WHERE article_id = ?', [articleId]);
+  for (const name of tags) {
+    const trimmed = name.trim().toLowerCase();
+    if (!trimmed) continue;
+    let tag = await db.getAsync('SELECT id FROM tags WHERE name = ?', [trimmed]);
+    if (!tag) {
+      const r = await db.runAsync('INSERT INTO tags (name) VALUES (?)', [trimmed]);
+      tag = { id: r.insertId || r.lastID };
+    }
+    await db.runAsync('INSERT IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id])
+      .catch(() => db.runAsync('INSERT OR IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id]));
+  }
+}
+
 // GET /api/articles/:id - Obtener artículo por ID
 router.get('/:id',
   param('id').isInt({ min: 1 }),
@@ -147,6 +175,7 @@ router.get('/:id',
     // Incrementar vistas
     await db.runAsync('UPDATE articles SET views = views + 1 WHERE id = ?', [req.params.id]);
     article.views += 1;
+    article.tags = await getArticleTags(article.id);
 
     res.json(article);
   } catch (error) {
@@ -194,6 +223,7 @@ router.get('/slug/:slug',
 
     // Incrementar vistas en background (no bloquea la respuesta)
     db.runAsync('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]).catch(() => {});
+    article.tags = await getArticleTags(article.id);
 
     res.json(article);
   } catch (error) {
@@ -231,7 +261,8 @@ router.post('/',
       breaking,
       badge,
       read_time,
-      published
+      published,
+      tags
     } = req.body;
 
     // Log article creation
@@ -252,8 +283,10 @@ router.post('/',
 
     // MySQL usa insertId, SQLite usa lastID
     const articleId = result.insertId || result.lastID;
+    await saveArticleTags(articleId, tags);
 
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [articleId]);
+    article.tags = await getArticleTags(articleId);
     invalidateArticles();
 
     // Enviar push notification si es breaking news
@@ -297,7 +330,8 @@ router.put('/:id',
       category,
       featured,
       breaking,
-      badge
+      badge,
+      tags
     } = req.body;
 
     logSecurityEvent(req, 'ARTICLE_UPDATE', { id: req.params.id, title });
@@ -310,7 +344,9 @@ router.put('/:id',
       [title, excerpt, content, image, image_blur || null, category, featured, breaking, badge, req.params.id]
     );
 
+    await saveArticleTags(req.params.id, tags);
     const article = await db.getAsync('SELECT * FROM articles WHERE id = ?', [req.params.id]);
+    article.tags = await getArticleTags(req.params.id);
     invalidateArticles();
     res.json(article);
   } catch (error) {
