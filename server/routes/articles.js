@@ -45,8 +45,8 @@ router.get('/',
 
       if (tag) {
         query = `SELECT a.* FROM articles a
-          JOIN article_tags at ON a.id = at.article_id
-          JOIN tags t ON at.tag_id = t.id
+          JOIN article_tags art ON a.id = art.article_id
+          JOIN tags t ON art.tag_id = t.id
           WHERE a.published = 1 AND t.name = ?`;
         params.push(tag.toLowerCase());
       }
@@ -73,7 +73,7 @@ router.get('/',
       const articles = await db.allAsync(query, params);
 
       let countQuery = tag
-        ? `SELECT COUNT(*) as total FROM articles a JOIN article_tags at ON a.id = at.article_id JOIN tags t ON at.tag_id = t.id WHERE a.published = 1 AND t.name = ?`
+        ? `SELECT COUNT(*) as total FROM articles a JOIN article_tags art ON a.id = art.article_id JOIN tags t ON art.tag_id = t.id WHERE a.published = 1 AND t.name = ?`
         : 'SELECT COUNT(*) as total FROM articles a WHERE a.published = 1';
       let countParams = tag ? [tag.toLowerCase()] : [];
       if (category) {
@@ -148,7 +148,7 @@ router.get('/trending', async (req, res) => {
 async function getArticleTags(articleId) {
   try {
     const rows = await db.allAsync(
-      'SELECT t.name FROM tags t JOIN article_tags at ON t.id = at.tag_id WHERE at.article_id = ?',
+      'SELECT t.name FROM tags t JOIN article_tags art ON t.id = art.tag_id WHERE art.article_id = ?',
       [articleId]
     );
     return rows.map(r => r.name);
@@ -167,8 +167,11 @@ async function saveArticleTags(articleId, tags) {
       const r = await db.runAsync('INSERT INTO tags (name) VALUES (?)', [trimmed]);
       tag = { id: r.insertId || r.lastID };
     }
-    await db.runAsync('INSERT IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id])
-      .catch(() => db.runAsync('INSERT OR IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id]));
+    try {
+      await db.runAsync('INSERT IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id]);
+    } catch {
+      await db.runAsync('INSERT OR IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)', [articleId, tag.id]);
+    }
   }
 }
 
