@@ -28,6 +28,7 @@ import NotificationBanner from './components/NotificationBanner';
 import NewsletterPopup from './components/NewsletterPopup';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import ConferenciaPopup from './components/ConferenciaPopup';
+import TagPage from './pages/TagPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="privacidad" element={<Privacy />} />
           <Route path="terminos" element={<Terms />} />
           <Route path="suscripcion" element={<Subscription />} />
+          <Route path="tag/:tag" element={<TagPage />} />
           <Route path="perfil" element={<ReaderProfile />} />
         </Route>
 

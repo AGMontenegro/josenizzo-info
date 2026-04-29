@@ -173,6 +173,24 @@ function ArticleDetail() {
                 <ShareButtons article={article} />
               </div>
 
+              {/* Tags */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Etiquetas</p>
+                  <div className="flex flex-wrap gap-2">
+                    {article.tags.map(tag => (
+                      <Link
+                        key={tag}
+                        to={`/tag/${tag}`}
+                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Seguir tema */}
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
                 <div className="flex items-center justify-between flex-wrap gap-4">

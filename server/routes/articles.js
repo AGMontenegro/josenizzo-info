@@ -27,6 +27,7 @@ router.get('/',
   query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
   query('category').optional().trim().escape(),
   query('search').optional().trim().escape().isLength({ max: 200 }),
+  query('tag').optional().trim().escape().isLength({ max: 100 }),
   handleValidation,
   async (req, res) => {
   try {
@@ -35,45 +36,56 @@ router.get('/',
     const offset = req.query.offset != null ? parseInt(req.query.offset) : (page - 1) * limit;
     const category = req.query.category;
     const search = req.query.search;
+    const tag = req.query.tag;
 
-    const cacheKey = KEYS.articleList({ page, limit, category, search });
+    const cacheKey = KEYS.articleList({ page, limit, category, search, tag });
     const data = await cacheOrFetch(cacheKey, async () => {
-      let query = 'SELECT * FROM articles WHERE published = 1';
+      let query = 'SELECT a.* FROM articles a WHERE a.published = 1';
       let params = [];
 
+      if (tag) {
+        query = `SELECT a.* FROM articles a
+          JOIN article_tags at ON a.id = at.article_id
+          JOIN tags t ON at.tag_id = t.id
+          WHERE a.published = 1 AND t.name = ?`;
+        params.push(tag.toLowerCase());
+      }
+
       if (category) {
-        query += ' AND category = ?';
+        query += ' AND a.category = ?';
         params.push(category);
       }
 
       if (search) {
         // Usar FULLTEXT en MySQL, LIKE como fallback en SQLite
         if (db.type === 'mysql') {
-          query += ' AND MATCH(title, excerpt) AGAINST(? IN BOOLEAN MODE)';
+          query += ' AND MATCH(a.title, a.excerpt) AGAINST(? IN BOOLEAN MODE)';
           params.push(search + '*');
         } else {
-          query += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+          query += ' AND (a.title LIKE ? OR a.content LIKE ? OR a.excerpt LIKE ?)';
           const searchTerm = `%${search}%`;
           params.push(searchTerm, searchTerm, searchTerm);
         }
       }
 
-      query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+      query += ` ORDER BY a.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
       const articles = await db.allAsync(query, params);
 
-      let countQuery = 'SELECT COUNT(*) as total FROM articles WHERE published = 1';
-      let countParams = [];
+      let countQuery = tag
+        ? `SELECT COUNT(*) as total FROM articles a JOIN article_tags at ON a.id = at.article_id JOIN tags t ON at.tag_id = t.id WHERE a.published = 1 AND t.name = ?`
+        : 'SELECT COUNT(*) as total FROM articles a WHERE a.published = 1';
+      let countParams = tag ? [tag.toLowerCase()] : [];
       if (category) {
-        countQuery += ' AND category = ?';
+        countQuery += ' AND a.category = ?';
         countParams.push(category);
       }
       if (search) {
         if (db.type === 'mysql') {
-          countQuery += ' AND MATCH(title, excerpt) AGAINST(? IN BOOLEAN MODE)';
+          countQuery += ' AND MATCH(a.title, a.excerpt) AGAINST(? IN BOOLEAN MODE)';
           countParams.push(search + '*');
         } else {
-          countQuery += ' AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)';
+          countQuery += ' AND (a.title LIKE ? OR a.content LIKE ? OR a.excerpt LIKE ?)';
           const searchTerm = `%${search}%`;
           countParams.push(searchTerm, searchTerm, searchTerm);
         }

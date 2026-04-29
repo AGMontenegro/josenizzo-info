@@ -39,7 +39,7 @@ export function useArticles(params = {}) {
     return () => {
       isMounted = false;
     };
-  }, [params.page, params.limit, params.search, params.category]);
+  }, [params.page, params.limit, params.search, params.category, params.tag]);
 
   return { articles, loading, error, pagination };
 }
