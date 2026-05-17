@@ -28,12 +28,14 @@ import NotificationBanner from './components/NotificationBanner';
 import NewsletterPopup from './components/NewsletterPopup';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import TagPage from './pages/TagPage';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <ThemeProvider>
     <AuthProvider>
     <Router>
+      <ScrollToTop />
       <NotificationBanner />
       <NewsletterPopup />
       <PWAInstallBanner />
