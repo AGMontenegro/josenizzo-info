@@ -988,10 +988,18 @@ function Home() {
                   </div>
 
                   {/* Espacios publicitarios adicionales */}
-                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-6 min-h-[250px] flex flex-col items-center justify-center">
-                    <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
-                    <p className="text-xs text-gray-300 mt-1">300x250</p>
-                  </div>
+                  <a
+                    href="https://m161bartoletti.com.ar/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block mt-6 min-h-[250px]"
+                  >
+                    <img
+                      src="/logos/logo-BE70_vBB.webp"
+                      alt="M161 Bartoletti"
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
                   <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
                     <p className="text-xs text-gray-300 mt-1">300x250</p>
