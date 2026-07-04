@@ -1000,9 +1000,12 @@ function Home() {
                       className="w-full h-full object-cover"
                     />
                   </a>
-                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
-                    <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
-                    <p className="text-xs text-gray-300 mt-1">300x250</p>
+                  <div className="mt-4 min-h-[250px]">
+                    <img
+                      src="/logos/Arena_Ripio.jpeg"
+                      alt="Arena Ripio"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center mt-4 min-h-[250px] flex flex-col items-center justify-center">
                     <p className="text-gray-400 font-medium text-sm">Espacio Publicitario</p>
