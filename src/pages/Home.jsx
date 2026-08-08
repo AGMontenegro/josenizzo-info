@@ -306,7 +306,6 @@ function Home() {
                       <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
                         Planeta Extremo
                       </h3>
-                      <PremiumBadge small />
                     </div>
                     {planetaExtremoLoading ? (
                       <LoadingSpinner className="py-10" />
@@ -358,7 +357,7 @@ function Home() {
                       </div>
                     ) : (
                       <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center min-h-[150px] flex flex-col items-center justify-center">
-                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible para suscripción</p>
+                        <p className="text-gray-400 font-medium text-sm">Próximamente disponible</p>
                       </div>
                     )}
                   </div>
