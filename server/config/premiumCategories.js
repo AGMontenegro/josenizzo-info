@@ -1,7 +1,6 @@
 // Categorías que requieren suscripción premium
 export const PREMIUM_CATEGORIES = [
-  'Guerra Espiritual',
-  'Planeta extremo'
+  'Guerra Espiritual'
 ];
 
 export function isPremiumCategory(category) {

@@ -301,7 +301,7 @@ function Home() {
                   <div className="mt-8 border-t-2 border-gray-900 dark:border-gray-100"></div>
 
                   {/* Sección PLANETA EXTREMO */}
-                  <div className="mt-8">
+                  <div className="mt-4">
                     <div className="flex items-center gap-2 mb-6">
                       <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-widest uppercase">
                         Planeta Extremo
@@ -311,46 +311,54 @@ function Home() {
                       <LoadingSpinner className="py-10" />
                     ) : planetaExtremoArticles.length > 0 ? (
                       <div className="space-y-4">
-                        {/* Primer artículo - Título + Extracto + Imagen */}
+                        {/* Primer artículo - Título + Extracto a la izquierda, Imagen a la derecha (solo desktop) */}
                         <div className="group pb-4 border-b border-gray-200 dark:border-gray-800">
                           <Link to={`/articulo/${planetaExtremoArticles[0].slug}`}>
-                            <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
-                              {planetaExtremoArticles[0].title}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light mb-2">
-                              {planetaExtremoArticles[0].excerpt}
-                            </p>
-                            {planetaExtremoArticles[0].image && (
-                              <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
-                                <BlurImage
-                                  src={planetaExtremoArticles[0].image}
-                                  alt={planetaExtremoArticles[0].title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  blurData={planetaExtremoArticles[0].image_blur}
-                                  loading="lazy"
-                                />
+                            <div className="flex flex-col lg:flex-row gap-6">
+                              <div className="w-full lg:w-1/2 flex flex-col justify-center">
+                                <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-base mb-2">
+                                  {planetaExtremoArticles[0].title}
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed font-light">
+                                  {planetaExtremoArticles[0].excerpt}
+                                </p>
                               </div>
-                            )}
-                          </Link>
-                        </div>
-                        {/* Segundo artículo - Título + Imagen */}
-                        {planetaExtremoArticles.length >= 2 && (
-                          <div className="group">
-                            <Link to={`/articulo/${planetaExtremoArticles[1].slug}`}>
-                              <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm mb-2">
-                                {planetaExtremoArticles[1].title}
-                              </h3>
-                              {planetaExtremoArticles[1].image && (
-                                <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                              {planetaExtremoArticles[0].image && (
+                                <div className="w-full lg:w-1/2 aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
                                   <BlurImage
-                                    src={planetaExtremoArticles[1].image}
-                                    alt={planetaExtremoArticles[1].title}
+                                    src={planetaExtremoArticles[0].image}
+                                    alt={planetaExtremoArticles[0].title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    blurData={planetaExtremoArticles[1].image_blur}
+                                    blurData={planetaExtremoArticles[0].image_blur}
                                     loading="lazy"
                                   />
                                 </div>
                               )}
+                            </div>
+                          </Link>
+                        </div>
+                        {/* Segundo artículo - Título a la izquierda, Imagen a la derecha (solo desktop) */}
+                        {planetaExtremoArticles.length >= 2 && (
+                          <div className="group">
+                            <Link to={`/articulo/${planetaExtremoArticles[1].slug}`}>
+                              <div className="flex flex-col lg:flex-row gap-6">
+                                <div className="w-full lg:w-1/2 flex flex-col justify-center">
+                                  <h3 className="font-serif font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-3 leading-snug text-sm">
+                                    {planetaExtremoArticles[1].title}
+                                  </h3>
+                                </div>
+                                {planetaExtremoArticles[1].image && (
+                                  <div className="w-full lg:w-1/2 aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
+                                    <BlurImage
+                                      src={planetaExtremoArticles[1].image}
+                                      alt={planetaExtremoArticles[1].title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      blurData={planetaExtremoArticles[1].image_blur}
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                )}
+                              </div>
                             </Link>
                           </div>
                         )}
