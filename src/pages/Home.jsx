@@ -1010,7 +1010,7 @@ function Home() {
                       className="w-full h-full object-cover"
                     />
                   </a>
-                  <div className="mt-4 min-h-[250px]">
+                  <div className="mt-4 h-[250px]">
                     <video
                       src="/videos/Activation.mp4"
                       autoPlay
